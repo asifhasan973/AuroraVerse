@@ -1,0 +1,57 @@
+[
+  {
+    "question": "What causes the beautiful auroras in the sky?",
+    "options": [
+      "Rainbows after rain",
+      "Charged particles from the Sun interacting with Earth's atmosphere",
+      "Moonlight reflecting off clouds",
+      "City lights in the distance"
+    ],
+    "correctIndex": 1,
+    "fact": "Auroras happen when solar wind particles collide with gases like oxygen and nitrogen high in the atmosphere."
+  },
+  {
+    "question": "Which layer protects us from most of the Sun’s harmful radiation?",
+    "options": [
+      "Crust",
+      "Mantle",
+      "Magnetosphere",
+      "Inner core"
+    ],
+    "correctIndex": 2,
+    "fact": "Earth’s magnetic field (magnetosphere) deflects many charged particles coming from the Sun."
+  },
+  {
+    "question": "What can strong solar storms sometimes disrupt on Earth?",
+    "options": [
+      "GPS and radio communications",
+      "Ocean tides",
+      "Volcanoes",
+      "Earthquakes"
+    ],
+    "correctIndex": 0,
+    "fact": "Space weather can affect satellites, GPS signals, and power grids during big storms."
+  },
+  {
+    "question": "What is the Sun mostly made of?",
+    "options": [
+      "Rock and iron",
+      "Ice and dust",
+      "Hydrogen and helium",
+      "Carbon and oxygen"
+    ],
+    "correctIndex": 2,
+    "fact": "The Sun is a giant ball of hot plasma, mainly hydrogen (about 74%) and helium (about 24%)."
+  },
+  {
+    "question": "What is a solar flare?",
+    "options": [
+      "A volcano on the Sun",
+      "A sudden burst of energy and light from the Sun’s surface",
+      "A comet hitting the Sun",
+      "A bright star near the Sun"
+    ],
+    "correctIndex": 1,
+    "fact": "Solar flares are powerful eruptions of radiation caused by magnetic energy release on the Sun."
+  }
+]
