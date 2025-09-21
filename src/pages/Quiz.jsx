@@ -62,7 +62,10 @@ export default function Quiz() {
   }, []);
   useEffect(() => {
     if (index > 0 && swoosh.current) {
-      try { swoosh.current.currentTime = 0; swoosh.current.play(); } catch {}
+      try { swoosh.current.currentTime = 0; swoosh.current.play(); } catch {
+        console.log("Failed to play sound");
+        
+      }
     }
   }, [index]);
 
@@ -85,7 +88,7 @@ export default function Quiz() {
       <div className="absolute inset-0 -z-10 [background:radial-gradient(1px_1px_at_10px_10px,_white_40%,_transparent_41%)_0_0/24px_24px,_radial-gradient(1px_1px_at_5px_15px,_#c4b5fd_40%,_transparent_41%)_0_0/32px_32px,_transparent] opacity-20" />
 
       {/* Top bar */}
-      <div className="container mx-auto px-4 pt-4 flex items-center justify-between">
+      <div className  ="container mx-auto px-4 pt-4 flex items-center justify-between">
         <div></div>
         <div className="text-sm px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/10">
           Quiz • {index + 1} / {total}

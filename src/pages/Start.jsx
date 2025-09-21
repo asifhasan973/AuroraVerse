@@ -46,7 +46,7 @@ const SCRIPT = [
   {
     // garden 2
     id: "garden-2",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_hi.png",
@@ -74,7 +74,7 @@ const SCRIPT = [
   {
     // garden 3
     id: "garden-3",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_sit.png",
@@ -102,7 +102,7 @@ const SCRIPT = [
   {
     // garden 4
     id: "garden-4",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_sit_wow.png",
@@ -130,7 +130,7 @@ const SCRIPT = [
   {
     // garden 5
     id: "garden-5",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_talk2.png",
@@ -158,7 +158,7 @@ const SCRIPT = [
   {
     // garden 6 - Do you wanna explore
     id: "garden-6",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_sit_wow.png",
@@ -186,7 +186,7 @@ const SCRIPT = [
   {
     // garden 7 - YES
     id: "garden-7",
-    bg: "images/GamePage/bg1.png",
+    bg: "/images/GamePage/bg1.png",
     characters: {
       child: {
         src: "/images/GamePage/c_happy.png",
@@ -227,7 +227,7 @@ const SCRIPT = [
         move: {
           toX: "-80vw",
           toY: "28vh",
-          duration: 4000,         // <-- speed control (ms)
+          duration: 3000, // <-- speed control (ms)
           delay: 0,
           easing: "cubic-bezier(.2,.8,.2,1)",
         },
@@ -246,17 +246,17 @@ const SCRIPT = [
         },
       },
 
-      // Phase 1: Both fly away at ~45°
+      // Phase 1: Both fly away at ~45° 
+      // Note: flip_image.png 
       fly: {
-       child: {
-            src: "/images/GamePage/flip_image.png",
-            scale: 0.63,
-            pos: { bottom: 0, left: "32%", z: 2 },
-            anchorCenterX: true,
-            fly45: { distance: "115vh", duration: 5000, delay: 0, direction: "right" },
-           
+        
+        child: {
+          src: "/images/GamePage/flip_image.png",
+          scale: 0.63,
+          pos: { bottom: 0, left: "32%", z: 2 },
+          anchorCenterX: true,
+          fly45: { distance: "115vh", duration: 5000, delay: 0, direction: "right" },
         },
-    
       },
     },
 
@@ -344,14 +344,18 @@ function Background({ bg, bgVideo }) {
       {bgVideo ? (
         <video
           className="absolute inset-0 -z-30 h-full w-full object-cover"
-          autoPlay loop muted playsInline poster={bg || "/video-poster.jpg"}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={bg || "/video-poster.jpg"}
         >
           <source src={bgVideo} type="video/mp4" />
         </video>
       ) : (
         <div
-          className="absolute inset-0 -z-30 bg-cover bg-center"
-          style={{ backgroundImage: `url(${bg})` }}
+          className="inset-0 -z-30 bg-cover bg-center"
+          style={{ position: "absolute", backgroundImage: `url(${bg})` }}
         />
       )}
       <div className="absolute inset-0 -z-20 bg-gradient-to-b from-black/20 via-purple-950/30 to-black/60" />
@@ -386,11 +390,13 @@ function CharactersLayer({ characters = {} }) {
     "--lift-delay": char.lift?.delay ? `${char.lift.delay}ms` : undefined,
     "--lift-distance": char.lift?.distance || undefined,
 
-   transform: [
-        char.anchorCenterX ? "translateX(-50%)" : null,
-        char.flipX ? "scaleX(-1)" : null,
-        `scale(${char.scale || 1})`,
-    ].filter(Boolean).join(" "),
+    transform: [
+      char.anchorCenterX ? "translateX(-50%)" : null,
+      char.flipX ? "scaleX(-1)" : null,
+      `scale(${char.scale || 1})`,
+    ]
+      .filter(Boolean)
+      .join(" "),
     transformOrigin: "center bottom",
     height: "auto",
     maxWidth: char.maxWidth ?? "40vw",
@@ -420,7 +426,9 @@ function CharactersLayer({ characters = {} }) {
           alt="Astronaut"
           draggable={false}
           className={cx(astro, "drop-shadow-[0_10px_40px_rgba(59,130,246,.6)]")}
-          style={commonStyle(astro)}
+          style={{ position: "absolute", ...commonStyle(astro) }}
+          width={800}
+          height={800}
         />
       )}
       {child?.visible !== false && (
@@ -429,7 +437,9 @@ function CharactersLayer({ characters = {} }) {
           alt="Child"
           draggable={false}
           className={cx(child, "drop-shadow-[0_10px_40px_rgba(124,58,237,.6)]")}
-          style={{ ...commonStyle(child), maxWidth: "36vw" }}
+          style={{ position: "absolute", ...commonStyle(child), maxWidth: "36vw" }}
+          width={800}
+          height={800}
         />
       )}
     </div>
