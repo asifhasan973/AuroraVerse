@@ -1,3 +1,6 @@
+/* App.css */
+
+/* Your existing styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +42,151 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* ========== ADD THESE STYLES FOR RESPONSIVE STORY COMPONENT ========== */
+
+/* Override root styles for story pages */
+#story-root {
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Animation for bounce slow */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+  50% {
+    transform: translateY(-10px) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+/* Animation for float */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+  50% {
+    transform: translateY(-20px) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Animation for lift (vertical) */
+@keyframes lift {
+  from {
+    transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+  to {
+    transform: translateY(calc(-1 * var(--lift-distance, 100vh))) 
+               translateX(var(--tx, 0)) 
+               scale(var(--base-scale, 1));
+  }
+}
+
+.animate-lift {
+  animation: lift var(--lift-duration, 3000ms) var(--lift-delay, 0ms) ease-in-out forwards;
+}
+
+/* Animation for move (approach) */
+@keyframes move {
+  from {
+    transform: translate(0, 0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+  to {
+    transform: translate(var(--to-x, 0), var(--to-y, 0)) 
+               translateX(var(--tx, 0)) 
+               scale(var(--base-scale, 1));
+  }
+}
+
+.animate-move {
+  animation: move var(--move-duration, 2000ms) 
+             var(--move-delay, 0ms) 
+             var(--move-ease, ease-in-out) 
+             forwards;
+}
+
+/* Animation for fly 45 degrees */
+@keyframes fly-45 {
+  from {
+    transform: translate(0, 0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
+  }
+  to {
+    transform: translate(
+                calc(var(--diag-dir, 1) * var(--diag-distance, 100vh) * 0.707),
+                calc(-1 * var(--diag-distance, 100vh) * 0.707)
+              )
+              translateX(var(--tx, 0))
+              scale(var(--base-scale, 1));
+  }
+}
+
+.animate-fly-45 {
+  animation: fly-45 var(--diag-duration, 4000ms) 
+             var(--diag-delay, 0ms) 
+             ease-in-out 
+             forwards;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 640px) {
+  #story-root {
+    min-height: 100svh; /* Use svh for mobile browsers */
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Adjust animation speeds for mobile */
+  .animate-move {
+    --move-duration: 2000ms !important;
+  }
+  
+  .animate-fly-45 {
+    --diag-duration: 3000ms !important;
+  }
+  
+  /* Ensure dialogue boxes don't overflow */
+  .dialogue-box {
+    max-width: 90vw !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Responsive styles for tablet */
+@media (max-width: 768px) {
+  /* Tablet adjustments */
+  #story-root img {
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* Reduce animation distances on smaller screens */
+  .animate-lift {
+    --lift-distance: 80vh !important;
+  }
+  
+  .animate-fly-45 {
+    --diag-distance: 100vh !important;
+  }
+}
+
+/* Prevent horizontal scroll on mobile/tablet */
+@media (max-width: 1024px) {
+  body {
+    overflow-x: hidden;
+  }
+  
+  #story-root {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
 }

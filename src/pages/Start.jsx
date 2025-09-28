@@ -1,17 +1,85 @@
 // src/pages/Start.jsx
 import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
+
+// Hook to track window size
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+};
 
 // Helper: allow numbers (px) or strings ("50%", "10vw")
 const pxOr = (v) => (typeof v === "number" ? `${v}px` : v);
-const styleFromPos = (pos = {}) => {
+
+const styleFromPos = (pos = {}, isMobile = false) => {
   const style = {};
+  
+  // Convert percentage-based positions for mobile
+  if (isMobile && pos.left && typeof pos.left === 'string' && pos.left.includes('%')) {
+    const percentage = parseInt(pos.left);
+    // Adjust percentages for mobile to keep elements visible
+    style.left = `${Math.min(Math.max(percentage, 10), 90)}%`;
+  } else if (pos.left != null) {
+    style.left = pxOr(pos.left);
+  }
+  
   if (pos.top != null) style.top = pxOr(pos.top);
   if (pos.bottom != null) style.bottom = pxOr(pos.bottom);
-  if (pos.left != null) style.left = pxOr(pos.left);
   if (pos.right != null) style.right = pxOr(pos.right);
   if (pos.z != null) style.zIndex = pos.z;
+  
   return style;
+};
+
+// Helper to get responsive scale
+const getResponsiveScale = (scale, windowWidth) => {
+  if (!scale) return 1;
+  
+  if (typeof scale === 'object') {
+    if (windowWidth < 640) return scale.mobile || scale.base * 0.6;
+    if (windowWidth < 768) return scale.tablet || scale.base * 0.75;
+    if (windowWidth < 1024) return scale.base * 0.85;
+    return scale.base || 1;
+  }
+  
+  // If scale is a number, apply responsive multipliers
+  if (windowWidth < 640) return scale * 0.6;
+  if (windowWidth < 768) return scale * 0.75;
+  if (windowWidth < 1024) return scale * 0.85;
+  return scale;
+};
+
+// Helper to get responsive width
+const getResponsiveWidth = (width, windowWidth) => {
+  if (typeof width === 'object') {
+    if (windowWidth < 640) return width.mobile || "90%";
+    if (windowWidth < 768) return width.tablet || width.base * 0.85;
+    return width.base || width;
+  }
+  
+  // For mobile, constrain width to viewport
+  if (windowWidth < 768) {
+    return Math.min(width || 450, windowWidth * 0.9);
+  }
+  
+  return width || 450;
 };
 
 // --- SCRIPT: fully controllable per step ---
@@ -24,7 +92,7 @@ const SCRIPT = [
         src: "/images/GamePage/c_sit.png",
         visible: true,
         pose: "sit",
-        scale: 0.35,
+        scale: { base: 0.35, mobile: 0.21, tablet: 0.28 },
         pos: { bottom: 0, left: "30%", z: 2 },
         anchorCenterX: true,
       },
@@ -32,15 +100,19 @@ const SCRIPT = [
         src: "/images/GamePage/a_hi.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "astro",
-      text: "Hi there! I’m Stelly.",
-      box: { width: 450, pos: { bottom: 250, left: "65%" }, anchorCenterX: true },
+      text: "Hi there! I'm Stelly.",
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "25vh", left: "65%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -52,23 +124,27 @@ const SCRIPT = [
         src: "/images/GamePage/c_hi.png",
         visible: true,
         pose: "hi",
-        scale: 0.43,
-        pos: { bottom: -35, left: "30%", z: 2 },
+        scale: { base: 0.43, mobile: 0.26, tablet: 0.34 },
+        pos: { bottom: "-5vh", left: "30%", z: 2 },
         anchorCenterX: true,
       },
       astro: {
         src: "/images/GamePage/a_listen2.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "child",
       text: "Hi! Who are you?",
-      box: { width: 450, pos: { bottom: 150, left: "35%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "15vh", left: "35%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -80,7 +156,7 @@ const SCRIPT = [
         src: "/images/GamePage/c_sit.png",
         visible: true,
         pose: "sit",
-        scale: 0.35,
+        scale: { base: 0.35, mobile: 0.21, tablet: 0.28 },
         pos: { bottom: 0, left: "30%", z: 2 },
         anchorCenterX: true,
       },
@@ -88,15 +164,19 @@ const SCRIPT = [
         src: "/images/GamePage/a_hi.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "astro",
-      text: "I’m an astronaut.",
-      box: { width: 450, pos: { bottom: 250, left: "65%" }, anchorCenterX: true },
+      text: "I'm an astronaut.",
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "25vh", left: "65%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -108,23 +188,27 @@ const SCRIPT = [
         src: "/images/GamePage/c_sit_wow.png",
         visible: true,
         pose: "hi",
-        scale: 0.43,
-        pos: { bottom: -35, left: "30%", z: 2 },
+        scale: { base: 0.43, mobile: 0.26, tablet: 0.34 },
+        pos: { bottom: "-5vh", left: "30%", z: 2 },
         anchorCenterX: true,
       },
       astro: {
         src: "/images/GamePage/a_listen2.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "child",
       text: "Astronaut? What is it?",
-      box: { width: 450, pos: { bottom: 150, left: "35%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "15vh", left: "35%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -136,23 +220,27 @@ const SCRIPT = [
         src: "/images/GamePage/c_talk2.png",
         visible: true,
         pose: "hi",
-        scale: 0.43,
-        pos: { bottom: -35, left: "30%", z: 2 },
+        scale: { base: 0.43, mobile: 0.26, tablet: 0.34 },
+        pos: { bottom: "-5vh", left: "30%", z: 2 },
         anchorCenterX: true,
       },
       astro: {
         src: "/images/GamePage/a_talk.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "astro",
       text: `An astronaut is a space explorer!`,
-      box: { width: 450, pos: { bottom: 250, left: "65%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "25vh", left: "65%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -164,23 +252,27 @@ const SCRIPT = [
         src: "/images/GamePage/c_sit_wow.png",
         visible: true,
         pose: "hi",
-        scale: 0.43,
-        pos: { bottom: -35, left: "30%", z: 2 },
+        scale: { base: 0.43, mobile: 0.26, tablet: 0.34 },
+        pos: { bottom: "-5vh", left: "30%", z: 2 },
         anchorCenterX: true,
       },
       astro: {
         src: "/images/GamePage/a_hi.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "astro",
       text: `Do you wanna explore the space?`,
-      box: { width: 450, pos: { bottom: 250, left: "65%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "25vh", left: "65%" },
+        anchorCenterX: true 
+      },
     },
   },
   {
@@ -192,23 +284,27 @@ const SCRIPT = [
         src: "/images/GamePage/c_happy.png",
         visible: true,
         pose: "hi",
-        scale: 0.40,
-        pos: { bottom: 20, left: "30%", z: 2 },
+        scale: { base: 0.40, mobile: 0.24, tablet: 0.32 },
+        pos: { bottom: "2vh", left: "30%", z: 2 },
         anchorCenterX: true,
       },
       astro: {
         src: "/images/GamePage/a_hi.png",
         visible: true,
         pose: "enter-top",
-        scale: 0.5,
-        pos: { top: -250, left: "105%", z: 3 },
+        scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
+        pos: { top: "-15vh", left: "105%", z: 3 },
         anchorCenterX: true,
       },
     },
     dialogue: {
       speaker: "child",
       text: "Yes...",
-      box: { width: 450, pos: { bottom: 150, left: "35%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 450, mobile: "85%", tablet: 380 },
+        pos: { bottom: "15vh", left: "35%" },
+        anchorCenterX: true 
+      },
     },
   },
 
@@ -234,14 +330,14 @@ const SCRIPT = [
         // child idle sprite (sitting/happy/etc.)
         child: {
           src: "/images/GamePage/c_happy.png",
-          scale: 0.40,
-          pos: { bottom: 20, left: "30%", z: 2 },
+          scale: { base: 0.40, mobile: 0.24, tablet: 0.32 },
+          pos: { bottom: "2vh", left: "30%", z: 2 },
           anchorCenterX: true,
         },
         // astronaut sprite used during approach
         astro: {
           src: "/images/GamePage/a_hi.png",
-          scale: 0.5,
+          scale: { base: 0.5, mobile: 0.3, tablet: 0.4 },
           anchorCenterX: true,
         },
       },
@@ -249,10 +345,9 @@ const SCRIPT = [
       // Phase 1: Both fly away at ~45° 
       // Note: flip_image.png 
       fly: {
-        
         child: {
           src: "/images/GamePage/flip_image.png",
-          scale: 0.63,
+          scale: { base: 0.63, mobile: 0.38, tablet: 0.5 },
           pos: { bottom: 0, left: "32%", z: 2 },
           anchorCenterX: true,
           fly45: { distance: "115vh", duration: 5000, delay: 0, direction: "right" },
@@ -263,7 +358,11 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: "Hold my hand, let's fly! 🚀",
-      box: { width: 480, pos: { bottom: 200, left: "60%" }, anchorCenterX: true },
+      box: { 
+        width: { base: 480, mobile: "85%", tablet: 400 },
+        pos: { bottom: "20vh", left: "60%" },
+        anchorCenterX: true 
+      },
     },
   },
 ];
@@ -271,8 +370,24 @@ const SCRIPT = [
 export default function Start() {
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState(0); // 0 = approach, 1 = fly (only for take-off)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const windowSize = useWindowSize();
+  const isMobile = windowSize.width < 768;
+  
   const step = SCRIPT[stepIndex];
   const canNext = stepIndex < SCRIPT.length - 1;
+  const isLast = !canNext;
+
+  // If we came back from Story2 with jumpToLast flag, jump to last scene
+  useEffect(() => {
+    if (location.state?.jumpToLast) {
+      setStepIndex(SCRIPT.length - 1);
+      // Clean the state so re-renders don't repeat
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // When we enter the take-off step, run phase 0 then phase 1 automatically
   useEffect(() => {
@@ -317,20 +432,36 @@ export default function Start() {
   }, [step, phase]);
 
   return (
-    <div id="story-root" className="relative min-h-screen overflow-hidden text-white">
+    <div 
+      id="story-root" 
+      className={`
+        relative min-h-screen overflow-hidden text-white
+        ${isMobile ? 'touch-manipulation' : ''}
+      `}
+      style={{
+        maxHeight: '100vh',
+        touchAction: isMobile ? 'pan-y' : 'auto',
+      }}
+    >
       <Background bg={step.bg} bgVideo={step.bgVideo} />
 
-      <CharactersLayer characters={activeCharacters} />
+      <CharactersLayer 
+        characters={activeCharacters} 
+        windowSize={windowSize}
+      />
 
       {/* Dialogue – size + position controlled from script */}
       <DialogueBox
         speaker={step.dialogue?.speaker}
         text={step.dialogue?.text}
-        width={step.dialogue?.box?.width}
+        width={getResponsiveWidth(step.dialogue?.box?.width, windowSize.width)}
         position={step.dialogue?.box?.pos}
         anchorCenterX={step.dialogue?.box?.anchorCenterX}
-        onNext={() => canNext && setStepIndex((i) => i + 1)}
-        showNext={canNext}
+        onNext={() => {
+          if (canNext) return setStepIndex((i) => i + 1);
+          if (isLast) navigate("/story2");
+        }}
+        showNext={canNext || isLast}
         onBack={() => stepIndex > 0 && setStepIndex((i) => i - 1)}
         canBack={stepIndex > 0}
       />
@@ -364,13 +495,14 @@ function Background({ bg, bgVideo }) {
 }
 
 /* ⬇️ understands sit/float/fly-up (old), move-to (new), fly-45 (new) */
-function CharactersLayer({ characters = {} }) {
+function CharactersLayer({ characters = {}, windowSize }) {
   const { child, astro } = characters;
+  const isMobile = windowSize.width < 768;
 
   const commonStyle = (char) => ({
-    ...styleFromPos(char.pos),
+    ...styleFromPos(char.pos, isMobile),
     "--tx": char.anchorCenterX ? "-50%" : "0",
-    "--base-scale": char.scale ?? 1,
+    "--base-scale": getResponsiveScale(char.scale, windowSize.width),
 
     /* Approach movement (phase 0) */
     "--to-x": char.move?.toX ?? undefined,
@@ -393,13 +525,13 @@ function CharactersLayer({ characters = {} }) {
     transform: [
       char.anchorCenterX ? "translateX(-50%)" : null,
       char.flipX ? "scaleX(-1)" : null,
-      `scale(${char.scale || 1})`,
+      `scale(${getResponsiveScale(char.scale, windowSize.width)})`,
     ]
       .filter(Boolean)
       .join(" "),
     transformOrigin: "center bottom",
     height: "auto",
-    maxWidth: char.maxWidth ?? "40vw",
+    maxWidth: isMobile ? "60vw" : char.maxWidth ?? "40vw",
   });
 
   const cx = (char, extras = "") =>
@@ -437,7 +569,11 @@ function CharactersLayer({ characters = {} }) {
           alt="Child"
           draggable={false}
           className={cx(child, "drop-shadow-[0_10px_40px_rgba(124,58,237,.6)]")}
-          style={{ position: "absolute", ...commonStyle(child), maxWidth: "36vw" }}
+          style={{ 
+            position: "absolute", 
+            ...commonStyle(child), 
+            maxWidth: isMobile ? "55vw" : "36vw" 
+          }}
           width={800}
           height={800}
         />
