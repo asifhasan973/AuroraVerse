@@ -1,131 +1,152 @@
 // src/pages/Home.jsx
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/Button";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import { useImagePreload } from "../hooks/useImagePreload";
 
 export default function Home() {
   const videoRef = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
+  const location = useLocation();
+  const { done: imgsReady, progress } = useImagePreload([
+    "/images/astranaut2.png",
+    "/video-poster.jpg",
+  ]);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const v = videoRef.current;
+    if (!v) return;
 
-    // Force video properties immediately
-    video.muted = true;
-    video.playsInline = true;
-    video.loop = true;
-    video.autoplay = true;
+    let playAttempts = 0;
+    const maxAttempts = 5;
 
-    // Aggressive play function with multiple retry attempts
-    const forcePlay = async () => {
+    const markReady = () => setVideoReady(true);
+
+    const tryPlay = async () => {
+      if (!v || playAttempts >= maxAttempts) return;
+      
+      playAttempts++;
+      
       try {
-        // Reset video to beginning
-        video.currentTime = 0;
+        // Reset video to ensure fresh start
+        v.currentTime = 0;
+        v.muted = true; // Ensure muted for autoplay to work
         
-        // Force play with Promise handling
-        const playPromise = video.play();
-        
-        if (playPromise !== undefined) {
-          await playPromise;
-          console.log("Video playing successfully");
-        }
+        await v.play();
+        setVideoReady(true);
+        console.log('Video playing successfully');
       } catch (error) {
-        console.log("Play attempt failed, retrying...", error);
+        console.log(`Play attempt ${playAttempts} failed:`, error);
         
-        // Multiple aggressive retries with different delays
-        const retryDelays = [50, 100, 200, 500, 1000];
-        
-        retryDelays.forEach((delay, index) => {
-          setTimeout(async () => {
-            try {
-              video.currentTime = 0;
-              await video.play();
-              console.log(`Video started on retry ${index + 1}`);
-            } catch (retryError) {
-              if (index === retryDelays.length - 1) {
-                console.log("All retry attempts failed");
-              }
-            }
-          }, delay);
-        });
+        // Retry after a short delay
+        if (playAttempts < maxAttempts) {
+          setTimeout(tryPlay, 500);
+        } else {
+          // Final fallback: wait for user interaction
+          const onFirstInteraction = () => {
+            v.play().finally(() => {
+              setVideoReady(true);
+              document.removeEventListener("click", onFirstInteraction);
+              document.removeEventListener("touchstart", onFirstInteraction);
+            });
+          };
+          document.addEventListener("click", onFirstInteraction, { once: true });
+          document.addEventListener("touchstart", onFirstInteraction, { once: true });
+        }
       }
     };
 
-    // Try immediately when component mounts
-    forcePlay();
+    // Try to play when video is ready
+    const handleCanPlay = () => {
+      tryPlay();
+    };
 
-    // Multiple event listeners for different loading states
-    const handleLoadStart = () => forcePlay();
-    const handleLoadedMetadata = () => forcePlay();
-    const handleLoadedData = () => forcePlay();
-    const handleCanPlay = () => forcePlay();
-    const handleCanPlayThrough = () => forcePlay();
-
-    // Silent user interaction handler (no console logs)
-    const handleUserInteraction = () => {
-      if (video.paused) {
-        video.play().catch(() => {});
+    // Try to play when page becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && v.paused) {
+        tryPlay();
       }
     };
 
-    // Add all event listeners
-    video.addEventListener('loadstart', handleLoadStart);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('canplaythrough', handleCanPlayThrough);
-    
-    // User interaction listeners
-    document.addEventListener('click', handleUserInteraction, { passive: true });
-    document.addEventListener('touchstart', handleUserInteraction, { passive: true });
-    document.addEventListener('keydown', handleUserInteraction, { passive: true });
-    document.addEventListener('mousemove', handleUserInteraction, { passive: true });
+    // Try to play when window gets focus
+    const handleFocus = () => {
+      if (v.paused) {
+        tryPlay();
+      }
+    };
 
-    // Intersection Observer to play when video comes into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && video.paused) {
-            forcePlay();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(video);
+    // Add event listeners
+    v.addEventListener("canplay", handleCanPlay);
+    v.addEventListener("loadedmetadata", handleCanPlay);
+    v.addEventListener("playing", markReady);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
 
-    // Cleanup
+    // Initial play attempt with small delay to ensure DOM is ready
+    setTimeout(() => {
+      tryPlay();
+    }, 100);
+
+    // If coming from login (you can check location.state if you're passing it from login)
+    if (location.state?.fromLogin) {
+      // Force play attempt after login
+      setTimeout(() => {
+        tryPlay();
+      }, 300);
+    }
+
     return () => {
-      video.removeEventListener('loadstart', handleLoadStart);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('canplaythrough', handleCanPlayThrough);
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('mousemove', handleUserInteraction);
-      observer.disconnect();
+      v.removeEventListener("canplay", handleCanPlay);
+      v.removeEventListener("loadedmetadata", handleCanPlay);
+      v.removeEventListener("playing", markReady);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
     };
-  }, []);
+  }, [location]);
+
+  // Additional effect to handle play/pause based on page visibility
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const handlePageHide = () => {
+      if (!v.paused) {
+        v.pause();
+      }
+    };
+
+    const handlePageShow = () => {
+      if (v.paused && videoReady) {
+        v.play().catch(() => {
+          // Silently fail if autoplay is blocked
+        });
+      }
+    };
+
+    window.addEventListener("pagehide", handlePageHide);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, [videoReady]);
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
+      <LoadingOverlay show={!(videoReady && imgsReady)} label={`Loading… ${progress ?? 0}%`} />
       {/* Background video */}
       <video
         ref={videoRef}
         className="pointer-events-none absolute inset-0 -z-30 h-full w-full object-cover scale-x-[-1]"
-        autoPlay={true}
-        loop={true}
-        muted={true}
-        playsInline={true}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
         controls={false}
         poster="/video-poster.jpg"
-        preload="auto"
-        webkit-playsinline="true"
-        x5-video-player-type="h5"
-        x5-video-player-fullscreen="true"
-        x5-video-orientation="portraint"
       >
         <source src="/videos/1851190-uhd_3840_2160_25fps.mp4" type="video/mp4" />
       </video>
@@ -142,23 +163,24 @@ export default function Home() {
               From Solar Storms to Auroras
             </span>
           </h1>
-          <p className="mt-4 text-2xl text-white/80 font-bold">
+          <p className="mt-4  text-2xl text-white/80 font-bold">
             Every Flare Tells a Story Worth Exploring.
           </p>
+
           <div className="mt-8 flex gap-4">
             <Link to="/start">
               <Button
                 size="lg"
-                className="bg-fuchsia-500 hover:bg-fuchsia-400 text-white shadow-lg transform hover:scale-110 transition duration-300"
+                className=" bg-fuchsia-500 hover:bg-fuchsia-400 text-white shadow-lg transform hover:scale-110 transition duration-300"
               >
-                <span className="font-bold text-lg">Start Journey</span>
+                <span className="font-bold text-lg"> Start Journey</span>
               </Button>
             </Link>
             <Link to="https://u2204125.github.io/aurora-sentinel/">
               <Button
                 size="lg"
                 variant="secondary"
-                className="bg-white/20 text-white hover:bg-white/30 shadow-lg transform hover:scale-110 transition duration-300"
+                className=" bg-white/20 text-white hover:bg-white/30 shadow-lg transform hover:scale-110 transition duration-300"
               >
                 <span className="font-bold text-lg">Aurora Lab</span>
               </Button>

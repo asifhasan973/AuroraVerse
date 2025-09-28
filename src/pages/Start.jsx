@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import { useImagePreload } from "../hooks/useImagePreload";
 
 // Hook to track window size
 const useWindowSize = () => {
@@ -379,6 +381,29 @@ export default function Start() {
   const canNext = stepIndex < SCRIPT.length - 1;
   const isLast = !canNext;
 
+  // Preload assets for the current step (bg + character sprites used in this step)
+  const stepImageUrls = useMemo(() => {
+    const urls = new Set();
+    if (step?.bg) urls.add(step.bg);
+    const addChar = (c) => c?.src && urls.add(c.src);
+    if (step?.characters) {
+      addChar(step.characters.astro);
+      addChar(step.characters.child);
+    }
+    if (step?.id === 'take-off') {
+      // include special phase sprites
+      const ap = step.phases?.approach;
+      const fl = step.phases?.fly;
+      addChar(ap?.astro);
+      addChar(ap?.child);
+      addChar(fl?.astro);
+      addChar(fl?.child);
+    }
+    return Array.from(urls);
+  }, [step]);
+
+  const { done: assetsReady, progress } = useImagePreload(stepImageUrls);
+
   // If we came back from Story2 with jumpToLast flag, jump to last scene
   useEffect(() => {
     if (location.state?.jumpToLast) {
@@ -443,6 +468,7 @@ export default function Start() {
         touchAction: isMobile ? 'pan-y' : 'auto',
       }}
     >
+      <LoadingOverlay show={!assetsReady} label={`Loading… ${progress}%`} />
       <Background bg={step.bg} bgVideo={step.bgVideo} />
 
       <CharactersLayer 
@@ -457,12 +483,17 @@ export default function Start() {
         width={getResponsiveWidth(step.dialogue?.box?.width, windowSize.width)}
         position={step.dialogue?.box?.pos}
         anchorCenterX={step.dialogue?.box?.anchorCenterX}
+        loading={!assetsReady}
         onNext={() => {
+          if (!assetsReady) return;
           if (canNext) return setStepIndex((i) => i + 1);
           if (isLast) navigate("/story2");
         }}
         showNext={canNext || isLast}
-        onBack={() => stepIndex > 0 && setStepIndex((i) => i - 1)}
+        onBack={() => {
+          if (!assetsReady) return;
+          if (stepIndex > 0) setStepIndex((i) => i - 1);
+        }}
         canBack={stepIndex > 0}
       />
     </div>
