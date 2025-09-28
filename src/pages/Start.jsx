@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { useImagePreload } from "../hooks/useImagePreload";
+import VocabularySlider from "../components/VocabularySlider";
+import { useVocabulary } from "../hooks/useVocabulary";
 
 // Hook to track window size
 const useWindowSize = () => {
@@ -32,7 +34,7 @@ const pxOr = (v) => (typeof v === "number" ? `${v}px` : v);
 
 const styleFromPos = (pos = {}, isMobile = false) => {
   const style = {};
-  
+
   // Convert percentage-based positions for mobile
   if (isMobile && pos.left && typeof pos.left === 'string' && pos.left.includes('%')) {
     const percentage = parseInt(pos.left);
@@ -41,26 +43,26 @@ const styleFromPos = (pos = {}, isMobile = false) => {
   } else if (pos.left != null) {
     style.left = pxOr(pos.left);
   }
-  
+
   if (pos.top != null) style.top = pxOr(pos.top);
   if (pos.bottom != null) style.bottom = pxOr(pos.bottom);
   if (pos.right != null) style.right = pxOr(pos.right);
   if (pos.z != null) style.zIndex = pos.z;
-  
+
   return style;
 };
 
 // Helper to get responsive scale
 const getResponsiveScale = (scale, windowWidth) => {
   if (!scale) return 1;
-  
+
   if (typeof scale === 'object') {
     if (windowWidth < 640) return scale.mobile || scale.base * 0.6;
     if (windowWidth < 768) return scale.tablet || scale.base * 0.75;
     if (windowWidth < 1024) return scale.base * 0.85;
     return scale.base || 1;
   }
-  
+
   // If scale is a number, apply responsive multipliers
   if (windowWidth < 640) return scale * 0.6;
   if (windowWidth < 768) return scale * 0.75;
@@ -75,12 +77,12 @@ const getResponsiveWidth = (width, windowWidth) => {
     if (windowWidth < 768) return width.tablet || width.base * 0.85;
     return width.base || width;
   }
-  
+
   // For mobile, constrain width to viewport
   if (windowWidth < 768) {
     return Math.min(width || 450, windowWidth * 0.9);
   }
-  
+
   return width || 450;
 };
 
@@ -110,10 +112,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: "Hi there! I'm Stelly.",
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "25vh", left: "65%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -142,10 +144,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "child",
       text: "Hi! Who are you?",
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "15vh", left: "35%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -174,10 +176,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: "I'm an astronaut.",
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "25vh", left: "65%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -206,10 +208,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "child",
       text: "Astronaut? What is it?",
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "15vh", left: "35%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -238,10 +240,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: `An astronaut is a space explorer!`,
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "25vh", left: "65%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -270,10 +272,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: `Do you wanna explore the space?`,
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "25vh", left: "65%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -302,10 +304,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "child",
       text: "Yes...",
-      box: { 
+      box: {
         width: { base: 450, mobile: "85%", tablet: 380 },
         pos: { bottom: "15vh", left: "35%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -345,7 +347,7 @@ const SCRIPT = [
       },
 
       // Phase 1: Both fly away at ~45° 
-      // Note: flip_image.png 
+      // Note: flip_image.png  is the image of both child and astro. 
       fly: {
         child: {
           src: "/images/GamePage/flip_image.png",
@@ -360,10 +362,10 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: "Hold my hand, let's fly! 🚀",
-      box: { 
+      box: {
         width: { base: 480, mobile: "85%", tablet: 400 },
         pos: { bottom: "20vh", left: "60%" },
-        anchorCenterX: true 
+        anchorCenterX: true
       },
     },
   },
@@ -372,11 +374,12 @@ const SCRIPT = [
 export default function Start() {
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState(0); // 0 = approach, 1 = fly (only for take-off)
+  const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 768;
-  
+
   const step = SCRIPT[stepIndex];
   const canNext = stepIndex < SCRIPT.length - 1;
   const isLast = !canNext;
@@ -403,6 +406,9 @@ export default function Start() {
   }, [step]);
 
   const { done: assetsReady, progress } = useImagePreload(stepImageUrls);
+
+  // Get vocabulary for current step
+  const { vocabulary: currentVocabulary, hasVocabulary } = useVocabulary('start', step?.id, assetsReady);
 
   // If we came back from Story2 with jumpToLast flag, jump to last scene
   useEffect(() => {
@@ -448,17 +454,17 @@ export default function Start() {
       };
     }
 
-    // Phase 1: 45° flight
+    // Phase 1: 45° flight - only child (flip_image.png contains both characters)
     const f = step.phases.fly;
     return {
-      astro: { ...(f.astro || {}), pose: "fly-45" },
+      astro: { visible: false }, // Hide astronaut since flip_image.png contains both
       child: { ...(f.child || {}), pose: "fly-45" },
     };
   }, [step, phase]);
 
   return (
-    <div 
-      id="story-root" 
+    <div
+      id="story-root"
       className={`
         relative min-h-screen overflow-hidden text-white
         ${isMobile ? 'touch-manipulation' : ''}
@@ -468,34 +474,47 @@ export default function Start() {
         touchAction: isMobile ? 'pan-y' : 'auto',
       }}
     >
-      <LoadingOverlay show={!assetsReady} label={`Loading… ${progress}%`} />
-      <Background bg={step.bg} bgVideo={step.bgVideo} />
+      {/* Content Container - only this area becomes flex when side-by-side */}
+      <div className={`${isVocabularySideBySide ? 'flex h-screen' : ''}`}>
+        {/* Main Content Area */}
+        <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
+          <LoadingOverlay show={!assetsReady} label={`Loading… ${progress}%`} />
+          <Background bg={step.bg} bgVideo={step.bgVideo} />
 
-      <CharactersLayer 
-        characters={activeCharacters} 
-        windowSize={windowSize}
-      />
+          <CharactersLayer
+            characters={activeCharacters}
+            windowSize={windowSize}
+          />
 
-      {/* Dialogue – size + position controlled from script */}
-      <DialogueBox
-        speaker={step.dialogue?.speaker}
-        text={step.dialogue?.text}
-        width={getResponsiveWidth(step.dialogue?.box?.width, windowSize.width)}
-        position={step.dialogue?.box?.pos}
-        anchorCenterX={step.dialogue?.box?.anchorCenterX}
-        loading={!assetsReady}
-        onNext={() => {
-          if (!assetsReady) return;
-          if (canNext) return setStepIndex((i) => i + 1);
-          if (isLast) navigate("/story2");
-        }}
-        showNext={canNext || isLast}
-        onBack={() => {
-          if (!assetsReady) return;
-          if (stepIndex > 0) setStepIndex((i) => i - 1);
-        }}
-        canBack={stepIndex > 0}
-      />
+          {/* Dialogue – size + position controlled from script */}
+          <DialogueBox
+            speaker={step.dialogue?.speaker}
+            text={step.dialogue?.text}
+            width={getResponsiveWidth(step.dialogue?.box?.width, windowSize.width)}
+            position={step.dialogue?.box?.pos}
+            anchorCenterX={step.dialogue?.box?.anchorCenterX}
+            loading={!assetsReady}
+            onNext={() => {
+              if (!assetsReady) return;
+              if (canNext) return setStepIndex((i) => i + 1);
+              if (isLast) navigate("/story2");
+            }}
+            showNext={canNext || isLast}
+            onBack={() => {
+              if (!assetsReady) return;
+              if (stepIndex > 0) setStepIndex((i) => i - 1);
+            }}
+            canBack={stepIndex > 0}
+          />
+        </div>
+
+        {/* Vocabulary Slider */}
+        <VocabularySlider
+          vocabulary={currentVocabulary}
+          isVisible={hasVocabulary}
+          onLayoutChange={setIsVocabularySideBySide}
+        />
+      </div>
     </div>
   );
 }
@@ -600,10 +619,10 @@ function CharactersLayer({ characters = {}, windowSize }) {
           alt="Child"
           draggable={false}
           className={cx(child, "drop-shadow-[0_10px_40px_rgba(124,58,237,.6)]")}
-          style={{ 
-            position: "absolute", 
-            ...commonStyle(child), 
-            maxWidth: isMobile ? "55vw" : "36vw" 
+          style={{
+            position: "absolute",
+            ...commonStyle(child),
+            maxWidth: isMobile ? "55vw" : "36vw"
           }}
           width={800}
           height={800}

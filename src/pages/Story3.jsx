@@ -5,6 +5,8 @@ import DialogueBox from "./DialogueBox";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import Spinner from "../components/ui/Spinner";
 import { useImagePreload } from "../hooks/useImagePreload";
+import VocabularySlider from "../components/VocabularySlider";
+import { useVocabulary } from "../hooks/useVocabulary";
 
 // 🌞 Sun background states
 const SUN_BACKGROUNDS = {
@@ -195,7 +197,7 @@ const getDialoguePosition = (dialogue, isMobile) => {
   if (dialogue.position) {
     return dialogue.position;
   }
-  
+
   // Otherwise, use default position based on speaker
   const speakerPositions = DIALOGUE_POSITIONS[dialogue.speaker] || DIALOGUE_POSITIONS.narrator;
   return isMobile ? speakerPositions.mobile : speakerPositions.desktop;
@@ -206,14 +208,15 @@ export default function Story3() {
   const [currentBackground, setCurrentBackground] = useState("sun1");
   const [tapCount, setTapCount] = useState(0);
   const [allTapsComplete, setAllTapsComplete] = useState(false);
-  
+  const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
+
   // State for custom position editing (for development/testing)
   const [customPositions, setCustomPositions] = useState({
     astro: { ...DIALOGUE_POSITIONS.astro },
     child: { ...DIALOGUE_POSITIONS.child }
   });
   const [showPositionEditor, _setShowPositionEditor] = useState(false);
-  
+
   const navigate = useNavigate();
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 768;
@@ -224,6 +227,9 @@ export default function Story3() {
     CHARACTERS.both,
   ];
   const { done: assetsReady, progress } = useImagePreload(preloadUrls);
+
+  // Get vocabulary for current step
+  const { vocabulary: currentVocabulary, hasVocabulary } = useVocabulary('story3', stepIndex, assetsReady);
 
   const currentStep = SCRIPT[stepIndex];
   const canNext = stepIndex < SCRIPT.length - 1;
@@ -251,11 +257,11 @@ export default function Story3() {
     if (!currentStep.canTapBackground || allTapsComplete) return;
 
     const nextTapCount = tapCount + 1;
-    
+
     if (nextTapCount < backgroundSequence.length) {
       setCurrentBackground(backgroundSequence[nextTapCount]);
       setTapCount(nextTapCount);
-      
+
       // Check if we've reached the final state
       if (nextTapCount === backgroundSequence.length - 1) {
         setAllTapsComplete(true);
@@ -269,7 +275,7 @@ export default function Story3() {
     if (currentStep.requireAllTaps && !allTapsComplete) {
       return;
     }
-    
+
     if (canNext) {
       setStepIndex(i => i + 1);
     } else {
@@ -305,18 +311,18 @@ export default function Story3() {
   // Get current dialogue position (with custom overrides)
   const getCurrentDialoguePosition = () => {
     const dialogue = currentStep.dialogue;
-    
+
     // If specific position is provided for this dialogue, use it
     if (dialogue.position) {
       return dialogue.position;
     }
-    
+
     // Use custom positions if editor is active
     if (showPositionEditor) {
       const speakerPositions = customPositions[dialogue.speaker] || customPositions.astro;
       return isMobile ? speakerPositions.mobile : speakerPositions.desktop;
     }
-    
+
     // Otherwise use default
     return getDialoguePosition(dialogue, isMobile);
   };
@@ -325,214 +331,227 @@ export default function Story3() {
   const showNextButton = !currentStep.requireAllTaps || allTapsComplete;
 
   return (
-    <div 
+    <div
       className="relative min-h-screen w-full overflow-hidden text-white"
       onClick={handleBackgroundTap}
       style={{ cursor: currentStep.canTapBackground && !allTapsComplete ? 'pointer' : 'default' }}
     >
-      {/* Global loading overlay for the scene */}
-      <LoadingOverlay show={!assetsReady} label={`Preparing scene… ${progress}%`} />
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 -z-30 bg-cover bg-center transition-all duration-1000"
-        style={{ 
-          backgroundImage: `url(${SUN_BACKGROUNDS[currentBackground]})`,
-        }}
-      />
-      
-      {/* Optional gradient overlay for better text readability */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+      {/* Content Container - only this area becomes flex when side-by-side */}
+      <div className={`${isVocabularySideBySide ? 'flex h-screen' : ''}`}>
+        {/* Main Content Area */}
+        <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
+          {/* Global loading overlay for the scene */}
+          <LoadingOverlay show={!assetsReady} label={`Preparing scene… ${progress}%`} />
+          {/* Background Image */}
+          <div
+            className="absolute inset-0 -z-30 bg-cover bg-center transition-all duration-1000"
+            style={{
+              backgroundImage: `url(${SUN_BACKGROUNDS[currentBackground]})`,
+            }}
+          />
 
-    
+          {/* Optional gradient overlay for better text readability */}
+          <div className="absolute inset-0 -z-20 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
 
-      {/* Position Editor Panel */}
-      {showPositionEditor && (
-        <div 
-          className="absolute top-16 right-4 z-40 bg-black/90 rounded-lg p-4 w-80 backdrop-blur-md border border-white/20"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h3 className="text-sm font-bold mb-3 text-white">Dialogue Position Editor</h3>
-          
-          {/* Astronaut Positions */}
-          <div className="mb-4">
-            <h4 className="text-xs font-semibold mb-2 text-fuchsia-300">Astronaut Dialogue</h4>
-            <div className="space-y-2">
-              <div>
-                <label className="text-xs text-gray-300">Desktop Bottom:</label>
-                <input
-                  type="text"
-                  value={customPositions.astro.desktop.bottom}
-                  onChange={(e) => updatePosition('astro', 'desktop', 'bottom', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
+
+
+          {/* Position Editor Panel */}
+          {showPositionEditor && (
+            <div
+              className="absolute top-16 right-4 z-40 bg-black/90 rounded-lg p-4 w-80 backdrop-blur-md border border-white/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-sm font-bold mb-3 text-white">Dialogue Position Editor</h3>
+
+              {/* Astronaut Positions */}
+              <div className="mb-4">
+                <h4 className="text-xs font-semibold mb-2 text-fuchsia-300">Astronaut Dialogue</h4>
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs text-gray-300">Desktop Bottom:</label>
+                    <input
+                      type="text"
+                      value={customPositions.astro.desktop.bottom}
+                      onChange={(e) => updatePosition('astro', 'desktop', 'bottom', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Desktop Left:</label>
+                    <input
+                      type="text"
+                      value={customPositions.astro.desktop.left}
+                      onChange={(e) => updatePosition('astro', 'desktop', 'left', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Mobile Bottom:</label>
+                    <input
+                      type="text"
+                      value={customPositions.astro.mobile.bottom}
+                      onChange={(e) => updatePosition('astro', 'mobile', 'bottom', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Mobile Left:</label>
+                    <input
+                      type="text"
+                      value={customPositions.astro.mobile.left}
+                      onChange={(e) => updatePosition('astro', 'mobile', 'left', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                </div>
               </div>
+
+              {/* Child Positions */}
               <div>
-                <label className="text-xs text-gray-300">Desktop Left:</label>
-                <input
-                  type="text"
-                  value={customPositions.astro.desktop.left}
-                  onChange={(e) => updatePosition('astro', 'desktop', 'left', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
+                <h4 className="text-xs font-semibold mb-2 text-blue-300">Child Dialogue</h4>
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs text-gray-300">Desktop Bottom:</label>
+                    <input
+                      type="text"
+                      value={customPositions.child.desktop.bottom}
+                      onChange={(e) => updatePosition('child', 'desktop', 'bottom', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Desktop Left:</label>
+                    <input
+                      type="text"
+                      value={customPositions.child.desktop.left}
+                      onChange={(e) => updatePosition('child', 'desktop', 'left', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Mobile Bottom:</label>
+                    <input
+                      type="text"
+                      value={customPositions.child.mobile.bottom}
+                      onChange={(e) => updatePosition('child', 'mobile', 'bottom', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-300">Mobile Left:</label>
+                    <input
+                      type="text"
+                      value={customPositions.child.mobile.left}
+                      onChange={(e) => updatePosition('child', 'mobile', 'left', e.target.value)}
+                      className="w-full px-2 py-1 text-xs bg-white/10 rounded"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-xs text-gray-300">Mobile Bottom:</label>
-                <input
-                  type="text"
-                  value={customPositions.astro.mobile.bottom}
-                  onChange={(e) => updatePosition('astro', 'mobile', 'bottom', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-300">Mobile Left:</label>
-                <input
-                  type="text"
-                  value={customPositions.astro.mobile.left}
-                  onChange={(e) => updatePosition('astro', 'mobile', 'left', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
+
+              <div className="mt-3 text-xs text-gray-400">
+                Current Speaker: <span className="text-white font-semibold">{currentStep.dialogue.speaker}</span>
               </div>
             </div>
-          </div>
-
-          {/* Child Positions */}
-          <div>
-            <h4 className="text-xs font-semibold mb-2 text-blue-300">Child Dialogue</h4>
-            <div className="space-y-2">
-              <div>
-                <label className="text-xs text-gray-300">Desktop Bottom:</label>
-                <input
-                  type="text"
-                  value={customPositions.child.desktop.bottom}
-                  onChange={(e) => updatePosition('child', 'desktop', 'bottom', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-300">Desktop Left:</label>
-                <input
-                  type="text"
-                  value={customPositions.child.desktop.left}
-                  onChange={(e) => updatePosition('child', 'desktop', 'left', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-300">Mobile Bottom:</label>
-                <input
-                  type="text"
-                  value={customPositions.child.mobile.bottom}
-                  onChange={(e) => updatePosition('child', 'mobile', 'bottom', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-300">Mobile Left:</label>
-                <input
-                  type="text"
-                  value={customPositions.child.mobile.left}
-                  onChange={(e) => updatePosition('child', 'mobile', 'left', e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-white/10 rounded"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 text-xs text-gray-400">
-            Current Speaker: <span className="text-white font-semibold">{currentStep.dialogue.speaker}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Tap Hint - shows in center of screen */}
-      {currentStep.showTapHint && !allTapsComplete && (
-        <div className="fixed inset-0 flex items-start pt-20 justify-center z-30 pointer-events-none">
-          <div className="text-center animate-pulse">
-            <div className="text-2xl text-red-500 font-bold drop-shadow-lg">
-              Tap anywhere to make the sun angrier!
-            </div>
-            <div className="text-sm text-white/10 mt-2">
-              Tap {backgroundSequence.length - 1 - tapCount} more time{backgroundSequence.length - 1 - tapCount !== 1 ? 's' : ''}
-            </div>
-          </div>
-        </div>
-      )}
-      {currentStep.showFlareOverlay && (
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <div className="absolute inset-0 animate-pulse-fast">
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-px h-screen bg-gradient-to-b from-transparent via-yellow-400/50 to-transparent animate-flare-sweep" />
-            <div className="absolute top-1/4 left-1/3 w-px h-screen bg-gradient-to-b from-transparent via-orange-400/30 to-transparent animate-flare-sweep-delay" />
-            <div className="absolute top-1/4 left-2/3 w-px h-screen bg-gradient-to-b from-transparent via-yellow-300/30 to-transparent animate-flare-sweep-delay-2" />
-          </div>
-        </div>
-      )}
-
-      {/* CME Overlay (optional visual effect) */}
-      {currentStep.showCMEOverlay && (
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="w-96 h-96 rounded-full bg-gradient-radial from-orange-500/20 via-red-500/10 to-transparent animate-expand-slow" />
-          </div>
-        </div>
-      )}
-
-      {/* Characters */}
-      {currentStep.characters && (
-        <div 
-          className="absolute z-20 pointer-events-none"
-          style={currentStep.characters.position}
-        >
-          {!assetsReady ? (
-            <div className="flex items-center justify-center" style={{ width: isMobile ? '200px' : '320px', height: isMobile ? '200px' : '320px' }}>
-              <Spinner size={40} />
-            </div>
-          ) : (
-            <img
-              src={CHARACTERS[currentStep.characters.show] || CHARACTERS.both}
-              alt="Characters"
-              className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
-              style={{
-                width: isMobile ? '200px' : '320px',
-                height: 'auto',
-              }}
-            />
           )}
-        </div>
-      )}
 
-      {/* Dialogue Box with Dynamic Position */}
-      <div onClick={(e) => e.stopPropagation()}> {/* Prevent dialogue clicks from changing background */}
-        <DialogueBox
-          speaker={currentStep.dialogue.speaker}
-          text={currentStep.dialogue.text}
-          width={isMobile ? "90%" : 600}
-          maxWidth={600}
-          position={getCurrentDialoguePosition()}
-          anchorCenterX={true}
-          showNext={showNextButton}
-          onNext={handleNext}
-          onBack={handleBack}
-          canBack={true}
-          loading={!assetsReady}
+          {/* Tap Hint - shows in center of screen */}
+          {currentStep.showTapHint && !allTapsComplete && (
+            <div className="fixed inset-0 flex items-start pt-20 justify-center z-30 pointer-events-none">
+              <div className="text-center animate-pulse">
+                <div className="text-2xl text-red-500 font-bold drop-shadow-lg">
+                  Tap anywhere to make the sun angrier!
+                </div>
+                <div className="text-sm text-white/10 mt-2">
+                  Tap {backgroundSequence.length - 1 - tapCount} more time{backgroundSequence.length - 1 - tapCount !== 1 ? 's' : ''}
+                </div>
+              </div>
+            </div>
+          )}
+          {currentStep.showFlareOverlay && (
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <div className="absolute inset-0 animate-pulse-fast">
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-px h-screen bg-gradient-to-b from-transparent via-yellow-400/50 to-transparent animate-flare-sweep" />
+                <div className="absolute top-1/4 left-1/3 w-px h-screen bg-gradient-to-b from-transparent via-orange-400/30 to-transparent animate-flare-sweep-delay" />
+                <div className="absolute top-1/4 left-2/3 w-px h-screen bg-gradient-to-b from-transparent via-yellow-300/30 to-transparent animate-flare-sweep-delay-2" />
+              </div>
+            </div>
+          )}
+
+          {/* CME Overlay (optional visual effect) */}
+          {currentStep.showCMEOverlay && (
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="w-96 h-96 rounded-full bg-gradient-radial from-orange-500/20 via-red-500/10 to-transparent animate-expand-slow" />
+              </div>
+            </div>
+          )}
+
+          {/* Characters */}
+          {currentStep.characters && (
+            <div
+              className="absolute z-20 pointer-events-none"
+              style={currentStep.characters.position}
+            >
+              {!assetsReady ? (
+                <div className="flex items-center justify-center" style={{ width: isMobile ? '200px' : '320px', height: isMobile ? '200px' : '320px' }}>
+                  <Spinner size={40} />
+                </div>
+              ) : (
+                <img
+                  src={CHARACTERS[currentStep.characters.show] || CHARACTERS.both}
+                  alt="Characters"
+                  className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
+                  style={{
+                    width: isMobile ? '200px' : '320px',
+                    height: 'auto',
+                  }}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Dialogue Box with Dynamic Position */}
+          <div onClick={(e) => e.stopPropagation()}> {/* Prevent dialogue clicks from changing background */}
+            <DialogueBox
+              speaker={currentStep.dialogue.speaker}
+              text={currentStep.dialogue.text}
+              width={isMobile ? "90%" : 600}
+              maxWidth={600}
+              position={getCurrentDialoguePosition()}
+              anchorCenterX={true}
+              showNext={showNextButton}
+              onNext={handleNext}
+              onBack={handleBack}
+              canBack={true}
+              loading={!assetsReady}
+            />
+          </div>
+
+          {/* Progress indicator for sun states */}
+          {currentStep.canTapBackground && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+              {backgroundSequence.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-3 h-3 rounded-full transition-all ${index <= tapCount
+                    ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50'
+                    : 'bg-white/30'
+                    }`}
+                />
+              ))}
+            </div>
+          )}
+
+        </div>
+
+        {/* Vocabulary Slider */}
+        <VocabularySlider
+          vocabulary={currentVocabulary}
+          isVisible={hasVocabulary}
+          onLayoutChange={setIsVocabularySideBySide}
         />
       </div>
-
-      {/* Progress indicator for sun states */}
-      {currentStep.canTapBackground && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-          {backgroundSequence.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index <= tapCount 
-                  ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50' 
-                  : 'bg-white/30'
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
