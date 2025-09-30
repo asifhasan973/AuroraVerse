@@ -153,6 +153,7 @@ const SCRIPT = [
       position: { bottom: "10vh", left: "25%" },
     },
   },
+
   {
     id: "explain-cme",
     background: "sun4",
@@ -161,6 +162,22 @@ const SCRIPT = [
     dialogue: {
       speaker: "astro",
       text: "Coronal Mass Ejections: A giant cloud of charged particles that takes 1-3 days to arrive.",
+    },
+    characters: {
+      show: "both",
+      position: { bottom: "10vh", left: "25%" },
+    },
+  },
+  {
+    id: "",
+    background: "sun4",
+    canTapBackground: false,
+    // showFlareOverlay: true, // Optional: show light ray overlay
+    dialogue: {
+      speaker: "astro",
+      text: "Solar storms can harm us. We need to save ourselves.",
+      // Can override position for special cases
+      // position: { bottom: "35vh", left: "60%" }
     },
     characters: {
       show: "both",

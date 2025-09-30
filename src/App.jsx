@@ -8,6 +8,7 @@ import Start from "./pages/Start";
 import Finale from "./pages/Finale";
 import Story2 from "./pages/Story2"; // Story 2 route
 import Story3 from "./pages/Story3"; // Story 3 route
+import Story4 from "./pages/Story4"; // Story 4 route
 
 export default function App() {
   return (
@@ -23,9 +24,10 @@ export default function App() {
           <Route path="/start" element={<Start />} />
           <Route path="/story2" element={<Story2 />} />
           <Route path="/story3" element={<Story3 />} />
+          <Route path="/story4" element={<Story4 />} />
         </Routes>
       </main>
-      
+
     </div>
 
   );
