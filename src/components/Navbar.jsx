@@ -50,7 +50,8 @@ export default function Navbar() {
         <NavItem to="/forecast">Aurora Forecast</NavItem>
         <NavItem to="/quiz">Quiz</NavItem>
         <NavItem to="/stormsafe">StormSafe</NavItem>
-        <NavItem to="/aboutus">About Us</NavItem>
+        <NavItem to="/kindex">Mood Meter</NavItem>
+        <StartJourneyButton />
       </div>
 
       {/* Hamburger (mobile) */}
@@ -87,7 +88,10 @@ export default function Navbar() {
             <MobileItem to="/forecast" onClick={() => setOpen(false)}>Aurora Forecast</MobileItem>
             <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
             <MobileItem to="/stormsafe" onClick={() => setOpen(false)}>StormSafe</MobileItem>
-            <MobileItem to="/aboutus" onClick={() => setOpen(false)}>About Us</MobileItem>
+            <MobileItem to="/kindex" onClick={() => setOpen(false)}>K-Index Dashboard</MobileItem>
+            <div className="pt-2 border-t border-white/10">
+              <MobileStartJourneyButton onClick={() => setOpen(false)} />
+            </div>
           </div>
         </div>
       )}
@@ -122,5 +126,36 @@ function MobileItem({ to, children, onClick }) {
     >
       {children}
     </NavLink>
+  );
+}
+
+function StartJourneyButton() {
+  return (
+    <Link
+      to="/start"
+      className="bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-600 hover:to-purple-700
+                 text-white font-bold py-2 px-4 rounded-lg
+                 transition-all duration-300 transform hover:scale-105
+                 shadow-lg hover:shadow-fuchsia-500/25
+                 border border-fuchsia-400/30"
+    >
+      Start Journey
+    </Link>
+  );
+}
+
+function MobileStartJourneyButton({ onClick }) {
+  return (
+    <Link
+      to="/start"
+      onClick={onClick}
+      className="block w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-600 hover:to-purple-700
+                 text-white font-bold py-3 px-4 rounded-lg text-center
+                 transition-all duration-300
+                 shadow-lg hover:shadow-fuchsia-500/25
+                 border border-fuchsia-400/30"
+    >
+      Start Journey
+    </Link>
   );
 }
