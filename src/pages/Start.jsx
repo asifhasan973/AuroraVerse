@@ -435,6 +435,22 @@ export default function Start() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIndex]);
 
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'Enter' && assetsReady) {
+        if (canNext) {
+          setStepIndex((i) => i + 1);
+        } else if (isLast) {
+          navigate("/story2");
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [canNext, isLast, assetsReady, navigate]);
+
   // Build characters for the active step (special handling for "take-off")
   const activeCharacters = useMemo(() => {
     if (step?.id !== "take-off") return step.characters;
@@ -529,7 +545,7 @@ function Background({ bg, bgVideo }) {
           loop
           muted
           playsInline
-          poster={bg || "/video-poster.jpg"}
+          poster={bg || ""}
         >
           <source src={bgVideo} type="video/mp4" />
         </video>

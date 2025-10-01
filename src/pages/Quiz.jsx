@@ -1,22 +1,195 @@
 // src/pages/Quiz.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import QUESTIONS from "../data/quiz.json"; 
+import { useNavigate } from "react-router-dom";
+import QUESTIONS from "../data/quiz.json";
 
+/* Helpers */
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+/* Tiny base64 beeps (safe placeholders) */
+const SND_NEXT =
+  "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA";
+const SND_GOOD =
+  "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA";
+const SND_BAD =
+  "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA";
+
+/* Animated starfield background */
+function Starfield() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0b1020] via-[#120a3a] to-[#0b1020]" />
+      <div className="absolute inset-0 opacity-50">
+        {[...Array(80)].map((_, i) => {
+          const left = Math.random() * 100;
+          const top = Math.random() * 100;
+          const size = Math.random() * 2 + 1;
+          const dur = 6 + Math.random() * 10;
+          const delay = Math.random() * 6;
+          return (
+            <span
+              key={i}
+              className="absolute block rounded-full bg-white/90 shadow-[0_0_8px_2px_rgba(255,255,255,0.2)]"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                width: size,
+                height: size,
+                animation: `twinkle ${dur}s ease-in-out ${delay}s infinite`,
+              }}
+            />
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes twinkle {
+          0%,100% { opacity: .2; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.6); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* Simple emoji burst for correct answers */
+function EmojiBurst({ fire }) {
+  const [burst, setBurst] = useState(0);
+  useEffect(() => {
+    if (fire) {
+      setBurst((b) => b + 1);
+      const t = setTimeout(() => setBurst((b) => b + 1), 400);
+      return () => clearTimeout(t);
+    }
+  }, [fire]);
+  if (!fire) return null;
+  const emojis = ["✨", "🌟", "🚀", "🛰️", "🌌", "🪐"];
+  return (
+    <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
+      {Array.from({ length: 20 }).map((_, i) => {
+        const x = Math.random() * 100;
+        const y = 50 + Math.random() * 10;
+        const d = 600 + Math.random() * 600;
+        const rot = (Math.random() * 40 - 20) | 0;
+        const delay = (i % 10) * 25;
+        return (
+          <div
+            key={`${burst}-${i}`}
+            className="absolute text-2xl md:text-3xl will-change-transform"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              animation: `burst ${d}ms ease-out ${delay}ms 1 forwards`,
+            }}
+          >
+            {emojis[i % emojis.length]}
+            <style>{`
+              @keyframes burst {
+                0% { transform: translate(-50%,0) rotate(0deg); opacity: 1; }
+                100% { transform: translate(-50%,-180px) rotate(${rot}deg); opacity: 0; }
+              }
+            `}</style>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* Circular countdown ring */
+function RingTimer({ seconds, fraction, warn }) {
+  const size = 60;
+  const stroke = 6;
+  const r = (size - stroke) / 2;
+  const C = 2 * Math.PI * r;
+  const dash = C * (1 - fraction);
+  return (
+    <div className="relative w-14 h-14">
+      <svg viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="transparent"
+          stroke="rgba(255,255,255,.15)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="transparent"
+          stroke={warn ? "rgba(255,80,80,.95)" : "rgba(99,102,241,.95)"}
+          strokeWidth={stroke}
+          strokeDasharray={C}
+          strokeDashoffset={dash}
+          strokeLinecap="round"
+          className="transition-[stroke-dashoffset,stroke] duration-300"
+        />
+      </svg>
+      <div className="absolute inset-0 grid place-items-center text-sm font-bold">
+        {seconds}
+      </div>
+    </div>
+  );
+}
 
 export default function Quiz() {
   const nav = useNavigate();
+
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [locked, setLocked] = useState(false);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [hintShown, setHintShown] = useState(false);
+  const [fiftyUsed, setFiftyUsed] = useState(false);
+  const [skipUsed, setSkipUsed] = useState(false);
+  const [disabledOptions, setDisabledOptions] = useState([]);
 
   const total = QUESTIONS.length;
   const q = QUESTIONS[index];
 
+  /* Timer per question */
+  const QUESTION_TIME = 20;
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
+  useEffect(() => {
+    if (locked) return;
+    if (timeLeft <= 0) {
+      setLocked(true);
+      setSelected(null);
+      return;
+    }
+    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft, locked]);
+
+  useEffect(() => {
+    setTimeLeft(QUESTION_TIME);
+    setHintShown(false);
+    setDisabledOptions([]);
+    setFiftyUsed(false);
+  }, [index]);
+
+  /* Sounds */
+  const sNext = useRef(null);
+  const sGood = useRef(null);
+  const sBad = useRef(null);
+  useEffect(() => {
+    sNext.current = new Audio(SND_NEXT);
+    sGood.current = new Audio(SND_GOOD);
+    sBad.current = new Audio(SND_BAD);
+  }, []);
+  const play = (ref) => {
+    try {
+      ref?.current && (ref.current.currentTime = 0, ref.current.play());
+    } catch { }
+  };
+
+  /* Progress */
   const progress = useMemo(() => Math.round((index / total) * 100), [index, total]);
 
+  /* Keyboard controls */
   useEffect(() => {
     const onKey = (e) => {
       if (locked) {
@@ -25,19 +198,29 @@ export default function Quiz() {
       }
       const map = { "1": 0, "2": 1, "3": 2, "4": 3 };
       if (q?.options && map[e.key] != null && map[e.key] < q.options.length) {
-        setSelected(map[e.key]);
+        if (!disabledOptions.includes(map[e.key])) setSelected(map[e.key]);
       }
       if (e.key === "Enter") handleSubmit();
+      if (e.key.toLowerCase() === "h") handleHint();
+      if (e.key.toLowerCase() === "f") handleFifty();
+      if (e.key.toLowerCase() === "s") handleSkip();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locked, q, selected]);
+  }, [locked, q, selected, disabledOptions, hintShown, fiftyUsed, skipUsed]);
 
   function handleSubmit() {
-    if (!q || selected == null) return;
+    if (!q || selected == null || locked) return;
     setLocked(true);
-    if (selected === q.correctIndex) setScore((s) => s + 1);
+    const isCorrect = selected === q.correctIndex;
+    if (isCorrect) {
+      play(sGood);
+      setScore((s) => s + 1);
+      setStreak((s) => s + 1);
+    } else {
+      play(sBad);
+      setStreak(0);
+    }
   }
 
   function handleNext() {
@@ -46,159 +229,257 @@ export default function Quiz() {
     if (next >= total) {
       nav("/finale", { state: { score, total } });
     } else {
+      play(sNext);
       setIndex(next);
       setSelected(null);
       setLocked(false);
     }
   }
 
-  const swoosh = useRef(null);
-  useEffect(() => {
-    if (!swoosh.current) {
-      const a = new Audio();
-      a.src = "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA"; // tiny placeholder
-      swoosh.current = a;
-    }
-  }, []);
-  useEffect(() => {
-    if (index > 0 && swoosh.current) {
-      try { swoosh.current.currentTime = 0; swoosh.current.play(); } catch {
-        console.log("Failed to play sound");
-        
-      }
-    }
-  }, [index]);
+  function handleFifty() {
+    if (locked || fiftyUsed || !q) return;
+    const wrong = q.options
+      .map((_, i) => i)
+      .filter((i) => i !== q.correctIndex);
+    const toDisable = shuffle(wrong).slice(0, Math.max(0, wrong.length - 1));
+    setDisabledOptions(toDisable);
+    setFiftyUsed(true);
+    if (toDisable.includes(selected)) setSelected(null);
+  }
 
-  const correct = selected === q?.correctIndex;
+  function handleHint() {
+    if (locked || hintShown) return;
+    setHintShown(true);
+  }
+
+  function handleSkip() {
+    if (locked || skipUsed) return;
+    setSkipUsed(true);
+    setLocked(true);
+    handleNext();
+  }
+
+  const isCorrectChoice = (i) => locked && i === q.correctIndex;
+  const isWrongChosen = (i) => locked && selected === i && i !== q.correctIndex;
+
+  const warnTime = timeLeft <= 5;
+  const showFact = locked && q?.fact;
 
   return (
-    <div className="relative pt-12 min-h-[100dvh]  text-white">
-      {/* Cosmic backdrop */}
-      <div
-        className="absolute inset-0 -z-20"
-        style={{
-          backgroundImage: `
-            radial-gradient(1200px 600px at 80% -10%, oklch(0.35 0.18 300 / .55), transparent 60%),
-            radial-gradient(800px 400px at 10% 10%, oklch(0.28 0.12 350 / .5), transparent 55%),
-            radial-gradient(900px 500px at 50% 110%, oklch(0.30 0.10 280 / .55), transparent 60%),
-            linear-gradient(180deg, oklch(0.16 0.05 310), oklch(0.12 0.04 310))
-          `,
-        }}
-      />
-      <div className="absolute inset-0 -z-10 [background:radial-gradient(1px_1px_at_10px_10px,_white_40%,_transparent_41%)_0_0/24px_24px,_radial-gradient(1px_1px_at_5px_15px,_#c4b5fd_40%,_transparent_41%)_0_0/32px_32px,_transparent] opacity-20" />
+    <div className="relative min-h-screen text-white pt-40">
+      <Starfield />
+      <EmojiBurst fire={locked && selected === q?.correctIndex} />
 
-      {/* Top bar */}
-      <div className  ="container mx-auto px-4 pt-4 flex items-center justify-between">
-        <div></div>
-        <div className="text-sm px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/10">
-          Quiz • {index + 1} / {total}
-        </div>
-      </div>
-
-      {/* Progress */}
-      <div className="container mx-auto px-4 mt-6">
-        <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-sky-400 transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Card */}
-      <div className="container mx-auto px-4 py-6 md:py-10 grid place-items-center">
-        <div className="relative w-full max-w-3xl rounded-3xl border border-white/10 bg-white/5 backdrop-blur-lg p-6 md:p-8">
-          {/* Sheen */}
-          <div
-            className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 md:opacity-100"
-            style={{ background: "linear-gradient(120deg, transparent, rgba(255,255,255,.06) 20%, transparent 45%)" }}
-          />
-
-          {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-extrabold text-center">
-            <span className="bg-gradient-to-br from-fuchsia-300 via-violet-200 to-indigo-300 bg-clip-text text-transparent">
-              Quiz Time 🧑‍🚀
-            </span>
-          </h2>
-          <p className="mt-2 text-center text-white/80 text-sm md:text-base">
-            Answer the question to power up your spaceship!
-          </p>
-
-          {/* Question */}
-          <div className="mt-6 md:mt-8 text-balance text-lg md:text-xl font-semibold">
-            {q?.question}
-          </div>
-
-          {/* Options */}
-          <div className="mt-5 grid gap-3">
-            {q?.options?.map((opt, i) => {
-              const isChosen = selected === i;
-              const isCorrect = locked && i === q.correctIndex;
-              const isWrong = locked && isChosen && !isCorrect;
-
-              return (
-                <button
-                  key={i}
-                  onClick={() => !locked && setSelected(i)}
-                  className={[
-                    "w-full text-left px-4 py-3 rounded-2xl border transition relative",
-                    "focus:outline-none focus:ring-2 focus:ring-fuchsia-400/40",
-                    isCorrect
-                      ? "bg-emerald-500/15 border-emerald-400/40"
-                      : isWrong
-                      ? "bg-rose-500/15 border-rose-400/40"
-                      : isChosen
-                      ? "bg-white/10 border-fuchsia-400/40"
-                      : "bg-white/5 border-white/10 hover:bg-white/10",
-                  ].join(" ")}
-                >
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md mr-3 align-middle text-sm
-                    bg-white/10 border border-white/15">
-                    {i + 1}
-                  </span>
-                  <span>{opt}</span>
-                  {locked && isCorrect && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2">✅</span>
-                  )}
-                  {locked && isWrong && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2">❌</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Feedback + Controls */}
-          <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div className="text-sm text-white/80 min-h-[1.5rem]">
-              {locked ? q?.fact : "Tip: Use 1-4 to choose, Enter to submit"}
+      {/* Header / HUD */}
+      <div className="fixed top-0 left-0 right-0 z-30 backdrop-blur-md border-b border-white/10 bg-black/30">
+        <div className="container mx-auto px-6 py-3">
+          <div className="flex items-center justify-between pt-12">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center shadow-[0_0_20px_rgba(168,85,247,.4)]">
+                <span className="text-xl">🛰️</span>
+              </div>
+              <div>
+                <h1 className="text-lg md:text-xl font-bold tracking-wide">
+                  Space Weather Quiz
+                </h1>
+                <p className="text-xs md:text-sm text-white/70">
+                  Question {index + 1} of {total}
+                </p>
+              </div>
             </div>
 
-            {!locked ? (
-              <button
-                onClick={handleSubmit}
-                disabled={selected == null}
-                className="px-5 py-2 rounded-full bg-fuchsia-500 text-white font-semibold
-                           hover:bg-fuchsia-400 disabled:opacity-40 disabled:hover:bg-fuchsia-500
-                           shadow-lg shadow-fuchsia-500/25"
-              >
-                Submit
-              </button>
-            ) : (
-              <button
-                onClick={handleNext}
-                className="px-5 py-2 rounded-full bg-emerald-500 text-white font-semibold
-                           hover:bg-emerald-400 shadow-lg shadow-emerald-500/20"
-              >
-                {index === total - 1 ? "Finish" : "Next"}
-              </button>
-            )}
+            <div className="flex items-center gap-6">
+              <div className="hidden sm:flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-xs uppercase tracking-wider text-white/60">
+                    Streak
+                  </div>
+                  <div className="text-lg font-bold">{streak}🔥</div>
+                </div>
+              </div>
+              <RingTimer
+                seconds={timeLeft}
+                fraction={Math.max(0, timeLeft) / QUESTION_TIME}
+                warn={warnTime && !locked}
+              />
+              <div className="text-right">
+                <div className="text-xs uppercase tracking-wider text-white/60">
+                  Score
+                </div>
+                <div className="text-2xl font-bold text-amber-300 drop-shadow">
+                  {score}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div className="mt-3 w-full h-2 rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="h-2 rounded-full bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
+      </div>
 
-        {/* Score bubble */}
-        <div className="mt-4 text-sm px-3 py-1 rounded-full bg-white/10 border border-white/10">
-          Score: <span className="font-bold">{score}</span> / {total}
+      {/* Content */}
+      <div className="container mx-auto px-6 py-10 md:py-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.12)]">
+            <div className="absolute -inset-px rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none" />
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-extrabold leading-tight">
+                <span className="bg-gradient-to-r from-sky-300 via-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
+                  {q?.question}
+                </span>
+              </h2>
+              <p className="text-white/70 text-sm mt-2">
+                Use 1–4 to select, Enter to {locked ? "continue" : "submit"}
+              </p>
+            </div>
+
+            {/* Lifelines */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+              <button
+                onClick={handleFifty}
+                disabled={fiftyUsed || locked}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                  ${fiftyUsed || locked
+                    ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
+                    : "hover:scale-[1.03] border-indigo-400/40 bg-indigo-500/10 hover:bg-indigo-500/20"}`}
+                title="Remove two wrong options (F)"
+                aria-label="Use fifty-fifty lifeline"
+              >
+                50:50
+              </button>
+              <button
+                onClick={handleHint}
+                disabled={hintShown || locked}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                  ${hintShown || locked
+                    ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
+                    : "hover:scale-[1.03] border-sky-400/40 bg-sky-500/10 hover:bg-sky-500/20"}`}
+                title="Reveal a hint (H)"
+                aria-label="Show hint"
+              >
+                Hint
+              </button>
+              <button
+                onClick={handleSkip}
+                disabled={skipUsed || locked}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                  ${skipUsed || locked
+                    ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
+                    : "hover:scale-[1.03] border-fuchsia-400/40 bg-fuchsia-500/10 hover:bg-fuchsia-500/20"}`}
+                title="Skip this question (S)"
+                aria-label="Skip question"
+              >
+                Skip
+              </button>
+            </div>
+
+            {/* Options */}
+            <div className="grid grid-cols-2 gap-4">
+              {q?.options?.map((opt, i) => {
+                const isChosen = selected === i;
+                const isCorrect = isCorrectChoice(i);
+                const isWrong = isWrongChosen(i);
+                const disabledBy50 = disabledOptions.includes(i);
+
+                const base =
+                  "w-full p-4 md:p-5 rounded-2xl border-2 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent";
+                const state = isCorrect
+                  ? "bg-emerald-500/15 border-emerald-400/70 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,.25)]"
+                  : isWrong
+                    ? "bg-rose-500/15 border-rose-400/70 text-rose-100 shadow-[0_0_20px_rgba(244,63,94,.2)]"
+                    : isChosen
+                      ? "bg-indigo-500/15 border-indigo-400/70 text-indigo-100 shadow-[0_0_20px_rgba(99,102,241,.25)]"
+                      : "bg-white/5 border-white/15 hover:border-white/30 hover:bg-white/10";
+                const scale = !locked ? "hover:scale-[1.01]" : "cursor-not-allowed";
+                const dimmed = disabledBy50 ? "opacity-40 grayscale" : "";
+
+                return (
+                  <button
+                    key={i}
+                    onClick={() => !locked && !disabledBy50 && setSelected(i)}
+                    disabled={locked || disabledBy50}
+                    className={`${base} ${state} ${scale} ${dimmed}`}
+                    aria-pressed={isChosen}
+                    aria-disabled={locked || disabledBy50}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-9 h-9 rounded-full grid place-items-center text-sm font-bold
+                          ${isCorrect
+                            ? "bg-emerald-500 text-white"
+                            : isWrong
+                              ? "bg-rose-500 text-white"
+                              : isChosen
+                                ? "bg-indigo-500 text-white"
+                                : "bg-white/15 text-white/80"}`}
+                      >
+                        {i + 1}
+                      </div>
+                      <span className="text-base md:text-lg">{opt}</span>
+                      {locked && isCorrect && (
+                        <span className="ml-auto text-2xl">✓</span>
+                      )}
+                      {locked && isWrong && (
+                        <span className="ml-auto text-2xl">✗</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Hint & Fact */}
+            <div className="mt-6 space-y-3">
+              {hintShown && !locked && (
+                <div className="p-3 rounded-xl border border-sky-400/30 bg-sky-500/10">
+                  <p className="text-sky-100 text-sm">
+                    Hint: Think about{" "}
+                    <span className="font-semibold">key terms</span> in the story you just learned.
+                  </p>
+                </div>
+              )}
+              {showFact && (
+                <div className="p-4 rounded-xl border border-amber-400/30 bg-amber-500/10">
+                  <p className="text-amber-100 text-sm md:text-base">
+                    Did you know? {q?.fact}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Controls */}
+            <div className="mt-8 flex justify-center">
+              {!locked ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={selected == null}
+                  className="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 shadow-[0_12px_30px_rgba(99,102,241,.25)] hover:shadow-[0_16px_40px_rgba(99,102,241,.35)] transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Submit answer"
+                >
+                  Submit Answer ↵
+                </button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  className="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[0_12px_30px_rgba(16,185,129,.25)] hover:shadow-[0_16px_40px_rgba(16,185,129,.35)] transition-all hover:scale-[1.03]"
+                  aria-label={index === total - 1 ? "Finish quiz" : "Next question"}
+                >
+                  {index === total - 1 ? "Finish Quiz" : "Next Question →"}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Legend / Shortcuts */}
+          <div className="mx-auto max-w-4xl text-center text-xs md:text-sm text-white/60 mt-6">
+            Shortcuts: 1–4 choose • Enter submit/next • F = 50:50 • H = Hint • S = Skip
+          </div>
         </div>
       </div>
     </div>

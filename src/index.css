@@ -1,102 +1,233 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+
 @custom-variant dark (&:is(.dark *));
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "tailwindcss";
 
 /* ===== Lift-off animation ===== */
 @keyframes liftOff {
   0% {
     transform:
-      translateX(var(--tx, 0))
-      translateY(0)
-      scale(var(--base-scale, 1))
-      rotate(0deg);
-    filter: drop-shadow(0 10px 40px rgba(255,255,255,.25));
+      translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1)) rotate(0deg);
+    filter: drop-shadow(0 10px 40px rgba(255, 255, 255, .25));
   }
+
   10% {
     transform:
-      translateX(var(--tx, 0))
-      translateY(-8px)
-      scale(calc(var(--base-scale, 1) * 1.01))
-      rotate(-0.5deg);
+      translateX(var(--tx, 0)) translateY(-8px) scale(calc(var(--base-scale, 1) * 1.01)) rotate(-0.5deg);
   }
+
   100% {
     transform:
-      translateX(var(--tx, 0))
-      translateY(calc(-1 * var(--lift-distance, 110vh)))
-      scale(calc(var(--base-scale, 1) * 1.06))
-      rotate(-2deg);
-    filter: drop-shadow(0 18px 60px rgba(124,58,237,.45));
+      translateX(var(--tx, 0)) translateY(calc(-1 * var(--lift-distance, 110vh))) scale(calc(var(--base-scale, 1) * 1.06)) rotate(-2deg);
+    filter: drop-shadow(0 18px 60px rgba(124, 58, 237, .45));
   }
 }
+
 .animate-lift {
   animation:
-    liftOff var(--lift-duration, 1.2s)
-    cubic-bezier(.22,1,.36,1)
-    var(--lift-delay, 0ms)
-    forwards;
+    liftOff var(--lift-duration, 1.2s) cubic-bezier(.22, 1, .36, 1) var(--lift-delay, 0ms) forwards;
 }
 
 /* ===== XY approach move ===== */
 @keyframes moveXY {
   from {
-    transform: translateX(var(--tx,0)) translateY(0)
-               scale(var(--base-scale,1));
+    transform: translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1));
   }
+
   to {
-    transform: translateX(var(--to-x,0)) translateY(var(--to-y,0))
-               scale(var(--base-scale,1));
+    transform: translateX(var(--to-x, 0)) translateY(var(--to-y, 0)) scale(var(--base-scale, 1));
   }
 }
+
 .animate-move {
-  animation: moveXY var(--move-duration,1600ms)
-             var(--move-ease,cubic-bezier(.22,1,.36,1))
-             var(--move-delay,0ms)
-             both;
+  animation: moveXY var(--move-duration, 1600ms) var(--move-ease, cubic-bezier(.22, 1, .36, 1)) var(--move-delay, 0ms) both;
 }
 
 /* ===== 45° diagonal flight ===== */
 @keyframes flyDiag {
   from {
-    transform: translateX(var(--tx,0)) translateY(0)
-               scale(var(--base-scale,1));
+    transform: translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1));
   }
+
   to {
-    transform: translateX(calc(var(--diag-dir,1) * var(--diag-distance,110vh)))
-               translateY(calc(-1 * var(--diag-distance,110vh)))
-               scale(calc(var(--base-scale,1) * 1.06));
+    transform: translateX(calc(var(--diag-dir, 1) * var(--diag-distance, 110vh))) translateY(calc(-1 * var(--diag-distance, 110vh))) scale(calc(var(--base-scale, 1) * 1.06));
   }
 }
+
 .animate-fly-45 {
-  animation: flyDiag var(--diag-duration,1600ms)
-             cubic-bezier(.22,1,.36,1)
-             var(--diag-delay,0ms)
-             forwards;
+  animation: flyDiag var(--diag-duration, 1600ms) cubic-bezier(.22, 1, .36, 1) var(--diag-delay, 0ms) forwards;
 }
 
 /* ===== Idle motions (scale respected) ===== */
 @keyframes float {
-  0% { transform: translateX(var(--tx,0)) translateY(0) scale(var(--base-scale,1)); }
-  50% { transform: translateX(var(--tx,0)) translateY(-20px) scale(var(--base-scale,1)); }
-  100% { transform: translateX(var(--tx,0)) translateY(0) scale(var(--base-scale,1)); }
+  0% {
+    transform: translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1));
+  }
+
+  50% {
+    transform: translateX(var(--tx, 0)) translateY(-20px) scale(var(--base-scale, 1));
+  }
+
+  100% {
+    transform: translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1));
+  }
 }
-.animate-float { animation: float 4s ease-in-out infinite; }
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
 
 @keyframes bounce-slow {
-  0%,100% { transform: translateX(var(--tx,0)) translateY(0) scale(var(--base-scale,1)); }
-  50% { transform: translateX(var(--tx,0)) translateY(-15px) scale(var(--base-scale,1)); }
+
+  0%,
+  100% {
+    transform: translateX(var(--tx, 0)) translateY(0) scale(var(--base-scale, 1));
+  }
+
+  50% {
+    transform: translateX(var(--tx, 0)) translateY(-15px) scale(var(--base-scale, 1));
+  }
 }
-.animate-bounce-slow { animation: bounce-slow 3s infinite; }
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+/* ===== Story3 specific animations ===== */
+@keyframes pulse-fast {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 0.5s ease-in-out infinite;
+}
+
+@keyframes flare-sweep {
+  0% {
+    transform: translateX(-50%) scaleY(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) scaleY(1);
+    opacity: 0;
+  }
+}
+
+.animate-flare-sweep {
+  animation: flare-sweep 2s ease-out infinite;
+}
+
+@keyframes flare-sweep-delay {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.animate-flare-sweep-delay {
+  animation: flare-sweep-delay 2s ease-out infinite 0.3s;
+}
+
+.animate-flare-sweep-delay-2 {
+  animation: flare-sweep-delay 2s ease-out infinite 0.6s;
+}
+
+@keyframes expand-slow {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+}
+
+.animate-expand-slow {
+  animation: expand-slow 3s ease-out infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* ===== Gradient utilities ===== */
+.bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
+}
 
 /* ===== Fonts ===== */
-@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
-.font-logo { font-family:"Audiowide",system-ui,sans-serif; letter-spacing:.04em; }
+.font-logo {
+  font-family: "Audiowide", system-ui, sans-serif;
+  letter-spacing: .04em;
+}
 
-.moo-lah-lah-regular { font-family:"Moo Lah Lah",sans-serif; font-weight:400; font-style:normal; }
-.fontdiner-swanky-regular { font-family:"Fontdiner Swanky",serif; font-weight:400; font-style:normal; }
-.rubik-dirt-regular { font-family:"Rubik Dirt",system-ui; font-weight:400; font-style:normal; }
+.moo-lah-lah-regular {
+  font-family: "Moo Lah Lah", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.fontdiner-swanky-regular {
+  font-family: "Fontdiner Swanky", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rubik-dirt-regular {
+  font-family: "Rubik Dirt", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* ===== Theme Vars ===== */
 @theme inline {
@@ -138,50 +269,55 @@
 }
 
 :root {
-  --radius:0.625rem;
-  --background:oklch(1 0 0);
-  --foreground:oklch(0.145 0 0);
-  --card:oklch(1 0 0);
-  --card-foreground:oklch(0.145 0 0);
-  --popover:oklch(1 0 0);
-  --popover-foreground:oklch(0.145 0 0);
-  --primary:oklch(0.205 0 0);
-  --primary-foreground:oklch(0.985 0 0);
-  --secondary:oklch(0.97 0 0);
-  --secondary-foreground:oklch(0.205 0 0);
-  --muted:oklch(0.97 0 0);
-  --muted-foreground:oklch(0.556 0 0);
-  --accent:oklch(0.97 0 0);
-  --accent-foreground:oklch(0.205 0 0);
-  --destructive:oklch(0.577 0.245 27.325);
-  --border:oklch(0.922 0 0);
-  --input:oklch(0.922 0 0);
-  --ring:oklch(0.708 0 0);
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background:oklch(0.145 0 0);
-  --foreground:oklch(0.985 0 0);
-  --card:oklch(0.205 0 0);
-  --card-foreground:oklch(0.985 0 0);
-  --popover:oklch(0.205 0 0);
-  --popover-foreground:oklch(0.985 0 0);
-  --primary:oklch(0.922 0 0);
-  --primary-foreground:oklch(0.205 0 0);
-  --secondary:oklch(0.269 0 0);
-  --secondary-foreground:oklch(0.985 0 0);
-  --muted:oklch(0.269 0 0);
-  --muted-foreground:oklch(0.708 0 0);
-  --accent:oklch(0.269 0 0);
-  --accent-foreground:oklch(0.985 0 0);
-  --destructive:oklch(0.704 0.191 22.216);
-  --border:oklch(1 0 0 / 10%);
-  --input:oklch(1 0 0 / 15%);
-  --ring:oklch(0.556 0 0);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
 }
 
 /* ===== Base ===== */
 @layer base {
-  * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground; }
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }

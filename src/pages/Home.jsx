@@ -11,7 +11,6 @@ export default function Home() {
   const location = useLocation();
   const { done: imgsReady, progress } = useImagePreload([
     "/images/astranaut2.png",
-    "/video-poster.jpg",
   ]);
 
   useEffect(() => {
@@ -25,20 +24,20 @@ export default function Home() {
 
     const tryPlay = async () => {
       if (!v || playAttempts >= maxAttempts) return;
-      
+
       playAttempts++;
-      
+
       try {
         // Reset video to ensure fresh start
         v.currentTime = 0;
         v.muted = true; // Ensure muted for autoplay to work
-        
+
         await v.play();
         setVideoReady(true);
         console.log('Video playing successfully');
       } catch (error) {
         console.log(`Play attempt ${playAttempts} failed:`, error);
-        
+
         // Retry after a short delay
         if (playAttempts < maxAttempts) {
           setTimeout(tryPlay, 500);
@@ -146,7 +145,7 @@ export default function Home() {
         playsInline
         preload="auto"
         controls={false}
-        poster="/video-poster.jpg"
+        poster=""
       >
         <source src="/videos/1851190-uhd_3840_2160_25fps.mp4" type="video/mp4" />
       </video>

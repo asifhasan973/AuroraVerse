@@ -46,7 +46,7 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
     if (!vocabulary.length || !isVisible) return null;
 
     const containerPos = isSideBySide ? "relative" : "fixed right-0 top-0";
-    const containerSize = isSideBySide ? "h-full" : "h-[calc(100vh-1rem)]";
+    const containerSize = isSideBySide ? "h-full" : "h-full";
     const expandedWidth = "w-80 sm:w-96";
     const collapsedWidth = "w-0";
 
@@ -87,7 +87,7 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
                             <button
                                 onClick={handleLayoutToggle}
                                 className={[
-                                    "p-2 rounded-full transition-all duration-200 hover:scale-110",
+                                    "flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200 hover:scale-105",
                                     isSideBySide
                                         ? "text-fuchsia-300 hover:text-fuchsia-200 bg-fuchsia-500/20 hover:bg-fuchsia-500/30"
                                         : "text-white/70 hover:text-white hover:bg-white/10",
@@ -100,6 +100,9 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
                                 ) : (
                                     <Sidebar className="w-4 h-4 sm:w-5 sm:h-5" />
                                 )}
+                                <span className="text-xs sm:text-sm font-medium hidden sm:inline">
+                                    {isSideBySide ? "Overlay" : "Split View"}
+                                </span>
                             </button>
 
                             <button

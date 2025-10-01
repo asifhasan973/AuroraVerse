@@ -3,7 +3,9 @@
     "question": "Where do astronauts hide during solar storms?",
     "options": [
       "In the cockpit",
-      "In the storm shelter"
+      "In the storm shelter",
+      "In the command center",
+      "In the kitchen"
     ],
     "correctIndex": 1,
     "fact": "Astronauts stay safe inside a storm shelter on the spacecraft when solar storms hit."
@@ -12,7 +14,11 @@
     "question": "What can solar storms damage?",
     "options": [
       "Satellites",
-      "Ice cream machines 🍦"
+      "Ice cream machines 🍦",
+      "Mobile phones",
+      "Power grids"
+
+
     ],
     "correctIndex": 0,
     "fact": "Solar storms can damage satellites, confuse signals, and disrupt GPS."
@@ -21,7 +27,10 @@
     "question": "What beautiful things do solar storms create?",
     "options": [
       "Tornadoes",
-      "Auroras"
+      "Auroras",
+
+      "Earthquakes",
+      "Volcanoes"
     ],
     "correctIndex": 1,
     "fact": "Auroras appear when solar particles collide with Earth’s atmosphere near the poles."

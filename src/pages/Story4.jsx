@@ -17,19 +17,15 @@ const BACKGROUNDS = {
     bg4: "/images/Story4/4.png",
     bg5: "/images/Story4/5.png",
     bg6: "/images/Story4/6.png",
-    bg7: "/images/Story4/7.png",
     bg8: "/images/Story4/8.png",
     bg9: "/images/Story4/9.png",
     bg10: "/images/Story4/10.png",
     bg11: "/images/Story4/11.png",
     bg12: "/images/Story4/screen_white.png",
-
 };
 
 // 👥 Character images
 const CHARACTERS = {
-    astro: "/images/Story4/astro.png",
-    child: "/images/Story4/child.png",
     both: "/images/Story4/talk_c_a_stand.png",
 };
 
@@ -52,11 +48,11 @@ const DIALOGUE_POSITIONS = {
 // 📝 Story script - each dialogue step can have its own background
 const SCRIPT = [
     {
-        id: "intro",
+        id: "solar-storms-spacecraft-intro",
         background: "bg0",
         dialogue: {
             speaker: "astro",
-            text: "Solar storms can also shake up our spacecraft.That’s why we hide inside a storm shelter in our spacecraft to stay safe.",
+            text: "Solar storms can also shake up our spacecraft.That's why we hide inside a storm shelter in our spacecraft to stay safe.",
         },
         characters: {
             show: "both",
@@ -64,7 +60,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "spacecraft-storms",
+        id: "child-asks-about-storm-shelter",
         background: "bg0",
         dialogue: {
             speaker: "child",
@@ -76,11 +72,11 @@ const SCRIPT = [
         },
     },
     {
-        id: "child-question",
+        id: "explain-storm-shelter-superhero",
         background: "bg0", // Same background as previous (no change)
         dialogue: {
             speaker: "astro",
-            text: "A storm shelter is like a super-safe hideout where you can stay safe from big storms, just like a superhero’s secret base!",
+            text: "A storm shelter is like a super-safe hideout where you can stay safe from big storms, just like a superhero's secret base!",
         },
         characters: {
             show: "both",
@@ -88,7 +84,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "storm-shelter",
+        id: "ask-to-see-solar-storm-power",
         background: "bg0",
         dialogue: {
             speaker: "astro",
@@ -100,7 +96,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "storm-shelter2",
+        id: "child-excited-to-see-storm",
         background: "bg0",
         dialogue: {
             speaker: "child",
@@ -112,8 +108,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "equipment-damage",
-        background: "bg0", 
+        id: "explain-storm-effects-computers",
+        background: "bg0",
         dialogue: {
             speaker: "astro",
             text: "Storms can confuse computers, mess with signals, and even damage equipment. Let's see in the monitor.",
@@ -124,8 +120,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "equipment-damage2",
-        background: "bg10", 
+        id: "radiation-damages-electronics",
+        background: "bg10",
         dialogue: {
             speaker: "astro",
             text: "These radiations can damage Spacecraft electronics.",
@@ -135,10 +131,10 @@ const SCRIPT = [
             position: { bottom: "10vh", left: "25%" },
         },
     },
-    
+
     {
-        id: "engineers-solution",
-        background: "bg1", // space craft sloution background
+        id: "engineers-build-protections",
+        background: "bg1",
         dialogue: {
             speaker: "astro",
             text: "Luckily, our engineers build special protections to keep everything working.",
@@ -149,8 +145,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "satellite-effects",
-        background: "bg2", 
+        id: "storms-affect-satellites",
+        background: "bg2",
         dialogue: {
             speaker: "astro",
             text: "Strong storms can even affect our satellites in space!",
@@ -161,8 +157,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "gps-problems",
-        background: "bg3", 
+        id: "gps-communication-problems",
+        background: "bg3",
         dialogue: {
             speaker: "astro",
             text: "They can mess up GPS signals and communication systems on Earth.",
@@ -173,8 +169,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "monitoring",
-        background: "bg11", 
+        id: "nasa-monitors-sun-24-7",
+        background: "bg11",
         dialogue: {
             speaker: "astro",
             text: "That's why scientists of NASA watch the sun 24/7 to warn us about incoming storms.",
@@ -185,8 +181,8 @@ const SCRIPT = [
         },
     },
     {
-        id: "finale",
-        background: "bg11", 
+        id: "safe-space-exploration",
+        background: "bg11",
         dialogue: {
             speaker: "astro",
             text: "With proper protection and warnings, we can explore space safely!",
@@ -197,7 +193,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "finale2",
+        id: "pilots-fishermen-navigation-problems",
         background: "bg4", // pilot
         dialogue: {
             speaker: "astro",
@@ -209,11 +205,11 @@ const SCRIPT = [
         },
     },
     {
-        id: "finale3",
+        id: "mobile-phones-power-grid-failures",
         background: "bg8", // power grid 
         dialogue: {
             speaker: "astro",
-            text: "Mass people can’t talk on mobile phones and lose network connection. And power grids can even fail!",
+            text: "Mass people can't talk on mobile phones and lose network connection. And power grids can even fail!",
         },
         characters: {
             show: "both",
@@ -221,7 +217,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "finale4",
+        id: "engineers-preventive-measures",
         background: "bg9", // power grid solution
         dialogue: {
             speaker: "astro",
@@ -232,9 +228,9 @@ const SCRIPT = [
             position: { bottom: "10vh", left: "25%" },
         },
     },
-    
+
     {
-        id: "conclusion",
+        id: "child-fears-sun",
         background: "bg9",
         dialogue: {
             speaker: "child",
@@ -246,7 +242,7 @@ const SCRIPT = [
         },
     },
     {
-        id: "conclusion2",
+        id: "sun-creates-magical-auroras",
         background: "bg5",
         dialogue: {
             speaker: "astro",
@@ -259,7 +255,7 @@ const SCRIPT = [
 
     },
     {
-        id: "conclusion3",
+        id: "child-asks-about-aurora",
         background: "bg5",
         dialogue: {
             speaker: "child",
@@ -272,20 +268,20 @@ const SCRIPT = [
 
     },
     {
-        id: "conclusion4",
+        id: "explain-aurora-formation",
         background: "bg5",
         dialogue: {
             speaker: "astro",
-            text: "These are beautiful lights in the sky when solar particles meet Earth’s atmosphere and magnetic field.",
+            text: "These are beautiful lights in the sky when solar particles meet Earth's atmosphere and magnetic field.",
         },
         characters: {
             show: "both",
             position: { bottom: "10vh", left: "25%" },
         },
-        
+
     },
     {
-        id: "conclusion4",
+        id: "ask-to-make-aurora",
         background: "bg5",
         dialogue: {
             speaker: "astro",
@@ -295,10 +291,10 @@ const SCRIPT = [
             show: "both",
             position: { bottom: "10vh", left: "25%" },
         },
-        
+
     },
     {
-        id: "conclusion5",
+        id: "child-excited-about-making-aurora",
         background: "bg5",
         dialogue: {
             speaker: "child",
@@ -308,11 +304,11 @@ const SCRIPT = [
             show: "both",
             position: { bottom: "10vh", left: "25%" },
         },
-        
+
     },
 
     {
-        id: "conclusion6",
+        id: "quiz-before-aurora-creation",
         background: "bg12",
         dialogue: {
             speaker: "astro",
@@ -322,9 +318,9 @@ const SCRIPT = [
             show: "both",
             position: { bottom: "10vh", left: "25%" },
         },
-
+        showQuizButton: true
     }
-    
+
 ];
 
 // Hook for window size
@@ -363,8 +359,10 @@ const getDialoguePosition = (dialogue, isMobile) => {
 
 export default function Story4() {
     const [stepIndex, setStepIndex] = useState(0);
-    const [currentBackground, setCurrentBackground] = useState("bg1");
+    const [currentBackground, setCurrentBackground] = useState("bg0");
     const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
+    const [buttonHovered, setButtonHovered] = useState(false);
+    const [isNavigatingToQuiz, setIsNavigatingToQuiz] = useState(false);
 
     const navigate = useNavigate();
     const windowSize = useWindowSize();
@@ -376,6 +374,14 @@ export default function Story4() {
         ...Object.values(CHARACTERS),
     ];
     const { done: assetsReady, progress } = useImagePreload(preloadUrls);
+
+    // Preload Quiz component when assets are ready
+    useEffect(() => {
+        if (assetsReady) {
+            // Preload the Quiz component by importing it
+            import('../pages/Quiz');
+        }
+    }, [assetsReady]);
 
     // Get vocabulary for current step
     const { vocabulary: currentVocabulary, hasVocabulary } = useVocabulary('story4', stepIndex, assetsReady);
@@ -390,6 +396,23 @@ export default function Story4() {
             setCurrentBackground(currentStep.background);
         }
     }, [stepIndex, currentStep]);
+
+    // Handle keyboard events
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.key === 'Enter' && assetsReady) {
+                if (canNext) {
+                    setStepIndex(i => i + 1);
+                } else {
+                    // Go to finale or next story part
+                    navigate("/finale");
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [canNext, assetsReady, navigate]);
 
     const handleNext = () => {
         if (!assetsReady) return; // block interactions until assets are ready
@@ -407,7 +430,7 @@ export default function Story4() {
         if (canBack) {
             setStepIndex(i => i - 1);
         } else {
-            // Go back to Story3
+            // Go back to Story3 last dialogue
             navigate("/story3", { state: { jumpToLast: true } });
         }
     };
@@ -419,75 +442,154 @@ export default function Story4() {
     };
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden text-white">
-            {/* Content Container - only this area becomes flex when side-by-side */}
-            <div className={`${isVocabularySideBySide ? 'flex h-screen' : ''}`}>
-                {/* Main Content Area */}
-                <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
-                    {/* Global loading overlay for the scene */}
-                    <LoadingOverlay show={!assetsReady} label={`Preparing scene… ${progress}%`} />
+        <>
+            {/* Custom CSS for button animations */}
+            <style jsx>{`
+                @keyframes rainbow {
+                    0% { filter: hue-rotate(0deg); }
+                    100% { filter: hue-rotate(360deg); }
+                }
+                @keyframes sparkle {
+                    0%, 100% { opacity: 0; transform: scale(0); }
+                    50% { opacity: 1; transform: scale(1); }
+                }
+                .animation-delay-200 { animation-delay: 200ms; }
+                .animation-delay-300 { animation-delay: 300ms; }
+                .animation-delay-500 { animation-delay: 500ms; }
+            `}</style>
+            <div className="relative min-h-screen w-full overflow-hidden text-white">
+                {/* Content Container - only this area becomes flex when side-by-side */}
+                <div className={`${isVocabularySideBySide ? 'flex h-screen' : ''}`}>
+                    {/* Main Content Area */}
+                    <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
+                        {/* Global loading overlay for the scene */}
+                        <LoadingOverlay show={!assetsReady} label={`Preparing scene… ${progress}%`} />
 
-                    {/* Background Image - changes with dialogue */}
-                    <div
-                        className="absolute inset-0 -z-30 bg-cover bg-center transition-all duration-1000"
-                        style={{
-                            backgroundImage: `url(${BACKGROUNDS[currentBackground]})`,
-                        }}
-                    />
-
-                    {/* Optional gradient overlay for better text readability */}
-                    <div className="absolute inset-0 -z-20 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
-
-                    {/* Characters */}
-                    {currentStep.characters && (
-                        <div
-                            className="absolute z-20 pointer-events-none"
-                            style={currentStep.characters.position}
-                        >
-                            {!assetsReady ? (
-                                <div className="flex items-center justify-center" style={{ width: isMobile ? '200px' : '320px', height: isMobile ? '200px' : '320px' }}>
-                                    <Spinner size={40} />
+                        {/* Quiz navigation overlay */}
+                        {isNavigatingToQuiz && (
+                            <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="animate-spin w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+                                    <p className="text-yellow-400 text-xl font-bold">Launching Quiz! 🚀</p>
                                 </div>
-                            ) : (
-                                <img
-                                    src={CHARACTERS[currentStep.characters.show] || CHARACTERS.both}
-                                    alt="Characters"
-                                    className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
-                                    style={{
-                                        width: isMobile ? '200px' : '320px',
-                                        height: 'auto',
-                                    }}
-                                />
-                            )}
-                        </div>
-                    )}
+                            </div>
+                        )}
 
-                    {/* Dialogue Box with Dynamic Position */}
-                    <div onClick={(e) => e.stopPropagation()}> {/* Prevent dialogue clicks from changing background */}
-                        <DialogueBox
-                            speaker={currentStep.dialogue.speaker}
-                            text={currentStep.dialogue.text}
-                            width={isMobile ? "90%" : 600}
-                            maxWidth={600}
-                            position={getCurrentDialoguePosition()}
-                            anchorCenterX={true}
-                            showNext={canNext}
-                            onNext={handleNext}
-                            onBack={handleBack}
-                            canBack={true}
-                            loading={!assetsReady}
+                        {/* Background Image - changes with dialogue */}
+                        <div
+                            className="absolute inset-0 -z-30 bg-cover bg-center transition-all duration-1000"
+                            style={{
+                                backgroundImage: `url(${BACKGROUNDS[currentBackground]})`,
+                            }}
                         />
+
+                        {/* Optional gradient overlay for better text readability */}
+                        <div className="absolute inset-0 -z-20 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+
+                        {/* Characters */}
+                        {currentStep.characters && (
+                            <div
+                                className="absolute z-20 pointer-events-none"
+                                style={currentStep.characters.position}
+                            >
+                                {!assetsReady ? (
+                                    <div className="flex items-center justify-center" style={{ width: isMobile ? '200px' : '320px', height: isMobile ? '200px' : '320px' }}>
+                                        <Spinner size={40} />
+                                    </div>
+                                ) : (
+                                    <img
+                                        src={CHARACTERS[currentStep.characters.show] || CHARACTERS.both}
+                                        alt="Characters"
+                                        className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
+                                        style={{
+                                            width: isMobile ? '200px' : '320px',
+                                            height: 'auto',
+                                        }}
+                                    />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Dialogue Box with Dynamic Position */}
+                        <div onClick={(e) => e.stopPropagation()}> {/* Prevent dialogue clicks from changing background */}
+                            <DialogueBox
+                                speaker={currentStep.dialogue.speaker}
+                                text={currentStep.dialogue.text}
+                                width={isMobile ? "90%" : 500}
+                                maxWidth={600}
+                                position={getCurrentDialoguePosition()}
+                                anchorCenterX={true}
+                                showNext={canNext && !currentStep.showQuizButton}
+                                onNext={handleNext}
+                                onBack={handleBack}
+                                canBack={true}
+                                loading={!assetsReady}
+                            />
+                        </div>
+
+                        {/* Quiz Button - Only show on the last dialogue */}
+                        {currentStep.showQuizButton && (
+                            <div className="absolute z-30 flex justify-center items-center"
+                                style={{
+                                    bottom: isMobile ? "18vh" : "60vh",
+                                    left: "73%",
+                                    transform: "translateX(-50%)"
+                                }}>
+                                <button
+                                    onClick={() => {
+                                        setIsNavigatingToQuiz(true);
+                                        setTimeout(() => navigate("/quiz"), 200);
+                                    }}
+                                    onMouseEnter={() => setButtonHovered(true)}
+                                    onMouseLeave={() => setButtonHovered(false)}
+                                    className={`group relative px-10 py-6 text-white font-bold text-2xl md:text-3xl rounded-full shadow-2xl transform transition-all duration-500 border-4 border-yellow-300 ${buttonHovered
+                                        ? 'scale-110 rotate-3 animate-pulse'
+                                        : 'animate-bounce scale-100'
+                                        }`}
+                                    style={{
+                                        background: buttonHovered
+                                            ? 'linear-gradient(45deg, #FF6B6B, #FFD93D, #6BCF7F, #4D96FF)'
+                                            : 'linear-gradient(45deg, #FFD700, #FFA500, #FF6347)',
+                                        boxShadow: buttonHovered
+                                            ? '0 15px 35px rgba(255, 107, 107, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4)'
+                                            : '0 8px 25px rgba(255, 215, 0, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.3)',
+                                        textShadow: '3px 3px 6px rgba(0, 0, 0, 0.7)',
+                                        fontFamily: 'Comic Sans MS, cursive',
+                                        animation: buttonHovered ? 'rainbow 2s linear infinite' : 'bounce 2s infinite'
+                                    }}
+                                >
+                                    <span className="relative z-10 flex items-center gap-3">
+                                        <span className="animate-spin">🚀</span>
+                                        <span className="animate-pulse">Start Quiz!</span>
+                                        <span className="animate-bounce">🌟</span>
+                                    </span>
+
+                                    {/* Multiple shine effects */}
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white to-transparent opacity-40 transform -skew-x-12 group-hover:animate-ping"></div>
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-l from-transparent via-yellow-200 to-transparent opacity-30 transform skew-x-12 group-hover:animate-ping animation-delay-200"></div>
+
+                                    {/* Glow effects */}
+                                    <div className="absolute inset-0 rounded-full bg-yellow-300 opacity-0 group-hover:opacity-60 blur-2xl transition-opacity duration-500"></div>
+                                    <div className="absolute inset-0 rounded-full bg-pink-300 opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-700"></div>
+
+                                    {/* Sparkle effects */}
+                                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-300 rounded-full animate-ping"></div>
+                                    <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-pink-300 rounded-full animate-ping animation-delay-300"></div>
+                                    <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-300 rounded-full animate-ping animation-delay-500"></div>
+                                </button>
+                            </div>
+                        )}
+
                     </div>
 
+                    {/* Vocabulary Slider */}
+                    <VocabularySlider
+                        vocabulary={currentVocabulary}
+                        isVisible={hasVocabulary}
+                        onLayoutChange={setIsVocabularySideBySide}
+                    />
                 </div>
-
-                {/* Vocabulary Slider */}
-                <VocabularySlider
-                    vocabulary={currentVocabulary}
-                    isVisible={hasVocabulary}
-                    onLayoutChange={setIsVocabularySideBySide}
-                />
             </div>
-        </div>
+        </>
     );
 }

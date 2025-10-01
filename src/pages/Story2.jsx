@@ -1,5 +1,5 @@
 // src/pages/Story2.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DialogueBox from "./DialogueBox";
 import { useLocation, useNavigate } from "react-router-dom";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
@@ -33,6 +33,23 @@ export default function Story2() {
 
   // Get vocabulary for current dialogue
   const { vocabulary: currentVocabulary, hasVocabulary } = useVocabulary('story2', i, assetsReady);
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'Enter' && assetsReady) {
+        if (canNext) {
+          setI((x) => x + 1);
+        } else {
+          // Final line -> go to Story3 first dialogue
+          navigate("/story3");
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [canNext, assetsReady, navigate]);
 
   return (
     <div id="story2-root" className="relative min-h-screen w-full overflow-hidden text-white">
@@ -75,7 +92,7 @@ export default function Story2() {
             loading={!assetsReady}
             onNext={() => {
               if (canNext) return setI((x) => x + 1);
-              // Final line -> go to Story3
+              // Final line -> go to Story3 first dialogue
               navigate("/story3");
             }}
             showNext={true}

@@ -1,83 +1,139 @@
 // src/pages/Finale.jsx
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Finale() {
   const { state } = useLocation();
   const score = state?.score ?? 0;
   const total = state?.total ?? 0;
+  const [animatedScore, setAnimatedScore] = useState(0);
 
   const pct = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  return (
-    <div className="relative min-h-[100dvh] overflow-hidden text-white">
-      {/* Cosmic backdrop */}
-      <div
-        className="absolute inset-0 -z-20"
-        style={{
-          backgroundImage: `
-            radial-gradient(1200px 600px at 80% -10%, oklch(0.35 0.18 300 / .55), transparent 60%),
-            radial-gradient(800px 400px at 10% 10%, oklch(0.28 0.12 350 / .5), transparent 55%),
-            radial-gradient(900px 500px at 50% 110%, oklch(0.30 0.10 280 / .55), transparent 60%),
-            linear-gradient(180deg, oklch(0.16 0.05 310), oklch(0.12 0.04 310))
-          `,
-        }}
-      />
-      <div className="absolute inset-0 -z-10 [background:radial-gradient(1px_1px_at_10px_10px,_white_40%,_transparent_41%)_0_0/24px_24px,_radial-gradient(1px_1px_at_5px_15px,_#c4b5fd_40%,_transparent_41%)_0_0/32px_32px,_transparent] opacity-25" />
+  // Animate score counter
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      let current = 0;
+      const increment = score / 20;
+      const counter = setInterval(() => {
+        current += increment;
+        if (current >= score) {
+          setAnimatedScore(score);
+          clearInterval(counter);
+        } else {
+          setAnimatedScore(Math.floor(current));
+        }
+      }, 50);
+      return () => clearInterval(counter);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [score]);
 
-      <div className="container mx-auto px-6 py-16 grid place-items-center">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-sm backdrop-blur">
-            🌟 Mission Complete
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white pt-16">
+      {/* Header */}
+      <div className=" backdrop-blur-sm border-b border-white/10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <span className="text-xl">🚀</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Quiz Complete</h1>
+              <p className="text-sm text-gray-300">Mission accomplished!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Success Badge */}
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-green-500/20 border border-green-400/40 mb-8">
+            <span className="text-2xl">🎉</span>
+            <span className="text-lg font-semibold text-green-300">Mission Complete!</span>
           </div>
 
-          <h1 className="mt-5 text-4xl md:text-6xl font-black">
-            <span className="bg-gradient-to-br from-emerald-300 via-lime-200 to-yellow-200 bg-clip-text text-transparent">
-              You finished the journey!
-            </span>
+          {/* Title */}
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
+            Congratulations!
           </h1>
 
-          <p className="mt-3 text-white/80 md:text-lg">
-            Score: <span className="font-extrabold text-emerald-300">{score}</span> / {total} ({pct}%)
-          </p>
-
-          {/* Medal */}
-          <div className="mt-8 inline-flex items-center justify-center">
-            <div className="size-32 md:size-40 rounded-full bg-white/10 border border-white/10 grid place-items-center shadow-[0_0_60px_rgba(168,85,247,.35)]">
-              <div className="size-24 md:size-28 rounded-full bg-gradient-to-br from-fuchsia-500 to-indigo-500 grid place-items-center">
-                <span className="text-4xl md:text-5xl">🏅</span>
-              </div>
+          {/* Score Display */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8 mb-8">
+            <div className="text-6xl font-bold text-yellow-400 mb-2">
+              {animatedScore}
+            </div>
+            <div className="text-2xl text-gray-300 mb-4">
+              out of {total} questions
+            </div>
+            <div className="text-3xl font-bold text-transparent bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text">
+              {pct}% Correct
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+
+
+          {/* Achievement Message */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4">
+              {pct >= 80 ? (
+                <span className="text-transparent bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text">
+                  Space Expert!
+                </span>
+              ) : pct >= 60 ? (
+                <span className="text-transparent bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text">
+                  Space Explorer!
+                </span>
+              ) : pct >= 40 ? (
+                <span className="text-transparent bg-gradient-to-r from-green-300 to-teal-300 bg-clip-text">
+                  Space Learner!
+                </span>
+              ) : (
+                <span className="text-transparent bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text">
+                  Space Adventurer!
+                </span>
+              )}
+            </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              {pct >= 80
+                ? "Outstanding work! You've mastered the mysteries of space and solar storms."
+                : pct >= 60
+                  ? "Great job! You're well on your way to becoming a space expert."
+                  : pct >= 40
+                    ? "Nice work! Keep exploring and learning about our amazing universe."
+                    : "Good effort! The universe is full of wonders waiting to be discovered."
+              }
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
             <Link
               to="/quiz"
-              className="px-5 py-2 rounded-full bg-fuchsia-500 hover:bg-fuchsia-400 shadow-lg shadow-fuchsia-500/25 font-semibold"
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl
+                       hover:from-blue-600 hover:to-purple-600 transition-all duration-200 hover:scale-105"
             >
               Play Again
             </Link>
             <Link
               to="https://u2204125.github.io/aurora-sentinel/"
-              className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 font-semibold"
+              className="px-8 py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20
+                       hover:bg-white/20 transition-all duration-200 hover:scale-105"
             >
               Aurora Lab
             </Link>
             <Link
               to="/"
-              className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 font-semibold"
+              className="px-8 py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20
+                       hover:bg-white/20 transition-all duration-200 hover:scale-105"
             >
               Home
             </Link>
           </div>
         </div>
       </div>
-
-      {/* Bottom glow */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-[-20vh] h-[40vh] blur-2xl opacity-60"
-        style={{ backgroundImage: "radial-gradient(60% 60% at 50% 0%, oklch(0.7 0.2 310 / .35), transparent 70%)" }}
-      />
     </div>
   );
 }

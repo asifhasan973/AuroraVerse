@@ -377,184 +377,160 @@ export const STORY3_VOCABULARY = {
 // STORY4 VOCABULARY - Space Protection and Solar Storm Effects
 // ============================================================================
 export const STORY4_VOCABULARY = {
-    // Dialogue: "Welcome to our space presentation! Today I'll show you how we protect ourselves from solar storms."
-    "intro": [],
-
-    // Dialogue: "Solar storms can shake up our spacecraft. That's why we need special protection."
-    "spacecraft-storms": [
+    // Dialogue: "Solar storms can also shake up our spacecraft.That's why we hide inside a storm shelter in our spacecraft to stay safe."
+    "solar-storms-spacecraft-intro": [
         {
-            word: "spacecraft",
-            explanation: "A vehicle designed to travel in space",
+            word: "solar storms",
+            explanation: "Powerful bursts of energy and particles from the Sun that can affect space and Earth",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/spacecraft-in-space.jpg",
-                    alt: "Spacecraft in space",
-                    externalLink: "https://www.nasa.gov/feature/spacecraft-design",
-                    sourceText: "NASA"
+                    src: "https://science.nasa.gov/wp-content/uploads/2024/09/cme-soho-eit-c2-2002.jpg?w=768",
+                    alt: "Solar storm visualization",
+                    externalLink: "https://science.nasa.gov/sun/solar-activity/solar-storms/",
+                    sourceText: "Science NASA"
                 }
             ],
             showMore: {
-                link: "https://www.nasa.gov/feature/spacecraft-design",
-                text: "Learn about spacecraft"
+                link: "https://science.nasa.gov/sun/solar-activity/solar-storms/",
+                text: "Learn about Solar Storms"
             }
         }
     ],
 
-    // Dialogue: "How do we stay safe?"
-    "child-question": [],
+    // Dialogue: "Storm shelter?"
+    "child-asks-about-storm-shelter": [],
 
-    // Dialogue: "We hide inside storm shelters in our spacecraft. These protect us from dangerous radiation."
-    "storm-shelter": [
+    // Dialogue: "A storm shelter is like a super-safe hideout where you can stay safe from big storms, just like a superhero's secret base!"
+    "explain-storm-shelter-superhero": [
         {
             word: "storm shelter",
-            explanation: "A protected area inside a spacecraft where astronauts can stay safe during solar storms",
+            explanation: "A protected area inside a spacecraft where astronauts can stay safe during dangerous solar storms",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/spacecraft-storm-shelter.jpg",
+                    src: "https://imgix.bustle.com/uploads/image/2024/9/18/3f491b66/artemis.jpg?w=374&h=222&fit=crop&crop=faces&dpr=2",
                     alt: "Spacecraft storm shelter",
                     externalLink: "https://www.nasa.gov/feature/spacecraft-protection",
                     sourceText: "NASA"
                 }
             ],
             showMore: {
-                link: "https://www.nasa.gov/feature/spacecraft-protection",
-                text: "Learn about storm shelters"
-            }
-        },
-        {
-            word: "radiation",
-            explanation: "Energy that comes from the sun and other sources that can be harmful to living things",
-            media: [
-                {
-                    type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/solar-radiation.jpg",
-                    alt: "Solar radiation",
-                    externalLink: "https://www.nasa.gov/feature/solar-radiation",
-                    sourceText: "NASA"
-                }
-            ],
-            showMore: {
-                link: "https://www.nasa.gov/feature/solar-radiation",
-                text: "Learn about solar radiation"
+                link: "https://ntrs.nasa.gov/api/citations/20170002287/downloads/20170002287.pdf",
+                text: "Read a paper about storm shelters"
             }
         }
     ],
 
-    // Dialogue: "Storms can damage our equipment, confuse computers, and mess with our signals."
-    "equipment-damage": [
+    // Dialogue: "Do you want to see how powerful and amazing a solar storm can be?"
+    "ask-to-see-solar-storm-power": [],
+
+    // Dialogue: "Yes, show me!"
+    "child-excited-to-see-storm": [],
+
+    // Dialogue: "Storms can confuse computers, mess with signals, and even damage equipment. Let's see in the monitor."
+    "explain-storm-effects-computers": [
+
         {
-            word: "equipment",
-            explanation: "Tools and machines used for a particular purpose",
+            word: "signals",
+            explanation: "Waves or messages sent through space or air to communicate information",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/space-equipment.jpg",
-                    alt: "Space equipment",
-                    externalLink: "https://www.nasa.gov/feature/space-equipment",
-                    sourceText: "NASA"
+                    src: "https://www.shutterstock.com/shutterstock/videos/1105714887/thumb/10.jpg?ip=x480",
+                    alt: "Space communication signals",
+                    externalLink: "https://www.shutterstock.com/shutterstock/videos/1105714887/thumb/10.jpg?ip=x480",
+                    sourceText: "shutterstock"
                 }
             ],
             showMore: {
-                link: "https://www.nasa.gov/feature/space-equipment",
-                text: "Learn about space equipment"
+                link: "https://science.nasa.gov/blogs/imap/2025/09/24/signal-acquired-for-space-weather-spacecraft/",
+                text: "Learn about space signals"
             }
         }
+    ],
+
+    // Dialogue: "These radiations can damage Spacecraft electronics."
+    "radiation-damages-electronics": [
+        {
+            word: "radiation",
+            explanation: "Energy that comes from the Sun and other sources that can be harmful to living things and electronics",
+            media: [
+                {
+                    type: "image",
+                    src: "https://images.newscientist.com/wp-content/uploads/2007/05/dn11951-1_510.jpg",
+                    alt: "Space radiation illustration",
+                    externalLink: "https://www.newscientist.com/article/dn11951-new-analysis-warns-of-solar-outbursts/",
+                    sourceText: "New Scientist"
+                }
+            ],
+            showMore: {
+                link: "https://science.nasa.gov/sun/solar-storms-and-flares/",
+                text: "Learn about Space Radiation"
+            }
+        },
+
     ],
 
     // Dialogue: "Luckily, our engineers build special protections to keep everything working."
-    "engineers-solution": [
-        {
-            word: "engineers",
-            explanation: "People who design and build machines, structures, and systems",
-            media: [
-                {
-                    type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/space-engineers-at-work.jpg",
-                    alt: "Space engineers working",
-                    externalLink: "https://www.nasa.gov/feature/space-engineers",
-                    sourceText: "NASA"
-                }
-            ],
-            showMore: {
-                link: "https://www.nasa.gov/feature/space-engineers",
-                text: "Learn about space engineers"
-            }
-        }
+    "engineers-build-protections": [
+
     ],
 
     // Dialogue: "Strong storms can even affect our satellites in space!"
-    "satellite-effects": [
+    "storms-affect-satellites": [
         {
             word: "satellites",
-            explanation: "Objects that orbit around planets, used for communication, weather monitoring, and GPS",
+            explanation: "Objects that orbit around Earth and help us communicate, navigate, and study weather",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/satellites-in-orbit.jpg",
-                    alt: "Satellites in orbit",
-                    externalLink: "https://www.nasa.gov/feature/satellites",
-                    sourceText: "NASA"
+                    src: "https://science.nasa.gov/wp-content/uploads/2024/08/sep-spacecraft-1080-ezgif-com-video-to-gif-converter.gif?w=600",
+                    alt: "Satellites orbiting Earth",
+                    externalLink: "https://science.nasa.gov/wp-content/uploads/2024/08/sep-spacecraft-1080-ezgif-com-video-to-gif-converter.gif?w=600",
+                    sourceText: "NASA Science"
                 }
             ],
             showMore: {
-                link: "https://www.nasa.gov/feature/satellites",
+                link: "https://www.nasa.gov/general/what-is-a-satellite/",
                 text: "Learn about satellites"
             }
         }
     ],
 
     // Dialogue: "They can mess up GPS signals and communication systems on Earth."
-    "gps-problems": [
+    "gps-communication-problems": [
         {
-            word: "GPS",
-            explanation: "Global Positioning System - a system that tells you exactly where you are on Earth",
+            word: "GPS Communication Systems",
+            explanation: "Global Positioning System - a system that tells you exactly where you are on Earth using satellites",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/gps-system.jpg",
+                    src: "https://science.nasa.gov/wp-content/uploads/2024/09/space-weather-effects-esa.jpg",
                     alt: "GPS system",
-                    externalLink: "https://www.nasa.gov/feature/gps",
-                    sourceText: "NASA"
+                    externalLink: "https://science.nasa.gov/wp-content/uploads/2024/09/space-weather-effects-esa.jpg",
+                    sourceText: "NASA Science"
                 }
             ],
             showMore: {
                 link: "https://www.nasa.gov/feature/gps",
                 text: "Learn about GPS"
             }
-        },
-        {
-            word: "communication",
-            explanation: "The way we send and receive messages and information",
-            media: [
-                {
-                    type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/space-communication.jpg",
-                    alt: "Space communication",
-                    externalLink: "https://www.nasa.gov/feature/space-communication",
-                    sourceText: "NASA"
-                }
-            ],
-            showMore: {
-                link: "https://www.nasa.gov/feature/space-communication",
-                text: "Learn about space communication"
-            }
         }
     ],
 
-    // Dialogue: "That's why scientists watch the sun 24/7 to warn us about incoming storms."
-    "monitoring": [
+    // Dialogue: "That's why scientists of NASA watch the sun 24/7 to warn us about incoming storms."
+    "nasa-monitors-sun-24-7": [
         {
-            word: "scientists",
+            word: "Nasa Scientists",
             explanation: "People who study and learn about the natural world through experiments and observation",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/solar-scientists-at-work.jpg",
+                    src: "https://www.nasa.gov/wp-content/uploads/2019/05/pia23266-1041.jpg",
                     alt: "Solar scientists working",
-                    externalLink: "https://www.nasa.gov/feature/goddard/solar-scientists",
-                    sourceText: "NASA"
+                    externalLink: "https://www.nasa.gov/missions/mars-2020-perseverance/perseverance-rover/nasas-mars-2020-gets-hd-eyes/",
+                    sourceText: "NASA Mars 2020"
                 }
             ],
             showMore: {
@@ -565,24 +541,126 @@ export const STORY4_VOCABULARY = {
     ],
 
     // Dialogue: "With proper protection and warnings, we can explore space safely!"
-    "finale": [
+    "safe-space-exploration": [
+
+    ],
+
+    // Dialogue: "Pilots also face direction problems and fishermen also have trouble with navigation due to solar storms."
+    "pilots-fishermen-navigation-problems": [
+
         {
-            word: "explore",
-            explanation: "To travel to new places to learn and discover new things",
+            word: "navigation",
+            explanation: "The process of finding your way from one place to another",
             media: [
                 {
                     type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2023/01/space-exploration-future.jpg",
-                    alt: "Future space exploration",
-                    externalLink: "https://www.nasa.gov/feature/space-exploration-future",
-                    sourceText: "NASA"
+                    src: "https://www.seobythesea.com/wp-content/importance-of-navigation.jpg",
+                    alt: "Navigation systems",
+                    externalLink: "https://www.seobythesea.com/wp-content/importance-of-navigation.jpg",
+                    sourceText: "Seobythesea"
                 }
             ],
             showMore: {
-                link: "https://www.nasa.gov/feature/space-exploration-future",
-                text: "Learn about future space exploration"
+                link: "https://www.nasa.gov/feature/navigation",
+                text: "Learn about navigation"
             }
         }
+    ],
+
+    // Dialogue: "Mass people can't talk on mobile phones and lose network connection. And power grids can even fail!"
+    "mobile-phones-power-grid-failures": [
+
+        {
+            word: "power grids",
+            explanation: "The system of power lines and stations that bring electricity to homes and buildings",
+            media: [
+                {
+                    type: "image",
+                    src: "https://taraenergy.com/wp-content/uploads/2021/12/power-grids-and-electrical-grids-photo-of-towers.jpg",
+                    alt: "Power grid system",
+                    externalLink: "https://taraenergy.com/wp-content/uploads/2021/12/power-grids-and-electrical-grids-photo-of-towers.jpg",
+                    sourceText: "Taraenergy"
+                }
+            ],
+            showMore: {
+                link: "https://science.nasa.gov/earth/climate-change/satellites-help-power-grid-move-as-is-its-balance/",
+                text: "Learn about power grids"
+            }
+        }
+    ],
+
+    // Dialogue: "Now engineers have discovered preventive measures against this problem."
+    "engineers-preventive-measures": [
+
+    ],
+
+    // Dialogue: "Oh God! The sun is so cruel. Scary sun!!"
+    "child-fears-sun": [],
+
+    // Dialogue: "No, the sun is not always dangerous.Its storms can also create something magical-AURORAS."
+    "sun-creates-magical-auroras": [
+        {
+            word: "auroras",
+            explanation: "Beautiful colored lights in the sky caused by solar particles interacting with Earth's atmosphere",
+            media: [
+                {
+                    type: "image",
+                    src: "https://mir-s3-cdn-cf.behance.net/project_modules/hd/ebf84d157316295.63767b18bec82.gif",
+                    alt: "Aurora Borealis",
+                    externalLink: "https://mir-s3-cdn-cf.behance.net/project_modules/hd/ebf84d157316295.63767b18bec82.gif",
+                    sourceText: "Nasa"
+                },
+                {
+                    type: "image",
+                    src: "https://www.nasa.gov/wp-content/uploads/2023/03/iss065e214281.jpg",
+                    title: "Aurora Borealis Time-lapse (NASA Video)",
+                    externalLink: "https://www.nasa.gov/wp-content/uploads/2023/03/iss065e214281.jpg",
+                    sourceText: "NASA"
+                },
+
+
+            ],
+            showMore: {
+                link: "https://science.nasa.gov/sun/auroras/",
+                text: "Learn about auroras"
+            }
+        }
+    ],
+
+    // Dialogue: "What is aurora?"
+    "child-asks-about-aurora": [],
+
+    // Dialogue: "These are beautiful lights in the sky when solar particles meet Earth's atmosphere and magnetic field."
+    "explain-aurora-formation": [
+        {
+            word: "solar particles",
+            explanation: "Tiny pieces of matter that come from the Sun and travel through space",
+            media: [
+                {
+                    type: "image",
+                    src: "https://assets.science.nasa.gov/dynamicimage/assets/science/hpd/itm/what-gives-aurora-colors.png?w=1000&h=797&fit=crop&crop=faces%2Cfocalpoint",
+                    title: "Aurora Borealis Time-lapse (NASA Video)",
+                    externalLink: "https://assets.science.nasa.gov/dynamicimage/assets/science/hpd/itm/what-gives-aurora-colors.png?w=1000&h=797&fit=crop&crop=faces%2Cfocalpoint",
+                    sourceText: "NASA"
+                },
+            ],
+            showMore: {
+                link: "https://science.nasa.gov/sun/auroras/",
+                text: "Learn about solar particles"
+            }
+        },
+
+    ],
+
+    // Dialogue: "Do you want to make an aurora now?"
+    "ask-to-make-aurora": [],
+
+    // Dialogue: "Yes, Can it be possible?"
+    "child-excited-about-making-aurora": [],
+
+    // Dialogue: "Of course, But you need to give an exciting quiz first then you can create your own aurora."
+    "quiz-before-aurora-creation": [
+
     ]
 };
 

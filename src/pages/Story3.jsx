@@ -1,6 +1,6 @@
 // src/pages/Story3.jsx
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import Spinner from "../components/ui/Spinner";
@@ -169,7 +169,7 @@ const SCRIPT = [
     },
   },
   {
-    id: "",
+    id: "solar-storms-harm-warning",
     background: "sun4",
     canTapBackground: false,
     // showFlareOverlay: true, // Optional: show light ray overlay
@@ -235,8 +235,16 @@ export default function Story3() {
   const [showPositionEditor, _setShowPositionEditor] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 768;
+
+  // Handle jumpToLast state from navigation
+  useEffect(() => {
+    if (location.state?.jumpToLast) {
+      setStepIndex(SCRIPT.length - 1);
+    }
+  }, [location.state]);
 
   // Preload all scene assets (backgrounds + character image)
   const preloadUrls = [
@@ -252,21 +260,30 @@ export default function Story3() {
   const canNext = stepIndex < SCRIPT.length - 1;
   const canBack = stepIndex > 0;
 
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'Enter' && assetsReady) {
+        // Don't advance if we need all taps and haven't completed them
+        if (currentStep.requireAllTaps && !allTapsComplete) {
+          return;
+        }
+
+        if (canNext) {
+          setStepIndex(i => i + 1);
+        } else {
+          // Go to next story part
+          navigate("/story4");
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [canNext, assetsReady, navigate, currentStep.requireAllTaps, allTapsComplete]);
+
   // Background tap sequence
   const backgroundSequence = ["sun1", "sun2", "sun3", "sun4"];
-
-  // Reset state when step changes
-  useEffect(() => {
-    // Set the background for the current step
-    if (!currentStep.canTapBackground) {
-      setCurrentBackground(currentStep.background);
-      setTapCount(0);
-      setAllTapsComplete(false);
-    } else if (stepIndex !== 2) { // Reset if not on tap instruction step
-      setTapCount(0);
-      setAllTapsComplete(false);
-    }
-  }, [stepIndex, currentStep]);
 
   // Handle background tap
   const handleBackgroundTap = () => {
@@ -306,10 +323,23 @@ export default function Story3() {
     if (canBack) {
       setStepIndex(i => i - 1);
     } else {
-      // Go back to Story2
+      // Go back to Story2 last dialogue
       navigate("/story2", { state: { jumpToLast: true } });
     }
   };
+
+  // Reset state when step changes
+  useEffect(() => {
+    // Set the background for the current step
+    if (!currentStep.canTapBackground) {
+      setCurrentBackground(currentStep.background);
+      setTapCount(0);
+      setAllTapsComplete(false);
+    } else if (stepIndex !== 2) { // Reset if not on tap instruction step
+      setTapCount(0);
+      setAllTapsComplete(false);
+    }
+  }, [stepIndex, currentStep]);
 
   // Update custom position for a speaker
   const updatePosition = (speaker, device, axis, value) => {
@@ -345,7 +375,19 @@ export default function Story3() {
   };
 
   // Determine if Next button should be shown/enabled
-  const showNextButton = !currentStep.requireAllTaps || allTapsComplete;
+  const showNextButton = currentStep ? (!currentStep.requireAllTaps || allTapsComplete) : false;
+
+  // Safety check - if currentStep is undefined, show loading
+  if (!currentStep) {
+    return (
+      <div className="relative min-h-screen w-full overflow-hidden text-white flex items-center justify-center">
+        <div className="text-center">
+          <Spinner size={60} />
+          <p className="mt-4 text-lg">Loading story...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
