@@ -154,46 +154,46 @@ export default function Home() {
       <div className="absolute inset-0 -z-20 bg-gradient-to-b from-purple-900/60 via-indigo-900/60 to-black/80" />
 
       {/* Split layout */}
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 min-h-screen">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         {/* LEFT SIDE: Text + Buttons */}
-        <div className="flex flex-col items-center md:items-start justify-center px-8 md:px-16 text-center md:text-left lg:ps-32">
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-extrabold tracking-wide drop-shadow-lg">
+        <div className="flex flex-col items-center lg:items-start justify-center px-4 sm:px-6 md:px-8 lg:px-16 text-center lg:text-left xl:ps-32 pt-20 lg:pt-0">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-extrabold tracking-wide drop-shadow-lg leading-tight">
             <span className="bg-gradient-to-r from-pink-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent animate-pulse moo-lah-lah-regular">
               From Solar Storms to Auroras
             </span>
           </h1>
-          <p className="mt-4  text-2xl text-white/80 font-bold">
+          <p className="mt-4 text-lg sm:text-xl md:text-2xl text-white/80 font-bold max-w-2xl">
             Every Flare Tells a Story Worth Exploring.
           </p>
 
-          <div className="mt-8 flex gap-4">
-            <Link to="/start">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+            <Link to="/start" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className=" bg-fuchsia-500 hover:bg-fuchsia-400 text-white shadow-lg transform hover:scale-110 transition duration-300"
+                className="w-full sm:w-auto bg-fuchsia-500 hover:bg-fuchsia-400 text-white shadow-lg transform hover:scale-110 transition duration-300"
               >
-                <span className="font-bold text-lg"> Start Journey</span>
+                <span className="font-bold text-base sm:text-lg">Start Journey</span>
               </Button>
             </Link>
-            <Link to="https://u2204125.github.io/aurora-sentinel/">
+            <Link to="https://u2204125.github.io/aurora-sentinel/" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="secondary"
-                className=" bg-white/20 text-white hover:bg-white/30 shadow-lg transform hover:scale-110 transition duration-300"
+                className="w-full sm:w-auto bg-white/20 text-white hover:bg-white/30 shadow-lg transform hover:scale-110 transition duration-300"
               >
-                <span className="font-bold text-lg">Aurora Lab</span>
+                <span className="font-bold text-base sm:text-lg">Aurora Lab</span>
               </Button>
             </Link>
           </div>
         </div>
 
         {/* RIGHT SIDE: Characters */}
-        <div className="relative flex items-center justify-center">
+        <div className="relative flex items-center justify-center order-first lg:order-last">
           {/* Astronaut floating from top */}
           <img
             src="/images/astranaut2.png"
             alt="Astronaut Stelly"
-            className="absolute top-20 right-40 md:top-40 h-[35vh] md:h-[90vh] w-auto animate-float drop-shadow-[0_10px_30px_rgba(59,130,246,.6)]"
+            className="absolute top-10 sm:top-20 lg:top-40 right-4 sm:right-8 lg:right-40 h-[25vh] sm:h-[35vh] lg:h-[90vh] w-auto animate-float drop-shadow-[0_10px_30px_rgba(59,130,246,.6)]"
             draggable={false}
           />
         </div>

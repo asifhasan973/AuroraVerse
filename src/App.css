@@ -4,8 +4,15 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
+}
+
+/* Mobile responsiveness for root */
+@media (max-width: 640px) {
+  #root {
+    padding: 0.5rem;
+  }
 }
 
 .logo {
@@ -14,9 +21,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -25,6 +34,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -55,9 +65,12 @@
 
 /* Animation for bounce slow */
 @keyframes bounce-slow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
+
   50% {
     transform: translateY(-10px) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
@@ -69,9 +82,12 @@
 
 /* Animation for float */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
+
   50% {
     transform: translateY(-20px) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
@@ -86,10 +102,9 @@
   from {
     transform: translateY(0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
+
   to {
-    transform: translateY(calc(-1 * var(--lift-distance, 100vh))) 
-               translateX(var(--tx, 0)) 
-               scale(var(--base-scale, 1));
+    transform: translateY(calc(-1 * var(--lift-distance, 100vh))) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
 }
 
@@ -102,18 +117,14 @@
   from {
     transform: translate(0, 0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
+
   to {
-    transform: translate(var(--to-x, 0), var(--to-y, 0)) 
-               translateX(var(--tx, 0)) 
-               scale(var(--base-scale, 1));
+    transform: translate(var(--to-x, 0), var(--to-y, 0)) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
 }
 
 .animate-move {
-  animation: move var(--move-duration, 2000ms) 
-             var(--move-delay, 0ms) 
-             var(--move-ease, ease-in-out) 
-             forwards;
+  animation: move var(--move-duration, 2000ms) var(--move-delay, 0ms) var(--move-ease, ease-in-out) forwards;
 }
 
 /* Animation for fly 45 degrees */
@@ -121,39 +132,34 @@
   from {
     transform: translate(0, 0) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
+
   to {
-    transform: translate(
-                calc(var(--diag-dir, 1) * var(--diag-distance, 100vh) * 0.707),
-                calc(-1 * var(--diag-distance, 100vh) * 0.707)
-              )
-              translateX(var(--tx, 0))
-              scale(var(--base-scale, 1));
+    transform: translate(calc(var(--diag-dir, 1) * var(--diag-distance, 100vh) * 0.707),
+        calc(-1 * var(--diag-distance, 100vh) * 0.707)) translateX(var(--tx, 0)) scale(var(--base-scale, 1));
   }
 }
 
 .animate-fly-45 {
-  animation: fly-45 var(--diag-duration, 4000ms) 
-             var(--diag-delay, 0ms) 
-             ease-in-out 
-             forwards;
+  animation: fly-45 var(--diag-duration, 4000ms) var(--diag-delay, 0ms) ease-in-out forwards;
 }
 
 /* Responsive styles for mobile */
 @media (max-width: 640px) {
   #story-root {
-    min-height: 100svh; /* Use svh for mobile browsers */
+    min-height: 100svh;
+    /* Use svh for mobile browsers */
     min-height: -webkit-fill-available;
   }
-  
+
   /* Adjust animation speeds for mobile */
   .animate-move {
     --move-duration: 2000ms !important;
   }
-  
+
   .animate-fly-45 {
     --diag-duration: 3000ms !important;
   }
-  
+
   /* Ensure dialogue boxes don't overflow */
   .dialogue-box {
     max-width: 90vw !important;
@@ -163,17 +169,18 @@
 
 /* Responsive styles for tablet */
 @media (max-width: 768px) {
+
   /* Tablet adjustments */
   #story-root img {
     image-rendering: crisp-edges;
     image-rendering: -webkit-optimize-contrast;
   }
-  
+
   /* Reduce animation distances on smaller screens */
   .animate-lift {
     --lift-distance: 80vh !important;
   }
-  
+
   .animate-fly-45 {
     --diag-distance: 100vh !important;
   }
@@ -184,7 +191,7 @@
   body {
     overflow-x: hidden;
   }
-  
+
   #story-root {
     overflow-x: hidden;
     overflow-y: hidden;

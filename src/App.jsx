@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import AuroraLab from "./pages/AuroraLab";
+import AuroraForecast from "./pages/AuroraForecast";
 import Quiz from "./pages/Quiz";
 import AboutUs from "./pages/AboutUs";
 import Start from "./pages/Start";
@@ -9,6 +10,7 @@ import Finale from "./pages/Finale";
 import Story2 from "./pages/Story2"; // Story 2 route
 import Story3 from "./pages/Story3"; // Story 3 route
 import Story4 from "./pages/Story4"; // Story 4 route
+import StormSafe from "./pages/StormSafe"; // StormSafe game route
 
 export default function App() {
   return (
@@ -18,7 +20,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/aurora" element={<AuroraLab />} />
+          <Route path="/forecast" element={<AuroraForecast />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/stormsafe" element={<StormSafe />} />
           <Route path="/finale" element={<Finale />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/start" element={<Start />} />

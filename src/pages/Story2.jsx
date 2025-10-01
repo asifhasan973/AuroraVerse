@@ -72,12 +72,12 @@ export default function Story2() {
               src={COUPLE}
               alt="Astronaut talking with child"
               draggable={false}
-              className="absolute w-80 left-1/4 bottom-[6vh] -translate-x-1/2 drop-shadow-[0_14px_48px_rgba(59,130,246,.45)]"
+              className="absolute w-60 sm:w-72 md:w-80 left-1/4 bottom-[6vh] -translate-x-1/2 drop-shadow-[0_14px_48px_rgba(59,130,246,.45)]"
               width={1200}
               height={1200}
             />
           ) : (
-            <div className="absolute w-80 left-1/4 bottom-[6vh] -translate-x-1/2 flex items-center justify-center" style={{ height: '20rem' }}>
+            <div className="absolute w-60 sm:w-72 md:w-80 left-1/4 bottom-[6vh] -translate-x-1/2 flex items-center justify-center" style={{ height: '15rem' }}>
               <Spinner size={36} />
             </div>
           )}
@@ -86,8 +86,8 @@ export default function Story2() {
           <DialogueBox
             speaker="astro"
             text={LINES[i]}
-            width={560}
-            position={{ bottom: "55%", left: "41%" }}
+            width={window.innerWidth < 768 ? "90%" : 560}
+            position={window.innerWidth < 768 ? { bottom: "20vh", left: "50%" } : { bottom: "55%", left: "41%" }}
             anchorCenterX
             loading={!assetsReady}
             onNext={() => {

@@ -266,29 +266,29 @@ export default function Quiz() {
   const showFact = locked && q?.fact;
 
   return (
-    <div className="relative min-h-screen text-white pt-40">
+    <div className="relative min-h-screen text-white pt-20 sm:pt-32 md:pt-40">
       <Starfield />
       <EmojiBurst fire={locked && selected === q?.correctIndex} />
 
       {/* Header / HUD */}
       <div className="fixed top-0 left-0 right-0 z-30 backdrop-blur-md border-b border-white/10 bg-black/30">
-        <div className="container mx-auto px-6 py-3">
-          <div className="flex items-center justify-between pt-12">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center shadow-[0_0_20px_rgba(168,85,247,.4)]">
-                <span className="text-xl">🛰️</span>
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3">
+          <div className="flex items-center justify-between pt-12 sm:pt-16 md:pt-12">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center shadow-[0_0_20px_rgba(168,85,247,.4)]">
+                <span className="text-sm sm:text-xl">🛰️</span>
               </div>
               <div>
-                <h1 className="text-lg md:text-xl font-bold tracking-wide">
+                <h1 className="text-sm sm:text-lg md:text-xl font-bold tracking-wide">
                   Space Weather Quiz
                 </h1>
-                <p className="text-xs md:text-sm text-white/70">
-                  Question {index + 1} of {total}
+                <p className="text-xs sm:text-xs md:text-sm text-white/70">
+                  Q{index + 1}/{total}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
               <div className="hidden sm:flex items-center gap-3">
                 <div className="text-right">
                   <div className="text-xs uppercase tracking-wider text-white/60">
@@ -306,7 +306,7 @@ export default function Quiz() {
                 <div className="text-xs uppercase tracking-wider text-white/60">
                   Score
                 </div>
-                <div className="text-2xl font-bold text-amber-300 drop-shadow">
+                <div className="text-lg sm:text-2xl font-bold text-amber-300 drop-shadow">
                   {score}
                 </div>
               </div>
@@ -314,9 +314,9 @@ export default function Quiz() {
           </div>
 
           {/* Progress */}
-          <div className="mt-3 w-full h-2 rounded-full bg-white/10 overflow-hidden">
+          <div className="mt-2 sm:mt-3 w-full h-1.5 sm:h-2 rounded-full bg-white/10 overflow-hidden">
             <div
-              className="h-2 rounded-full bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 transition-all duration-500"
+              className="h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -324,27 +324,27 @@ export default function Quiz() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-10 md:py-16">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-10 md:py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.12)]">
-            <div className="absolute -inset-px rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none" />
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-extrabold leading-tight">
+          <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.12)]">
+            <div className="absolute -inset-px rounded-2xl sm:rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none" />
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold leading-tight">
                 <span className="bg-gradient-to-r from-sky-300 via-indigo-300 to-fuchsia-300 bg-clip-text text-transparent">
                   {q?.question}
                 </span>
               </h2>
-              <p className="text-white/70 text-sm mt-2">
+              <p className="text-white/70 text-xs sm:text-sm mt-2">
                 Use 1–4 to select, Enter to {locked ? "continue" : "submit"}
               </p>
             </div>
 
             {/* Lifelines */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
               <button
                 onClick={handleFifty}
                 disabled={fiftyUsed || locked}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold border transition
                   ${fiftyUsed || locked
                     ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
                     : "hover:scale-[1.03] border-indigo-400/40 bg-indigo-500/10 hover:bg-indigo-500/20"}`}
@@ -356,7 +356,7 @@ export default function Quiz() {
               <button
                 onClick={handleHint}
                 disabled={hintShown || locked}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold border transition
                   ${hintShown || locked
                     ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
                     : "hover:scale-[1.03] border-sky-400/40 bg-sky-500/10 hover:bg-sky-500/20"}`}
@@ -368,7 +368,7 @@ export default function Quiz() {
               <button
                 onClick={handleSkip}
                 disabled={skipUsed || locked}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold border transition
                   ${skipUsed || locked
                     ? "opacity-50 cursor-not-allowed border-white/10 bg-white/5"
                     : "hover:scale-[1.03] border-fuchsia-400/40 bg-fuchsia-500/10 hover:bg-fuchsia-500/20"}`}
@@ -380,7 +380,7 @@ export default function Quiz() {
             </div>
 
             {/* Options */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {q?.options?.map((opt, i) => {
                 const isChosen = selected === i;
                 const isCorrect = isCorrectChoice(i);
@@ -388,7 +388,7 @@ export default function Quiz() {
                 const disabledBy50 = disabledOptions.includes(i);
 
                 const base =
-                  "w-full p-4 md:p-5 rounded-2xl border-2 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent";
+                  "w-full p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border-2 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent";
                 const state = isCorrect
                   ? "bg-emerald-500/15 border-emerald-400/70 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,.25)]"
                   : isWrong
@@ -408,9 +408,9 @@ export default function Quiz() {
                     aria-pressed={isChosen}
                     aria-disabled={locked || disabledBy50}
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       <div
-                        className={`w-9 h-9 rounded-full grid place-items-center text-sm font-bold
+                        className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full grid place-items-center text-xs sm:text-sm font-bold flex-shrink-0
                           ${isCorrect
                             ? "bg-emerald-500 text-white"
                             : isWrong
@@ -421,12 +421,12 @@ export default function Quiz() {
                       >
                         {i + 1}
                       </div>
-                      <span className="text-base md:text-lg">{opt}</span>
+                      <span className="text-sm sm:text-base md:text-lg">{opt}</span>
                       {locked && isCorrect && (
-                        <span className="ml-auto text-2xl">✓</span>
+                        <span className="ml-auto text-xl sm:text-2xl">✓</span>
                       )}
                       {locked && isWrong && (
-                        <span className="ml-auto text-2xl">✗</span>
+                        <span className="ml-auto text-xl sm:text-2xl">✗</span>
                       )}
                     </div>
                   </button>
@@ -435,18 +435,18 @@ export default function Quiz() {
             </div>
 
             {/* Hint & Fact */}
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
               {hintShown && !locked && (
-                <div className="p-3 rounded-xl border border-sky-400/30 bg-sky-500/10">
-                  <p className="text-sky-100 text-sm">
+                <div className="p-2 sm:p-3 rounded-xl border border-sky-400/30 bg-sky-500/10">
+                  <p className="text-sky-100 text-xs sm:text-sm">
                     Hint: Think about{" "}
                     <span className="font-semibold">key terms</span> in the story you just learned.
                   </p>
                 </div>
               )}
               {showFact && (
-                <div className="p-4 rounded-xl border border-amber-400/30 bg-amber-500/10">
-                  <p className="text-amber-100 text-sm md:text-base">
+                <div className="p-3 sm:p-4 rounded-xl border border-amber-400/30 bg-amber-500/10">
+                  <p className="text-amber-100 text-xs sm:text-sm md:text-base">
                     Did you know? {q?.fact}
                   </p>
                 </div>
@@ -454,12 +454,12 @@ export default function Quiz() {
             </div>
 
             {/* Controls */}
-            <div className="mt-8 flex justify-center">
+            <div className="mt-6 sm:mt-8 flex justify-center">
               {!locked ? (
                 <button
                   onClick={handleSubmit}
                   disabled={selected == null}
-                  className="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 shadow-[0_12px_30px_rgba(99,102,241,.25)] hover:shadow-[0_16px_40px_rgba(99,102,241,.35)] transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 shadow-[0_12px_30px_rgba(99,102,241,.25)] hover:shadow-[0_16px_40px_rgba(99,102,241,.35)] transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   aria-label="Submit answer"
                 >
                   Submit Answer ↵
@@ -467,7 +467,7 @@ export default function Quiz() {
               ) : (
                 <button
                   onClick={handleNext}
-                  className="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[0_12px_30px_rgba(16,185,129,.25)] hover:shadow-[0_16px_40px_rgba(16,185,129,.35)] transition-all hover:scale-[1.03]"
+                  className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[0_12px_30px_rgba(16,185,129,.25)] hover:shadow-[0_16px_40px_rgba(16,185,129,.35)] transition-all hover:scale-[1.03] text-sm sm:text-base"
                   aria-label={index === total - 1 ? "Finish quiz" : "Next question"}
                 >
                   {index === total - 1 ? "Finish Quiz" : "Next Question →"}
@@ -477,7 +477,7 @@ export default function Quiz() {
           </div>
 
           {/* Legend / Shortcuts */}
-          <div className="mx-auto max-w-4xl text-center text-xs md:text-sm text-white/60 mt-6">
+          <div className="mx-auto max-w-4xl text-center text-xs sm:text-xs md:text-sm text-white/60 mt-4 sm:mt-6">
             Shortcuts: 1–4 choose • Enter submit/next • F = 50:50 • H = Hint • S = Skip
           </div>
         </div>

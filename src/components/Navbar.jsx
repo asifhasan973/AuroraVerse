@@ -1,34 +1,55 @@
 // src/components/Navbar.jsx
 import { Link, NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (open && !event.target.closest('nav')) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [open]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50
                  flex items-center justify-between
-                 px-4 md:px-6 py-2
-                
+                 px-3 sm:px-4 md:px-6 py-2
+                 
                  text-white"
     >
       {/* Logo */}
-      <Link to="/" className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-2 flex-shrink-0">
         <span
-          className="font-logo text-xl md:text-4xl drop-shadow-sm
+          className="font-logo text-lg sm:text-xl md:text-4xl drop-shadow-sm
                      bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300
-                     bg-clip-text  rubik-dirt-regular"
+                     bg-clip-text rubik-dirt-regular"
         >
           AuroraVerse
         </span>
       </Link>
 
       {/* Desktop links */}
-      <div className="hidden md:flex items-center gap-10 text-sm font-bold">
+      <div className="hidden md:flex items-center gap-6 lg:gap-10 text-sm font-bold">
         <NavItem to="/">Home</NavItem>
         <NavItem to="https://u2204125.github.io/aurora-sentinel/">Aurora Lab</NavItem>
+        <NavItem to="/forecast">Aurora Forecast</NavItem>
         <NavItem to="/quiz">Quiz</NavItem>
+        <NavItem to="/stormsafe">StormSafe</NavItem>
         <NavItem to="/aboutus">About Us</NavItem>
       </div>
 
@@ -36,37 +57,38 @@ export default function Navbar() {
       <button
         aria-label="Toggle menu"
         onClick={() => setOpen((v) => !v)}
-        className="md:hidden relative h-9 w-10 grid place-items-center"
+        className="md:hidden relative h-8 w-8 grid place-items-center z-50"
       >
         <span
-          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
-            open ? "translate-y-1.5 rotate-45" : ""
-          }`}
+          className={`block h-0.5 w-5 bg-white transition-transform duration-300 ${open ? "translate-y-1.5 rotate-45" : ""
+            }`}
         />
         <span
-          className={`block h-0.5 w-6 bg-white my-1 transition-opacity duration-300 ${
-            open ? "opacity-0" : "opacity-100"
-          }`}
+          className={`block h-0.5 w-5 bg-white my-1 transition-opacity duration-300 ${open ? "opacity-0" : "opacity-100"
+            }`}
         />
         <span
-          className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${
-            open ? "-translate-y-1.5 -rotate-45" : ""
-          }`}
+          className={`block h-0.5 w-5 bg-white transition-transform duration-300 ${open ? "-translate-y-1.5 -rotate-45" : ""
+            }`}
         />
       </button>
 
       {/* Mobile menu panel */}
       {open && (
         <div
-          className="absolute top-full right-2 mt-2 w-44
+          className="absolute top-full left-0 right-0 mt-2 mx-2
                      rounded-xl border border-white/10
-                     bg-black/60 backdrop-blur-md shadow-lg
-                     p-2 md:hidden"
+                     bg-black/80 backdrop-blur-md shadow-lg
+                     p-3 md:hidden"
         >
-          <MobileItem to="/" onClick={() => setOpen(false)}>Home</MobileItem>
-          <MobileItem to="/aurora" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
-          <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
-          <MobileItem to="/finale" onClick={() => setOpen(false)}>Finale</MobileItem>
+          <div className="space-y-1">
+            <MobileItem to="/" onClick={() => setOpen(false)}>Home</MobileItem>
+            <MobileItem to="https://u2204125.github.io/aurora-sentinel/" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
+            <MobileItem to="/forecast" onClick={() => setOpen(false)}>Aurora Forecast</MobileItem>
+            <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
+            <MobileItem to="/stormsafe" onClick={() => setOpen(false)}>StormSafe</MobileItem>
+            <MobileItem to="/aboutus" onClick={() => setOpen(false)}>About Us</MobileItem>
+          </div>
         </div>
       )}
     </nav>
@@ -78,8 +100,7 @@ function NavItem({ to, children }) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `transition-colors hover:text-fuchsia-300 ${
-          isActive ? "text-fuchsia-200" : "text-white"
+        `transition-colors hover:text-fuchsia-300 ${isActive ? "text-fuchsia-200" : "text-white"
         }`
       }
     >

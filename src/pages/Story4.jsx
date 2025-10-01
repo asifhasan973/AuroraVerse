@@ -493,8 +493,8 @@ export default function Story4() {
                                 style={currentStep.characters.position}
                             >
                                 {!assetsReady ? (
-                                    <div className="flex items-center justify-center" style={{ width: isMobile ? '200px' : '320px', height: isMobile ? '200px' : '320px' }}>
-                                        <Spinner size={40} />
+                                    <div className="flex items-center justify-center" style={{ width: isMobile ? '150px' : '200px', height: isMobile ? '150px' : '200px' }}>
+                                        <Spinner size={isMobile ? 30 : 40} />
                                     </div>
                                 ) : (
                                     <img
@@ -502,7 +502,7 @@ export default function Story4() {
                                         alt="Characters"
                                         className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
                                         style={{
-                                            width: isMobile ? '200px' : '320px',
+                                            width: isMobile ? '150px' : '200px',
                                             height: 'auto',
                                         }}
                                     />
@@ -531,8 +531,8 @@ export default function Story4() {
                         {currentStep.showQuizButton && (
                             <div className="absolute z-30 flex justify-center items-center"
                                 style={{
-                                    bottom: isMobile ? "18vh" : "60vh",
-                                    left: "73%",
+                                    bottom: isMobile ? "15vh" : "60vh",
+                                    left: isMobile ? "50%" : "73%",
                                     transform: "translateX(-50%)"
                                 }}>
                                 <button
@@ -542,7 +542,7 @@ export default function Story4() {
                                     }}
                                     onMouseEnter={() => setButtonHovered(true)}
                                     onMouseLeave={() => setButtonHovered(false)}
-                                    className={`group relative px-10 py-6 text-white font-bold text-2xl md:text-3xl rounded-full shadow-2xl transform transition-all duration-500 border-4 border-yellow-300 ${buttonHovered
+                                    className={`group relative px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-white font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl rounded-full shadow-2xl transform transition-all duration-500 border-2 sm:border-4 border-yellow-300 ${buttonHovered
                                         ? 'scale-110 rotate-3 animate-pulse'
                                         : 'animate-bounce scale-100'
                                         }`}
@@ -558,10 +558,10 @@ export default function Story4() {
                                         animation: buttonHovered ? 'rainbow 2s linear infinite' : 'bounce 2s infinite'
                                     }}
                                 >
-                                    <span className="relative z-10 flex items-center gap-3">
-                                        <span className="animate-spin">🚀</span>
+                                    <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                                        <span className="animate-spin text-sm sm:text-base md:text-lg">🚀</span>
                                         <span className="animate-pulse">Start Quiz!</span>
-                                        <span className="animate-bounce">🌟</span>
+                                        <span className="animate-bounce text-sm sm:text-base md:text-lg">🌟</span>
                                     </span>
 
                                     {/* Multiple shine effects */}
@@ -573,9 +573,9 @@ export default function Story4() {
                                     <div className="absolute inset-0 rounded-full bg-pink-300 opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-700"></div>
 
                                     {/* Sparkle effects */}
-                                    <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-300 rounded-full animate-ping"></div>
-                                    <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-pink-300 rounded-full animate-ping animation-delay-300"></div>
-                                    <div className="absolute top-1/2 -right-4 w-2 h-2 bg-blue-300 rounded-full animate-ping animation-delay-500"></div>
+                                    <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-yellow-300 rounded-full animate-ping"></div>
+                                    <div className="absolute -bottom-1 sm:-bottom-2 -left-1 sm:-left-2 w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 bg-pink-300 rounded-full animate-ping animation-delay-300"></div>
+                                    <div className="absolute top-1/2 -right-2 sm:-right-3 md:-right-4 w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-blue-300 rounded-full animate-ping animation-delay-500"></div>
                                 </button>
                             </div>
                         )}
