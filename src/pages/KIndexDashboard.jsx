@@ -102,8 +102,7 @@ export default function KIndexDashboard() {
                     max: 9,
                     status: spaceMood.mood,
                     description: spaceMood.description,
-                    lastUpdated: latest.time.toLocaleString('en-GB', {
-                        timeZone: 'GMT',
+                    lastUpdated: new Date().toLocaleString('en-GB', {
                         hour12: false,
                         year: 'numeric',
                         month: '2-digit',
@@ -328,7 +327,7 @@ export default function KIndexDashboard() {
                             <div className="relative">
                                 <KIndexChart data={chartData} loading={loading} />
                                 <div className="mt-4 text-center text-sm text-gray-300">
-                                    <p>📊 Showing the last {chartData.length} data points from [NOAA Space Weather Prediction Center](https://services.swpc.noaa.gov/json/boulder_k_index_1m.json)</p>
+                                    <p>📊 Showing the last {chartData.length} data points from <a href="https://services.swpc.noaa.gov/json/boulder_k_index_1m.json" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">NOAA Space Weather Prediction Center</a></p>
                                     <p className="mt-1">🕐 Data updates every minute • Last data: {kIndexData ? kIndexData.lastUpdated : 'Loading...'}</p>
                                 </div>
                             </div>
@@ -552,8 +551,7 @@ function KIndexChart({ data, loading }) {
                                     fill="#94a3b8"
                                     textAnchor="start"
                                 >
-                                    {data[0].time.toLocaleTimeString('en-GB', {
-                                        timeZone: 'GMT',
+                                    {new Date().toLocaleTimeString('en-GB', {
                                         hour12: false,
                                         hour: '2-digit',
                                         minute: '2-digit'
@@ -566,8 +564,7 @@ function KIndexChart({ data, loading }) {
                                     fill="#94a3b8"
                                     textAnchor="end"
                                 >
-                                    {data[data.length - 1].time.toLocaleTimeString('en-GB', {
-                                        timeZone: 'GMT',
+                                    {new Date().toLocaleTimeString('en-GB', {
                                         hour12: false,
                                         hour: '2-digit',
                                         minute: '2-digit'
@@ -616,8 +613,7 @@ function KIndexChart({ data, loading }) {
                                     strokeWidth="2"
                                     className="hover:r-6 transition-all duration-200"
                                 >
-                                    <title>{`${point.time.toLocaleTimeString('en-GB', {
-                                        timeZone: 'GMT',
+                                    <title>{`${new Date().toLocaleTimeString('en-GB', {
                                         hour12: false,
                                         hour: '2-digit',
                                         minute: '2-digit',

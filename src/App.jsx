@@ -11,6 +11,7 @@ import Story3 from "./pages/Story3"; // Story 3 route
 import Story4 from "./pages/Story4"; // Story 4 route
 import StormSafe from "./pages/StormSafe"; // StormSafe game route
 import KIndexDashboard from "./pages/KIndexDashboard"; // K-Index Dashboard route
+import ElectronFluenceForecast from "./pages/ElectronFluenceForecast"; // Electron Fluence Forecast route
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/story3" element={<Story3 />} />
           <Route path="/story4" element={<Story4 />} />
           <Route path="/kindex" element={<KIndexDashboard />} />
+          <Route path="/electrons" element={<ElectronFluenceForecast />} />
         </Routes>
       </main>
 

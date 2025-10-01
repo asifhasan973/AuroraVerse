@@ -51,6 +51,7 @@ export default function Navbar() {
         <NavItem to="/quiz">Quiz</NavItem>
         <NavItem to="/stormsafe">StormSafe</NavItem>
         <NavItem to="/kindex">Mood Meter</NavItem>
+        <NavItem to="/electrons">Electron Storms</NavItem>
         <StartJourneyButton />
       </div>
 
@@ -89,6 +90,7 @@ export default function Navbar() {
             <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
             <MobileItem to="/stormsafe" onClick={() => setOpen(false)}>StormSafe</MobileItem>
             <MobileItem to="/kindex" onClick={() => setOpen(false)}>K-Index Dashboard</MobileItem>
+            <MobileItem to="/electrons" onClick={() => setOpen(false)}>Electron Storms</MobileItem>
             <div className="pt-2 border-t border-white/10">
               <MobileStartJourneyButton onClick={() => setOpen(false)} />
             </div>
