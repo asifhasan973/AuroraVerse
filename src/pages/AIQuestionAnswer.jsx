@@ -1,7 +1,7 @@
 // src/pages/AIQuestionAnswer.jsx
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../components/ui/Button";
-import { getAIResponse, isApiConfigured, getApiStatus, testApiConnection } from "../services/aiService";
+import { getAIResponse, getApiStatus, testApiConnection } from "../services/aiService";
 
 // API status for display
 const getApiStatusDisplay = () => {

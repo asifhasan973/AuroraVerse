@@ -1,4 +1,3 @@
-// src/pages/Start.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
@@ -7,7 +6,6 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import VocabularySlider from "../components/VocabularySlider";
 import { useVocabulary } from "../hooks/useVocabulary";
 
-// Hook to track window size
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,

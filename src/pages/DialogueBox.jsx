@@ -1,4 +1,3 @@
-// src/components/DialogueBox.jsx
 import { useEffect, useRef, useState } from "react";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
@@ -8,8 +7,8 @@ const pxOr = (v) => (typeof v === "number" ? `${v}px` : v);
 export default function DialogueBox({
   speaker = "Narrator",
   text = "",
-  width = "90%", // Changed to percentage for mobile
-  maxWidth = 600, // Add max width for larger screens
+  width = "90%",
+  maxWidth = 600,
   position = { bottom: 24, left: "50%" },
   anchorCenterX = true,
   showNext = true,

@@ -8,5 +8,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [animate],  // ✅ add it here
+  plugins: [animate],
 }

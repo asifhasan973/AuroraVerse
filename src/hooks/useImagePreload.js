@@ -1,4 +1,3 @@
-// src/hooks/useImagePreload.js
 import { useEffect, useMemo, useState } from "react";
 
 export function useImagePreload(urls = []) {

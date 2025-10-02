@@ -1,4 +1,3 @@
-// src/pages/Story3.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
@@ -8,22 +7,17 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import VocabularySlider from "../components/VocabularySlider";
 import { useVocabulary } from "../hooks/useVocabulary";
 
-// 🌞 Sun background states
 const SUN_BACKGROUNDS = {
-  sun1: "/images/Story3/sun1.png", // Calm sun
-  sun2: "/images/Story3/sun2.png", // Getting angry
-  sun3: "/images/Story3/sun3.png", // Angry
-  sun4: "/images/Story3/sun4.png", // Super angry
+  sun1: "/images/Story3/sun1.png",
+  sun2: "/images/Story3/sun2.png",
+  sun3: "/images/Story3/sun3.png",
+  sun4: "/images/Story3/sun4.png",
 };
 
-// 👥 Character images
 const CHARACTERS = {
-  // astronaut: "/images/Story1/flip_image.png",
-  // child: "/images/Story1/flip_image.png",
   both: "/images/Story3/see-sun-face-us.png",
 };
 
-// 💬 Default dialogue positions for different speakers
 const DIALOGUE_POSITIONS = {
   astro: {
     desktop: { bottom: "55vh", left: "25%" },

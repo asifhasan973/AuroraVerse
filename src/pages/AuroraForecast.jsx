@@ -1,4 +1,3 @@
-// src/pages/AuroraForecast.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Earth3D from "../components/Earth3D";
@@ -6,20 +5,17 @@ import Earth3D from "../components/Earth3D";
 const DATA_URL = "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json";
 const OFFICIAL_PAGE = "https://www.swpc.noaa.gov/products/aurora-30-minute-forecast";
 
-// nice, perceptual-ish color ramp (low→high)
 function colorFor(v) {
-    // v expected 0–100; clamp then map to 0–1
     const t = Math.max(0, Math.min(1, v / 100));
-    // piecewise gradient: navy -> teal -> green -> yellow -> orange -> red -> magenta
     const stops = [
-        [0, 18, 46],   // #00122E
-        [0, 92, 92],   // #005C5C
-        [2, 129, 64],  // #028140
-        [142, 192, 14],// #8EC00E
-        [241, 199, 0], // #F1C700
-        [234, 128, 0], // #EA8000
-        [210, 30, 42], // #D21E2A
-        [178, 36, 180] // #B224B4
+        [0, 18, 46],
+        [0, 92, 92],
+        [2, 129, 64],
+        [142, 192, 14],
+        [241, 199, 0],
+        [234, 128, 0],
+        [210, 30, 42],
+        [178, 36, 180]
     ];
     const x = t * (stops.length - 1);
     const i = Math.floor(x);
@@ -39,15 +35,15 @@ function formatUTC(iso) {
 
 export default function AuroraForecast() {
     const [meta, setMeta] = useState({ obs: "", fcst: "", format: "" });
-    const [grid, setGrid] = useState([]); // [[lon, lat, val], ...]
+    const [grid, setGrid] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
     const [opacity, setOpacity] = useState(0.9);
-    const [maxCap, setMaxCap] = useState(100); // cap high outliers visually
+    const [maxCap, setMaxCap] = useState(100);
     const [showGraticule, setShowGraticule] = useState(true);
     const [tooltipTick, setTooltipTick] = useState(0);
     const [backgroundImage, setBackgroundImage] = useState(null);
-    const [viewMode, setViewMode] = useState('3d'); // '3d' or 'flat'
+    const [viewMode, setViewMode] = useState('3d');
     const [showVideoPlayer, setShowVideoPlayer] = useState(false);
     const [northImages, setNorthImages] = useState([]);
     const [southImages, setSouthImages] = useState([]);

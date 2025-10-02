@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export default function StormSafe() {
-    const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'gameOver', 'victory'
+    const [gameState, setGameState] = useState('menu');
     const [lives, setLives] = useState(3);
     const [score, setScore] = useState(0);
     const [round, setRound] = useState(1);
@@ -46,7 +46,6 @@ export default function StormSafe() {
         { id: 'engine', name: 'Engine Room', icon: '⚙️', width: 125, height: 85 },
     ];
 
-    // Fisher-Yates shuffle algorithm for proper shuffling
     const shuffleArray = useCallback((array) => {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {

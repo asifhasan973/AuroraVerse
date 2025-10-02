@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
@@ -28,9 +27,8 @@ export default function Home() {
       playAttempts++;
 
       try {
-        // Reset video to ensure fresh start
         v.currentTime = 0;
-        v.muted = true; // Ensure muted for autoplay to work
+        v.muted = true;
 
         await v.play();
         setVideoReady(true);
@@ -38,11 +36,9 @@ export default function Home() {
       } catch (error) {
         console.log(`Play attempt ${playAttempts} failed:`, error);
 
-        // Retry after a short delay
         if (playAttempts < maxAttempts) {
           setTimeout(tryPlay, 500);
         } else {
-          // Final fallback: wait for user interaction
           const onFirstInteraction = () => {
             v.play().finally(() => {
               setVideoReady(true);

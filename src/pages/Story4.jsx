@@ -1,4 +1,3 @@
-// src/pages/Story4.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DialogueBox from "./DialogueBox";
@@ -8,7 +7,6 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import VocabularySlider from "../components/VocabularySlider";
 import { useVocabulary } from "../hooks/useVocabulary";
 
-// 🖼️ Background images that change with dialogue
 const BACKGROUNDS = {
     bg0: "/images/Story4/screen_off.png",
     bg1: "/images/Story4/1.png",
@@ -24,12 +22,10 @@ const BACKGROUNDS = {
     bg12: "/images/Story4/screen_white.png",
 };
 
-// 👥 Character images
 const CHARACTERS = {
     both: "/images/Story4/talk_c_a_stand.png",
 };
 
-// 💬 Default dialogue positions for different speakers
 const DIALOGUE_POSITIONS = {
     astro: {
         desktop: { bottom: "64vh", left: "20%" },

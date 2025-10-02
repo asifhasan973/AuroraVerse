@@ -1,4 +1,3 @@
-// src/components/ui/Spinner.jsx
 export default function Spinner({ size = 48, className = "" }) {
   const px = typeof size === "number" ? `${size}px` : size;
   const border = Math.max(3, Math.floor((typeof size === 'number' ? size : 48) / 12));
@@ -16,8 +15,8 @@ export default function Spinner({ size = 48, className = "" }) {
           borderStyle: 'solid',
           borderWidth: border,
           borderColor: 'rgba(255,255,255,0.15)',
-          borderTopColor: '#f0abfc', // fuchsia-300
-          borderRightColor: '#60a5fa', // blue-400
+          borderTopColor: '#f0abfc',
+          borderRightColor: '#60a5fa',
         }}
       />
     </div>

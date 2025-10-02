@@ -1,7 +1,4 @@
-// src/pages/KIndexDashboard.jsx
 import { useEffect, useState, useMemo } from "react";
-
-// Helper function to get space mood based on K-Index value
 const getSpaceMood = (value) => {
     if (value <= 2) return {
         mood: "Sleepy",

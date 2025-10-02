@@ -1,22 +1,7 @@
-// Universal Vocabulary System for All Story Pages
-// Each story page has its own vocabulary data with dialogue comments
-
-// ============================================================================
-// START PAGE VOCABULARY
-// ============================================================================
 export const START_VOCABULARY = {
-    // Dialogue: "Hi there! I'm Stelly."
-    "garden-1": [], // No hard words in this dialogue
-
-    // Dialogue: "Hi! Who are you?"
-    "garden-2": [], // No hard words in this dialogue
-
-    // Dialogue: "I'm an astronaut."
-    "garden-3": [
-
-    ],
-
-    // Dialogue: "Astronaut? What is it?"
+    "garden-1": [],
+    "garden-2": [],
+    "garden-3": [],
     "garden-4": [
         {
             word: "astronaut",
@@ -36,13 +21,7 @@ export const START_VOCABULARY = {
             }
         }
     ],
-
-    // Dialogue: "An astronaut is a space explorer!"
-    "garden-5": [
-
-    ],
-
-    // Dialogue: "Do you wanna explore the space?"
+    "garden-5": [],
     "garden-6": [
 
         {

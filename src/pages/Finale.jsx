@@ -1,4 +1,3 @@
-// src/pages/Finale.jsx
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -10,7 +9,6 @@ export default function Finale() {
 
   const pct = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  // Animate score counter
   useEffect(() => {
     const timer = setTimeout(() => {
       let current = 0;

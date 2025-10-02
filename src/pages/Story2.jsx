@@ -1,4 +1,3 @@
-// src/pages/Story2.jsx
 import { useState, useEffect } from "react";
 import DialogueBox from "./DialogueBox";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,11 +7,8 @@ import { useImagePreload } from "../hooks/useImagePreload";
 import VocabularySlider from "../components/VocabularySlider";
 import { useVocabulary } from "../hooks/useVocabulary";
 
-/** 🔧 Set your image paths once (they never change) */
 const BG = "images/Story2/story2_bg.png";
-const COUPLE = "images/Story2/talk_c_a_stand.png"; // one image with both
-
-/** 3 astronaut lines (click to advance) */
+const COUPLE = "images/Story2/talk_c_a_stand.png";
 const LINES = [
   "We , the astronauts live in space in space station(inside space craft rocket).",
   "From here, we can see the Earth, satellites, and of course… the Sun.",

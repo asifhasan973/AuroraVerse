@@ -5,17 +5,17 @@ import AuroraForecast from "./pages/AuroraForecast";
 import Quiz from "./pages/Quiz";
 import Start from "./pages/Start";
 import Finale from "./pages/Finale";
-import Story2 from "./pages/Story2"; // Story 2 route
-import Story3 from "./pages/Story3"; // Story 3 route
-import Story4 from "./pages/Story4"; // Story 4 route
-import StormSafe from "./pages/StormSafe"; // StormSafe game route
-import KIndexDashboard from "./pages/KIndexDashboard"; // K-Index Dashboard route
-import ElectronFluenceForecast from "./pages/ElectronFluenceForecast"; // Electron Fluence Forecast route
-import AIQuestionAnswer from "./pages/AIQuestionAnswer"; // AI Question Answer route
-import Data from "./pages/Data"; // Data documents route
-import SpaceDefense from "./pages/SpaceDefense"; // Space Defense game route
-import Games from "./pages/Games"; // Games page route
-import AuroraLab from "./pages/AuroraLab"; // Aurora Lab route
+import Story2 from "./pages/Story2";
+import Story3 from "./pages/Story3";
+import Story4 from "./pages/Story4";
+import StormSafe from "./pages/StormSafe";
+import KIndexDashboard from "./pages/KIndexDashboard";
+import ElectronFluenceForecast from "./pages/ElectronFluenceForecast";
+import AIQuestionAnswer from "./pages/AIQuestionAnswer";
+import Data from "./pages/Data";
+import SpaceDefense from "./pages/SpaceDefense";
+import Games from "./pages/Games";
+import AuroraLab from "./pages/AuroraLab";
 
 export default function App() {
   return (
@@ -39,11 +39,8 @@ export default function App() {
           <Route path="/ai-qa" element={<AIQuestionAnswer />} />
           <Route path="/data" element={<Data />} />
           <Route path="/space-defense" element={<SpaceDefense />} />
-          <Route path="/aurora-lab" element={<AuroraLab />} />
         </Routes>
       </main>
-
     </div>
-
   );
 }

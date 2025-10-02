@@ -1,4 +1,3 @@
-// src/components/ui/LoadingOverlay.jsx
 import Spinner from "./Spinner";
 
 export default function LoadingOverlay({ show = false, label = "Loading..." }) {

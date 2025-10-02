@@ -1,13 +1,10 @@
-// src/pages/Quiz.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QUESTIONS from "../data/quiz.json";
 
-/* Helpers */
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
-/* Tiny base64 beeps (safe placeholders) */
 const SND_NEXT =
   "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA";
 const SND_GOOD =
@@ -15,7 +12,6 @@ const SND_GOOD =
 const SND_BAD =
   "data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA";
 
-/* Animated starfield background */
 function Starfield() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">

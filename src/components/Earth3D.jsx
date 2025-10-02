@@ -9,63 +9,42 @@ const Earth3D = () => {
     const [southIsPlaying, setSouthIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [loadingProgress, setLoadingProgress] = useState(0);
-    const [loadedImagesCount, setLoadedImagesCount] = useState(0);
-    const [totalImagesCount, setTotalImagesCount] = useState(0);
     const [northImagesLoaded, setNorthImagesLoaded] = useState(false);
     const [southImagesLoaded, setSouthImagesLoaded] = useState(false);
     const [northPlaybackSpeed, setNorthPlaybackSpeed] = useState(8);
     const [southPlaybackSpeed, setSouthPlaybackSpeed] = useState(8);
 
-    // Refs for animation frames instead of intervals for smoother playback
     const northAnimationRef = useRef(null);
     const southAnimationRef = useRef(null);
     const northLastFrameTime = useRef(0);
     const southLastFrameTime = useRef(0);
 
-    // Canvas refs for smooth rendering
     const northCanvasRef = useRef(null);
     const southCanvasRef = useRef(null);
 
-    // Preloaded image objects
     const northImageObjects = useRef([]);
     const southImageObjects = useRef([]);
 
     const baseUrl = 'https://services.swpc.noaa.gov';
 
-    // Convert speed to frame delay
     const speedToMs = (speed) => {
         const normalizedSpeed = (speed - 1) / 9;
         const exponentialSpeed = Math.pow(normalizedSpeed, 0.6);
         return Math.round(1000 - exponentialSpeed * 950);
     };
 
-    // Preload images with fixed progress tracking
     const preloadImages = async (imageUrls, hemisphere, totalImages) => {
-        const imagePromises = imageUrls.map((imageData, index) => {
-            return new Promise((resolve, reject) => {
+        const imagePromises = imageUrls.map((imageData) => {
+            return new Promise((resolve) => {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
 
                 img.onload = () => {
-                    // Increment loaded count and calculate percentage correctly
-                    setLoadedImagesCount(prev => {
-                        const newCount = prev + 1;
-                        const percentage = Math.min(100, Math.round((newCount / totalImages) * 100));
-                        setLoadingProgress(percentage);
-                        return newCount;
-                    });
                     resolve(img);
                 };
 
                 img.onerror = () => {
                     console.error(`Failed to load image: ${imageData.url}`);
-                    // Still increment count for failed images to maintain accurate progress
-                    setLoadedImagesCount(prev => {
-                        const newCount = prev + 1;
-                        const percentage = Math.min(100, Math.round((newCount / totalImages) * 100));
-                        setLoadingProgress(percentage);
-                        return newCount;
-                    });
                     resolve(null);
                 };
 
@@ -86,14 +65,11 @@ const Earth3D = () => {
         return loadedImages;
     };
 
-    // Fetch and preload aurora data
     const fetchAuroraData = async () => {
         try {
             setIsLoading(true);
             setLoadingProgress(0);
-            setLoadedImagesCount(0);
 
-            // Fetch both Northern and Southern hemisphere data
             const [northResponse, southResponse] = await Promise.all([
                 fetch('https://services.swpc.noaa.gov/products/animations/ovation_north_24h.json'),
                 fetch('https://services.swpc.noaa.gov/products/animations/ovation_south_24h.json')
@@ -102,26 +78,21 @@ const Earth3D = () => {
             const northData = await northResponse.json();
             const southData = await southResponse.json();
 
-            // Reverse arrays to show recent images first
             const reversedNorth = northData.reverse();
             const reversedSouth = southData.reverse();
 
             setNorthImages(reversedNorth);
             setSouthImages(reversedSouth);
 
-            // Calculate total images to load
             const total = reversedNorth.length + reversedSouth.length;
-            setTotalImagesCount(total);
 
             console.log(reversedNorth, reversedSouth);
 
-            // Preload all images in parallel with correct total count
             await Promise.all([
                 preloadImages(reversedNorth, 'north', total),
                 preloadImages(reversedSouth, 'south', total)
             ]);
 
-            // Ensure progress is exactly 100% when done
             setLoadingProgress(100);
 
         } catch (error) {
@@ -131,17 +102,14 @@ const Earth3D = () => {
         }
     };
 
-    // Smooth canvas rendering
     const renderToCanvas = useCallback((canvas, imageObjects, currentIndex) => {
         if (!canvas || !imageObjects[currentIndex]) return;
 
         const ctx = canvas.getContext('2d');
         const img = imageObjects[currentIndex];
 
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate aspect ratio
         const aspectRatio = img.width / img.height;
         let drawWidth = canvas.width;
         let drawHeight = canvas.width / aspectRatio;
@@ -151,17 +119,14 @@ const Earth3D = () => {
             drawWidth = canvas.height * aspectRatio;
         }
 
-        // Center the image
         const x = (canvas.width - drawWidth) / 2;
         const y = (canvas.height - drawHeight) / 2;
 
-        // Draw with smoothing
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, x, y, drawWidth, drawHeight);
     }, []);
 
-    // Animation frame for Northern Hemisphere
     const animateNorth = useCallback((timestamp) => {
         if (!northIsPlaying) return;
 
@@ -171,7 +136,6 @@ const Earth3D = () => {
             setNorthCurrentIndex((prevIndex) => {
                 const nextIndex = (prevIndex + 1) % northImages.length;
 
-                // Render to canvas for smooth playback
                 if (northCanvasRef.current && northImageObjects.current.length > 0) {
                     renderToCanvas(northCanvasRef.current, northImageObjects.current, nextIndex);
                 }
@@ -185,7 +149,6 @@ const Earth3D = () => {
         northAnimationRef.current = requestAnimationFrame(animateNorth);
     }, [northIsPlaying, northPlaybackSpeed, northImages.length, renderToCanvas]);
 
-    // Animation frame for Southern Hemisphere
     const animateSouth = useCallback((timestamp) => {
         if (!southIsPlaying) return;
 
@@ -195,7 +158,6 @@ const Earth3D = () => {
             setSouthCurrentIndex((prevIndex) => {
                 const nextIndex = (prevIndex + 1) % southImages.length;
 
-                // Render to canvas for smooth playback
                 if (southCanvasRef.current && southImageObjects.current.length > 0) {
                     renderToCanvas(southCanvasRef.current, southImageObjects.current, nextIndex);
                 }
@@ -383,7 +345,7 @@ const Earth3D = () => {
                             />
                         </div>
                         <p className="text-gray-400 text-xs mt-1">
-                            Loading images... {loadingProgress}% 
+                            Loading images... {loadingProgress}%
                         </p>
                     </div>
                 )}

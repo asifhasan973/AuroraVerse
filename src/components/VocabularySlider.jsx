@@ -8,7 +8,6 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
     const [isExpanded, setIsExpanded] = useState(false);
     const [isSideBySide, setIsSideBySide] = useState(false);
 
-    // Extract image URLs from vocabulary for preloading
     const imageUrls = useMemo(() => {
         return vocabulary
             .flatMap(item => item.media || [])
@@ -17,7 +16,6 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
             .filter(Boolean);
     }, [vocabulary]);
 
-    // Preload images
     const { done: imagesLoaded, progress: imageProgress } = useImagePreload(imageUrls);
 
     const handleLayoutToggle = () => {
@@ -26,7 +24,6 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
         onLayoutChange?.(newSideBySide);
     };
 
-    // Close slider when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (isExpanded && !isSideBySide) {

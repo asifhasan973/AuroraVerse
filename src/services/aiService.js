@@ -1,32 +1,27 @@
 import axios from 'axios';
 
-// Groq AI API configuration
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
-// Available models (in order of preference) - Updated Dec 2024
 const AVAILABLE_MODELS = [
-    'llama-3.3-70b-versatile',    // Llama 3.3 70B (latest)
-    'llama-3.1-8b-instant',       // Llama 3.1 8B (fast)
-    'gemma2-9b-it',               // Gemma 2 9B Instruct
-    'mixtral-8x7b-32768',         // Mixtral 8x7B (if still available)
-    'llama3-groq-70b-8192-tool-use-preview', // Groq optimized
-    'llama3-groq-8b-8192-tool-use-preview'   // Groq optimized 8B
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'gemma2-9b-it',
+    'mixtral-8x7b-32768',
+    'llama3-groq-70b-8192-tool-use-preview',
+    'llama3-groq-8b-8192-tool-use-preview'
 ];
 
-// Get API key from environment variables
 const getApiKey = () => {
     const apiKey = import.meta.env.VITE_GROQ_API_KEY;
     if (!apiKey || apiKey === 'your_groq_api_key_here' || apiKey.trim() === '') {
         return null;
     }
-    // Validate API key format (Groq keys start with 'gsk_')
     if (!apiKey.startsWith('gsk_')) {
         return null;
     }
     return apiKey;
 };
 
-// System prompt to make the AI a space weather expert for children
 const SYSTEM_PROMPT = `You are a friendly AI space weather assistant designed specifically for children aged 8-14. Your name is "Space Weather Assistant" and you help kids learn about space science.
 
 CRITICAL INSTRUCTIONS:
@@ -55,7 +50,6 @@ Response Guidelines:
 
 Remember: Provide only clean, direct responses without any thinking process visible. You're helping spark curiosity about space science in young minds!`;
 
-// Fallback responses for when API is not available
 const FALLBACK_RESPONSES = [
     "That's a great question about space! 🌌 Space weather is fascinating - it's all about how the Sun affects Earth and creates amazing phenomena like auroras! What specific aspect would you like to know more about?",
     "I love your curiosity about space! 🚀 The Sun and Earth have such an interesting relationship, creating beautiful auroras and affecting our technology. Keep asking questions - that's how we learn!",
@@ -64,8 +58,7 @@ const FALLBACK_RESPONSES = [
     "That's an awesome question! 🌈 Space weather affects everything from the beautiful auroras we see to the satellites that help us navigate. There's so much to explore in space science!"
 ];
 
-// Function to try API call with different models
-const tryApiCall = async (apiKey, messages, modelIndex = 0) => {
+const _tryApiCall = async (apiKey, messages, modelIndex = 0) => {
     if (modelIndex >= AVAILABLE_MODELS.length) {
         throw new Error('All models failed');
     }
@@ -112,7 +105,7 @@ const tryApiCall = async (apiKey, messages, modelIndex = 0) => {
             errorMessage?.includes('not found') ||
             errorMessage?.includes('does not exist')) {
             console.log(`🔄 Trying next model (${modelIndex + 1}/${AVAILABLE_MODELS.length})...`);
-            return await tryApiCall(apiKey, messages, modelIndex + 1);
+            return await _tryApiCall(apiKey, messages, modelIndex + 1);
         }
 
         // For other errors, don't retry
@@ -213,7 +206,7 @@ const fetchAvailableModels = async (apiKey) => {
             const modelNames = response.data.data.map(model => model.id);
             return modelNames;
         }
-    } catch (error) {
+    } catch {
     }
     return AVAILABLE_MODELS; // fallback to hardcoded list
 };

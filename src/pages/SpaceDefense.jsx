@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, RotateCcw, Trophy, Target, Zap, Shield, Star, Rocket, Timer, Space } from 'lucide-react';
 
 export default function SpaceDefense() {
-    const [gameState, setGameState] = useState('menu'); // 'menu', 'playing', 'paused', 'gameOver', 'victory'
+    const [gameState, setGameState] = useState('menu');
     const [score, setScore] = useState(0);
     const [level, setLevel] = useState(1);
     const [lives, setLives] = useState(3);
@@ -22,7 +22,7 @@ export default function SpaceDefense() {
     const [multiShot, setMultiShot] = useState(false);
     const [rapidFire, setRapidFire] = useState(false);
     const [highScore, setHighScore] = useState(0);
-    const [survivalTime, setSurvivalTime] = useState(100); // 10 seconds survival timer
+    const [survivalTime, setSurvivalTime] = useState(100);
     const [gameStartTime, setGameStartTime] = useState(0);
 
     const canvasRef = useRef(null);

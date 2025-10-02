@@ -1,7 +1,4 @@
-// src/pages/ElectronFluenceForecast.jsx
 import { useEffect, useState, useMemo } from "react";
-
-// Helper function to get electron storm level based on fluence value
 const getElectronStormLevel = (fluence) => {
     if (fluence < 10000000) return {
         level: "Calm",
