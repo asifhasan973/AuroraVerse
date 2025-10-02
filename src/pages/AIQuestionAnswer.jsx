@@ -159,11 +159,14 @@ export default function AIQuestionAnswer() {
     ]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
-    const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
     const inputRef = useRef(null);
 
+    // Fixed scroll function - only scrolls within the chat container
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
@@ -193,7 +196,12 @@ export default function AIQuestionAnswer() {
         return randomGeneral;
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (e) => {
+        // Prevent default form submission behavior
+        if (e) {
+            e.preventDefault();
+        }
+
         if (!inputValue.trim()) return;
 
         const userMessage = {
@@ -291,8 +299,11 @@ export default function AIQuestionAnswer() {
 
                 {/* Chat Container */}
                 <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
-                    {/* Messages */}
-                    <div className="h-96 overflow-y-auto p-6 space-y-4">
+                    {/* Messages - Added ref to container for controlled scrolling */}
+                    <div
+                        ref={messagesContainerRef}
+                        className="h-96 overflow-y-auto p-6 space-y-4"
+                    >
                         {messages.map((message) => (
                             <div
                                 key={message.id}
@@ -326,12 +337,11 @@ export default function AIQuestionAnswer() {
                                 </div>
                             </div>
                         )}
-                        <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input Area */}
+                    {/* Input Area - Added form to prevent default submission */}
                     <div className="border-t border-white/10 p-4">
-                        <div className="flex gap-3">
+                        <form onSubmit={handleSendMessage} className="flex gap-3">
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -342,13 +352,13 @@ export default function AIQuestionAnswer() {
                                 className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
                             />
                             <Button
-                                onClick={handleSendMessage}
+                                type="submit"
                                 disabled={!inputValue.trim() || isTyping}
                                 className="bg-gradient-to-r from-fuchsia-500 to-purple-600 hover:from-fuchsia-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Send
                             </Button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 

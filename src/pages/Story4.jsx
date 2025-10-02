@@ -493,8 +493,8 @@ export default function Story4() {
                                 style={currentStep.characters.position}
                             >
                                 {!assetsReady ? (
-                                    <div className="flex items-center justify-center" style={{ width: isMobile ? '150px' : '200px', height: isMobile ? '150px' : '200px' }}>
-                                        <Spinner size={isMobile ? 30 : 40} />
+                                    <div className="flex items-center justify-center" style={{ width: isMobile ? '250px' : '350px', height: isMobile ? '250px' : '350px' }}>
+                                        <Spinner size={isMobile ? 40 : 60} />
                                     </div>
                                 ) : (
                                     <img
@@ -502,7 +502,7 @@ export default function Story4() {
                                         alt="Characters"
                                         className="drop-shadow-[0_10px_40px_rgba(0,0,0,.8)]"
                                         style={{
-                                            width: isMobile ? '150px' : '200px',
+                                            width: isMobile ? '250px' : '350px',
                                             height: 'auto',
                                         }}
                                     />

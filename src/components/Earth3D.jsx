@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 const Earth3D = () => {
     const [northImages, setNorthImages] = useState([]);
@@ -8,25 +8,90 @@ const Earth3D = () => {
     const [northIsPlaying, setNorthIsPlaying] = useState(false);
     const [southIsPlaying, setSouthIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [northPlaybackSpeed, setNorthPlaybackSpeed] = useState(8); // Speed scale 1-10
-    const [southPlaybackSpeed, setSouthPlaybackSpeed] = useState(8); // Speed scale 1-10
-    const northIntervalRef = useRef(null);
-    const southIntervalRef = useRef(null);
+    const [loadingProgress, setLoadingProgress] = useState(0);
+    const [loadedImagesCount, setLoadedImagesCount] = useState(0);
+    const [totalImagesCount, setTotalImagesCount] = useState(0);
+    const [northImagesLoaded, setNorthImagesLoaded] = useState(false);
+    const [southImagesLoaded, setSouthImagesLoaded] = useState(false);
+    const [northPlaybackSpeed, setNorthPlaybackSpeed] = useState(8);
+    const [southPlaybackSpeed, setSouthPlaybackSpeed] = useState(8);
+
+    // Refs for animation frames instead of intervals for smoother playback
+    const northAnimationRef = useRef(null);
+    const southAnimationRef = useRef(null);
+    const northLastFrameTime = useRef(0);
+    const southLastFrameTime = useRef(0);
+
+    // Canvas refs for smooth rendering
+    const northCanvasRef = useRef(null);
+    const southCanvasRef = useRef(null);
+
+    // Preloaded image objects
+    const northImageObjects = useRef([]);
+    const southImageObjects = useRef([]);
+
     const baseUrl = 'https://services.swpc.noaa.gov';
 
-    // Convert speed (1-10) to milliseconds (50-1000ms) - More sensitive scaling
+    // Convert speed to frame delay
     const speedToMs = (speed) => {
-        // More dramatic speed scaling: Speed 1 = 1000ms, Speed 5 = 200ms, Speed 10 = 50ms
-        // This makes higher speeds much faster than before
-        const normalizedSpeed = (speed - 1) / 9; // 0 to 1
-        const exponentialSpeed = Math.pow(normalizedSpeed, 0.6); // Exponential curve for more sensitivity
+        const normalizedSpeed = (speed - 1) / 9;
+        const exponentialSpeed = Math.pow(normalizedSpeed, 0.6);
         return Math.round(1000 - exponentialSpeed * 950);
     };
 
-    // Fetch NASA aurora data for both hemispheres
+    // Preload images with fixed progress tracking
+    const preloadImages = async (imageUrls, hemisphere, totalImages) => {
+        const imagePromises = imageUrls.map((imageData, index) => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+
+                img.onload = () => {
+                    // Increment loaded count and calculate percentage correctly
+                    setLoadedImagesCount(prev => {
+                        const newCount = prev + 1;
+                        const percentage = Math.min(100, Math.round((newCount / totalImages) * 100));
+                        setLoadingProgress(percentage);
+                        return newCount;
+                    });
+                    resolve(img);
+                };
+
+                img.onerror = () => {
+                    console.error(`Failed to load image: ${imageData.url}`);
+                    // Still increment count for failed images to maintain accurate progress
+                    setLoadedImagesCount(prev => {
+                        const newCount = prev + 1;
+                        const percentage = Math.min(100, Math.round((newCount / totalImages) * 100));
+                        setLoadingProgress(percentage);
+                        return newCount;
+                    });
+                    resolve(null);
+                };
+
+                img.src = baseUrl + imageData.url;
+            });
+        });
+
+        const loadedImages = await Promise.all(imagePromises);
+
+        if (hemisphere === 'north') {
+            northImageObjects.current = loadedImages.filter(img => img !== null);
+            setNorthImagesLoaded(true);
+        } else {
+            southImageObjects.current = loadedImages.filter(img => img !== null);
+            setSouthImagesLoaded(true);
+        }
+
+        return loadedImages;
+    };
+
+    // Fetch and preload aurora data
     const fetchAuroraData = async () => {
         try {
             setIsLoading(true);
+            setLoadingProgress(0);
+            setLoadedImagesCount(0);
 
             // Fetch both Northern and Southern hemisphere data
             const [northResponse, southResponse] = await Promise.all([
@@ -38,8 +103,27 @@ const Earth3D = () => {
             const southData = await southResponse.json();
 
             // Reverse arrays to show recent images first
-            setNorthImages(northData.reverse());
-            setSouthImages(southData.reverse());
+            const reversedNorth = northData.reverse();
+            const reversedSouth = southData.reverse();
+
+            setNorthImages(reversedNorth);
+            setSouthImages(reversedSouth);
+
+            // Calculate total images to load
+            const total = reversedNorth.length + reversedSouth.length;
+            setTotalImagesCount(total);
+
+            console.log(reversedNorth, reversedSouth);
+
+            // Preload all images in parallel with correct total count
+            await Promise.all([
+                preloadImages(reversedNorth, 'north', total),
+                preloadImages(reversedSouth, 'south', total)
+            ]);
+
+            // Ensure progress is exactly 100% when done
+            setLoadingProgress(100);
+
         } catch (error) {
             console.error('Error fetching aurora data:', error);
         } finally {
@@ -47,86 +131,233 @@ const Earth3D = () => {
         }
     };
 
-    // Individual play/pause for Northern Hemisphere
+    // Smooth canvas rendering
+    const renderToCanvas = useCallback((canvas, imageObjects, currentIndex) => {
+        if (!canvas || !imageObjects[currentIndex]) return;
+
+        const ctx = canvas.getContext('2d');
+        const img = imageObjects[currentIndex];
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Calculate aspect ratio
+        const aspectRatio = img.width / img.height;
+        let drawWidth = canvas.width;
+        let drawHeight = canvas.width / aspectRatio;
+
+        if (drawHeight > canvas.height) {
+            drawHeight = canvas.height;
+            drawWidth = canvas.height * aspectRatio;
+        }
+
+        // Center the image
+        const x = (canvas.width - drawWidth) / 2;
+        const y = (canvas.height - drawHeight) / 2;
+
+        // Draw with smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, x, y, drawWidth, drawHeight);
+    }, []);
+
+    // Animation frame for Northern Hemisphere
+    const animateNorth = useCallback((timestamp) => {
+        if (!northIsPlaying) return;
+
+        const frameDelay = speedToMs(northPlaybackSpeed);
+
+        if (timestamp - northLastFrameTime.current >= frameDelay) {
+            setNorthCurrentIndex((prevIndex) => {
+                const nextIndex = (prevIndex + 1) % northImages.length;
+
+                // Render to canvas for smooth playback
+                if (northCanvasRef.current && northImageObjects.current.length > 0) {
+                    renderToCanvas(northCanvasRef.current, northImageObjects.current, nextIndex);
+                }
+
+                return nextIndex;
+            });
+
+            northLastFrameTime.current = timestamp;
+        }
+
+        northAnimationRef.current = requestAnimationFrame(animateNorth);
+    }, [northIsPlaying, northPlaybackSpeed, northImages.length, renderToCanvas]);
+
+    // Animation frame for Southern Hemisphere
+    const animateSouth = useCallback((timestamp) => {
+        if (!southIsPlaying) return;
+
+        const frameDelay = speedToMs(southPlaybackSpeed);
+
+        if (timestamp - southLastFrameTime.current >= frameDelay) {
+            setSouthCurrentIndex((prevIndex) => {
+                const nextIndex = (prevIndex + 1) % southImages.length;
+
+                // Render to canvas for smooth playback
+                if (southCanvasRef.current && southImageObjects.current.length > 0) {
+                    renderToCanvas(southCanvasRef.current, southImageObjects.current, nextIndex);
+                }
+
+                return nextIndex;
+            });
+
+            southLastFrameTime.current = timestamp;
+        }
+
+        southAnimationRef.current = requestAnimationFrame(animateSouth);
+    }, [southIsPlaying, southPlaybackSpeed, southImages.length, renderToCanvas]);
+
+    // Play/pause for Northern Hemisphere
     const toggleNorthPlayPause = () => {
         if (northIsPlaying) {
-            clearInterval(northIntervalRef.current);
+            if (northAnimationRef.current) {
+                cancelAnimationFrame(northAnimationRef.current);
+            }
             setNorthIsPlaying(false);
         } else {
             setNorthIsPlaying(true);
-            northIntervalRef.current = setInterval(() => {
-                setNorthCurrentIndex((prevIndex) => {
-                    return (prevIndex + 1) % northImages.length;
-                });
-            }, speedToMs(northPlaybackSpeed));
+            northLastFrameTime.current = performance.now();
+            northAnimationRef.current = requestAnimationFrame(animateNorth);
         }
     };
 
-    // Individual play/pause for Southern Hemisphere
+    // Play/pause for Southern Hemisphere
     const toggleSouthPlayPause = () => {
         if (southIsPlaying) {
-            clearInterval(southIntervalRef.current);
+            if (southAnimationRef.current) {
+                cancelAnimationFrame(southAnimationRef.current);
+            }
             setSouthIsPlaying(false);
         } else {
             setSouthIsPlaying(true);
-            southIntervalRef.current = setInterval(() => {
-                setSouthCurrentIndex((prevIndex) => {
-                    return (prevIndex + 1) % southImages.length;
-                });
-            }, speedToMs(southPlaybackSpeed));
+            southLastFrameTime.current = performance.now();
+            southAnimationRef.current = requestAnimationFrame(animateSouth);
         }
     };
 
     // Reset functions
     const resetNorth = () => {
-        clearInterval(northIntervalRef.current);
+        if (northAnimationRef.current) {
+            cancelAnimationFrame(northAnimationRef.current);
+        }
         setNorthIsPlaying(false);
         setNorthCurrentIndex(0);
+
+        // Render first frame
+        if (northCanvasRef.current && northImageObjects.current.length > 0) {
+            renderToCanvas(northCanvasRef.current, northImageObjects.current, 0);
+        }
     };
 
     const resetSouth = () => {
-        clearInterval(southIntervalRef.current);
+        if (southAnimationRef.current) {
+            cancelAnimationFrame(southAnimationRef.current);
+        }
         setSouthIsPlaying(false);
         setSouthCurrentIndex(0);
+
+        // Render first frame
+        if (southCanvasRef.current && southImageObjects.current.length > 0) {
+            renderToCanvas(southCanvasRef.current, southImageObjects.current, 0);
+        }
     };
 
-    // Speed change functions
+    // Speed change handlers
     const handleNorthSpeedChange = (e) => {
         const newSpeed = parseInt(e.target.value);
         setNorthPlaybackSpeed(newSpeed);
-
-        if (northIsPlaying) {
-            clearInterval(northIntervalRef.current);
-            northIntervalRef.current = setInterval(() => {
-                setNorthCurrentIndex((prevIndex) => {
-                    return (prevIndex + 1) % northImages.length;
-                });
-            }, speedToMs(newSpeed));
-        }
     };
 
     const handleSouthSpeedChange = (e) => {
         const newSpeed = parseInt(e.target.value);
         setSouthPlaybackSpeed(newSpeed);
-
-        if (southIsPlaying) {
-            clearInterval(southIntervalRef.current);
-            southIntervalRef.current = setInterval(() => {
-                setSouthCurrentIndex((prevIndex) => {
-                    return (prevIndex + 1) % southImages.length;
-                });
-            }, speedToMs(newSpeed));
-        }
     };
+
+    // Update canvas size on resize
+    const updateCanvasSize = useCallback(() => {
+        [northCanvasRef, southCanvasRef].forEach(canvasRef => {
+            if (canvasRef.current) {
+                const parent = canvasRef.current.parentElement;
+                canvasRef.current.width = parent.clientWidth;
+                canvasRef.current.height = parent.clientHeight;
+            }
+        });
+
+        // Re-render current frames
+        if (northCanvasRef.current && northImageObjects.current.length > 0) {
+            renderToCanvas(northCanvasRef.current, northImageObjects.current, northCurrentIndex);
+        }
+        if (southCanvasRef.current && southImageObjects.current.length > 0) {
+            renderToCanvas(southCanvasRef.current, southImageObjects.current, southCurrentIndex);
+        }
+    }, [northCurrentIndex, southCurrentIndex, renderToCanvas]);
+
+    // Start animation loops when playing state changes
+    useEffect(() => {
+        if (northIsPlaying) {
+            northLastFrameTime.current = performance.now();
+            northAnimationRef.current = requestAnimationFrame(animateNorth);
+        }
+
+        return () => {
+            if (northAnimationRef.current) {
+                cancelAnimationFrame(northAnimationRef.current);
+            }
+        };
+    }, [northIsPlaying, animateNorth]);
+
+    useEffect(() => {
+        if (southIsPlaying) {
+            southLastFrameTime.current = performance.now();
+            southAnimationRef.current = requestAnimationFrame(animateSouth);
+        }
+
+        return () => {
+            if (southAnimationRef.current) {
+                cancelAnimationFrame(southAnimationRef.current);
+            }
+        };
+    }, [southIsPlaying, animateSouth]);
+
+    // Update the initial render effects to ensure both render properly
+    useEffect(() => {
+        if (northImagesLoaded && northCanvasRef.current && northImageObjects.current.length > 0) {
+            // Set canvas size first
+            const parent = northCanvasRef.current.parentElement;
+            northCanvasRef.current.width = parent.clientWidth;
+            northCanvasRef.current.height = parent.clientHeight;
+            // Then render
+            renderToCanvas(northCanvasRef.current, northImageObjects.current, northCurrentIndex);
+        }
+    }, [northImagesLoaded, northCurrentIndex, renderToCanvas]);
+
+    useEffect(() => {
+        if (southImagesLoaded && southCanvasRef.current && southImageObjects.current.length > 0) {
+            // Set canvas size first
+            const parent = southCanvasRef.current.parentElement;
+            southCanvasRef.current.width = parent.clientWidth;
+            southCanvasRef.current.height = parent.clientHeight;
+            // Then render
+            renderToCanvas(southCanvasRef.current, southImageObjects.current, southCurrentIndex);
+        }
+    }, [southImagesLoaded, southCurrentIndex, renderToCanvas]);
+
+    // Handle window resize
+    useEffect(() => {
+        window.addEventListener('resize', updateCanvasSize);
+        return () => window.removeEventListener('resize', updateCanvasSize);
+    }, [updateCanvasSize]);
 
     // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (northIntervalRef.current) {
-                clearInterval(northIntervalRef.current);
+            if (northAnimationRef.current) {
+                cancelAnimationFrame(northAnimationRef.current);
             }
-            if (southIntervalRef.current) {
-                clearInterval(southIntervalRef.current);
+            if (southAnimationRef.current) {
+                cancelAnimationFrame(southAnimationRef.current);
             }
         };
     }, []);
@@ -141,6 +372,22 @@ const Earth3D = () => {
             <div className="text-center mb-3 sm:mb-4 px-4">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">3D Aurora Forecast</h2>
                 <p className="text-gray-300 text-xs sm:text-sm">Last 24 Hours - Live Data from NOAA Space Weather Prediction Center</p>
+
+                {/* Loading Progress Bar - Fixed */}
+                {isLoading && (
+                    <div className="mt-3 max-w-md mx-auto">
+                        <div className="bg-gray-700 rounded-full h-2 overflow-hidden">
+                            <div
+                                className="bg-gradient-to-r from-green-400 to-blue-500 h-full transition-all duration-300 ease-out"
+                                style={{ width: `${loadingProgress}%` }}
+                            />
+                        </div>
+                        <p className="text-gray-400 text-xs mt-1">
+                            Loading images... {loadingProgress}% 
+                        </p>
+                    </div>
+                )}
+
                 <button
                     onClick={() => window.open('https://www.swpc.noaa.gov/products/aurora-30-minute-forecast', '_blank', 'noopener')}
                     className="mt-3 sm:mt-4 px-4 sm:px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-semibold text-sm sm:text-base"
@@ -152,33 +399,33 @@ const Earth3D = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 h-full">
                 {/* Northern Hemisphere */}
                 <div className="flex flex-col h-full">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center mb-3 sm:mb-4">Northern Hemisphere</h3>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center mb-3 sm:mb-4">
+                        Northern Hemisphere
+                    </h3>
 
-                    {/* Big Northern Player */}
+                    {/* Northern Canvas Player */}
                     <div className="relative w-full flex-1 bg-black rounded-lg overflow-hidden min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
                         {isLoading ? (
                             <div className="flex items-center justify-center h-full">
-                                <img
-                                    src="https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg"
-                                    alt="Loading Northern Aurora Forecast"
-                                    className="w-full h-full object-contain"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                    <div className="text-white text-sm sm:text-base md:text-lg">Loading Northern Data...</div>
+                                <div className="text-white text-sm sm:text-base md:text-lg animate-pulse">
+                                    Preloading Northern Hemisphere images...
                                 </div>
                             </div>
-                        ) : northImages.length > 0 ? (
+                        ) : northImagesLoaded ? (
                             <>
-                                <img
-                                    src={baseUrl + northImages[northCurrentIndex]?.url}
-                                    alt={`Northern Aurora Forecast - ${northImages[northCurrentIndex]?.time_tag}`}
-                                    className="w-full h-full object-contain"
+                                <canvas
+                                    ref={northCanvasRef}
+                                    className="w-full h-full"
+                                    style={{ imageRendering: 'high-quality' }}
                                 />
                                 <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black bg-opacity-70 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {northImages[northCurrentIndex]?.time_tag ?
                                         new Date(northImages[northCurrentIndex].time_tag).toLocaleString() :
                                         'Loading...'
                                     }
+                                </div>
+                                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black bg-opacity-70 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+                                    Frame {northCurrentIndex + 1} / {northImages.length}
                                 </div>
                             </>
                         ) : (
@@ -193,25 +440,25 @@ const Earth3D = () => {
                         <div className="flex justify-center space-x-2 sm:space-x-3">
                             <button
                                 onClick={toggleNorthPlayPause}
-                                className={`px-3 sm:px-4 md:px-6 py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm ${northIsPlaying
-                                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                                    : 'bg-green-600 hover:bg-green-700 text-white'
+                                className={`px-3 sm:px-4 md:px-6 py-2 rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm ${northIsPlaying
+                                    ? 'bg-red-600 hover:bg-red-700 text-white scale-105'
+                                    : 'bg-green-600 hover:bg-green-700 text-white hover:scale-105'
                                     }`}
-                                disabled={isLoading || northImages.length === 0}
+                                disabled={isLoading || !northImagesLoaded}
                             >
                                 {northIsPlaying ? '⏸️ Pause' : '▶️ Play'}
                             </button>
                             <button
                                 onClick={resetNorth}
-                                className="px-3 sm:px-4 md:px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-xs sm:text-sm"
-                                disabled={isLoading || northImages.length === 0}
+                                className="px-3 sm:px-4 md:px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm hover:scale-105"
+                                disabled={isLoading || !northImagesLoaded}
                             >
                                 🔄 Reset
                             </button>
                         </div>
                         <div className="max-w-xs mx-auto">
                             <label className="block text-white text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-center">
-                                Speed: {northPlaybackSpeed}/10
+                                Speed: {northPlaybackSpeed}/10 ({Math.round(1000 / speedToMs(northPlaybackSpeed))} fps)
                             </label>
                             <input
                                 type="range"
@@ -220,10 +467,14 @@ const Earth3D = () => {
                                 step="1"
                                 value={northPlaybackSpeed}
                                 onChange={handleNorthSpeedChange}
-                                className="w-full h-1.5 sm:h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                className="w-full h-1.5 sm:h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                                style={{
+                                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${northPlaybackSpeed * 10}%, #374151 ${northPlaybackSpeed * 10}%, #374151 100%)`
+                                }}
                             />
                             <div className="flex justify-between text-xs text-gray-400 mt-1">
                                 <span>Slow</span>
+                                <span className="text-green-400">●</span>
                                 <span>Fast</span>
                             </div>
                         </div>
@@ -232,33 +483,33 @@ const Earth3D = () => {
 
                 {/* Southern Hemisphere */}
                 <div className="flex flex-col h-full">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center mb-3 sm:mb-4">Southern Hemisphere</h3>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white text-center mb-3 sm:mb-4">
+                        Southern Hemisphere
+                    </h3>
 
-                    {/* Big Southern Player */}
+                    {/* Southern Canvas Player */}
                     <div className="relative w-full flex-1 bg-black rounded-lg overflow-hidden min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
                         {isLoading ? (
                             <div className="flex items-center justify-center h-full">
-                                <img
-                                    src="https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg"
-                                    alt="Loading Southern Aurora Forecast"
-                                    className="w-full h-full object-contain"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                    <div className="text-white text-sm sm:text-base md:text-lg">Loading Southern Data...</div>
+                                <div className="text-white text-sm sm:text-base md:text-lg animate-pulse">
+                                    Preloading Southern Hemisphere images...
                                 </div>
                             </div>
-                        ) : southImages.length > 0 ? (
+                        ) : southImagesLoaded ? (
                             <>
-                                <img
-                                    src={baseUrl + southImages[southCurrentIndex]?.url}
-                                    alt={`Southern Aurora Forecast - ${southImages[southCurrentIndex]?.time_tag}`}
-                                    className="w-full h-full object-contain"
+                                <canvas
+                                    ref={southCanvasRef}
+                                    className="w-full h-full"
+                                    style={{ imageRendering: 'high-quality' }}
                                 />
                                 <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-black bg-opacity-70 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
                                     {southImages[southCurrentIndex]?.time_tag ?
                                         new Date(southImages[southCurrentIndex].time_tag).toLocaleString() :
                                         'Loading...'
                                     }
+                                </div>
+                                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black bg-opacity-70 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm">
+                                    Frame {southCurrentIndex + 1} / {southImages.length}
                                 </div>
                             </>
                         ) : (
@@ -273,25 +524,25 @@ const Earth3D = () => {
                         <div className="flex justify-center space-x-2 sm:space-x-3">
                             <button
                                 onClick={toggleSouthPlayPause}
-                                className={`px-3 sm:px-4 md:px-6 py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm ${southIsPlaying
-                                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                                    : 'bg-green-600 hover:bg-green-700 text-white'
+                                className={`px-3 sm:px-4 md:px-6 py-2 rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm ${southIsPlaying
+                                    ? 'bg-red-600 hover:bg-red-700 text-white scale-105'
+                                    : 'bg-green-600 hover:bg-green-700 text-white hover:scale-105'
                                     }`}
-                                disabled={isLoading || southImages.length === 0}
+                                disabled={isLoading || !southImagesLoaded}
                             >
                                 {southIsPlaying ? '⏸️ Pause' : '▶️ Play'}
                             </button>
                             <button
                                 onClick={resetSouth}
-                                className="px-3 sm:px-4 md:px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-xs sm:text-sm"
-                                disabled={isLoading || southImages.length === 0}
+                                className="px-3 sm:px-4 md:px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm hover:scale-105"
+                                disabled={isLoading || !southImagesLoaded}
                             >
                                 🔄 Reset
                             </button>
                         </div>
                         <div className="max-w-xs mx-auto">
                             <label className="block text-white text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-center">
-                                Speed: {southPlaybackSpeed}/10
+                                Speed: {southPlaybackSpeed}/10 ({Math.round(1000 / speedToMs(southPlaybackSpeed))} fps)
                             </label>
                             <input
                                 type="range"
@@ -300,16 +551,43 @@ const Earth3D = () => {
                                 step="1"
                                 value={southPlaybackSpeed}
                                 onChange={handleSouthSpeedChange}
-                                className="w-full h-1.5 sm:h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                className="w-full h-1.5 sm:h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                                style={{
+                                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${southPlaybackSpeed * 10}%, #374151 ${southPlaybackSpeed * 10}%, #374151 100%)`
+                                }}
                             />
                             <div className="flex justify-between text-xs text-gray-400 mt-1">
                                 <span>Slow</span>
+                                <span className="text-green-400">●</span>
                                 <span>Fast</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Add custom CSS for slider */}
+            <style jsx>{`
+                .slider::-webkit-slider-thumb {
+                    appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    background: #10b981;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                }
+                
+                .slider::-moz-range-thumb {
+                    width: 16px;
+                    height: 16px;
+                    background: #10b981;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    border: none;
+                }
+            `}</style>
         </div>
     );
 };

@@ -27,6 +27,7 @@ export default function StormSafe() {
     const mountedRef = useRef(true);
     const lastTime = useRef(0);
     const gameAreaRef = useRef(null);
+    const positionRef = useRef({});
 
     useEffect(() => {
         mountedRef.current = true;
@@ -89,18 +90,30 @@ export default function StormSafe() {
             const x = Math.max(padding, Math.min(containerWidth - area.width - padding, baseX + randomOffsetX));
             const y = Math.max(padding, Math.min(containerHeight - area.height - padding, baseY + randomOffsetY));
 
-            // Random velocity for movement
-            const vx = (Math.random() - 0.5) * 2;
-            const vy = (Math.random() - 0.5) * 2;
+            // Random velocity for movement with varied speeds
+            const speed = 0.3 + Math.random() * 0.4; // Varied speeds for more natural movement
+            const angle = Math.random() * Math.PI * 2;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
 
-            newPositions[area.id] = { x, y, vx, vy };
+            newPositions[area.id] = {
+                x,
+                y,
+                vx,
+                vy,
+                targetX: x,
+                targetY: y,
+                smoothX: x,
+                smoothY: y
+            };
         });
 
         setAreaPositions(newPositions);
+        positionRef.current = newPositions;
     }, [spacecraftAreas, shuffleArray]);
 
-    // Optimized movement with proper boundary detection
-    const moveAreas = useCallback(() => {
+    // Smoother movement with interpolation
+    const moveAreas = useCallback((deltaTime) => {
         if (!gameAreaRef.current) return;
 
         const container = gameAreaRef.current;
@@ -109,6 +122,8 @@ export default function StormSafe() {
         const containerHeight = containerRect.height;
 
         const padding = 50;
+        const deltaSeconds = deltaTime / 1000; // Convert to seconds
+        const smoothingFactor = 0.15; // For interpolation
 
         setAreaPositions(prev => {
             const next = {};
@@ -116,35 +131,61 @@ export default function StormSafe() {
                 const current = prev[area.id];
                 if (!current) return;
 
-                let { x, y, vx, vy } = current;
+                let { x, y, vx, vy, smoothX = x, smoothY = y } = current;
 
-                // Apply movement
-                x += vx;
-                y += vy;
+                // Apply smooth movement based on delta time
+                x += vx * deltaSeconds * 60; // 60 for 60fps baseline
+                y += vy * deltaSeconds * 60;
 
-                // Boundary collision with proper bouncing
+                // Smooth boundary collision with better physics
+                const dampening = 0.95;
+                const bounceRandomness = 0.1;
+
                 if (x <= padding) {
-                    vx = Math.abs(vx) * 0.9; // Add some damping
                     x = padding;
+                    vx = Math.abs(vx) * dampening + (Math.random() - 0.5) * bounceRandomness;
                 } else if (x >= containerWidth - area.width - padding) {
-                    vx = -Math.abs(vx) * 0.9;
                     x = containerWidth - area.width - padding;
+                    vx = -Math.abs(vx) * dampening + (Math.random() - 0.5) * bounceRandomness;
                 }
 
                 if (y <= padding) {
-                    vy = Math.abs(vy) * 0.9;
                     y = padding;
+                    vy = Math.abs(vy) * dampening + (Math.random() - 0.5) * bounceRandomness;
                 } else if (y >= containerHeight - area.height - padding) {
-                    vy = -Math.abs(vy) * 0.9;
                     y = containerHeight - area.height - padding;
+                    vy = -Math.abs(vy) * dampening + (Math.random() - 0.5) * bounceRandomness;
                 }
 
-                // Add slight random variation to prevent getting stuck
-                if (Math.abs(vx) < 0.1) vx += (Math.random() - 0.5) * 0.5;
-                if (Math.abs(vy) < 0.1) vy += (Math.random() - 0.5) * 0.5;
+                // Add subtle orbital movement for more natural feel
+                const time = Date.now() * 0.001;
+                const orbitInfluence = 0.05;
+                vx += Math.sin(time + area.id.charCodeAt(0)) * orbitInfluence;
+                vy += Math.cos(time + area.id.charCodeAt(0)) * orbitInfluence;
 
-                next[area.id] = { x, y, vx, vy };
+                // Clamp velocities to prevent too fast movement
+                const maxSpeed = 1.5;
+                const currentSpeed = Math.sqrt(vx * vx + vy * vy);
+                if (currentSpeed > maxSpeed) {
+                    vx = (vx / currentSpeed) * maxSpeed;
+                    vy = (vy / currentSpeed) * maxSpeed;
+                }
+
+                // Smooth interpolation for display positions
+                smoothX += (x - smoothX) * smoothingFactor;
+                smoothY += (y - smoothY) * smoothingFactor;
+
+                next[area.id] = {
+                    x,
+                    y,
+                    vx,
+                    vy,
+                    smoothX,
+                    smoothY
+                };
             });
+
+            positionRef.current = next;
             return next;
         });
     }, [spacecraftAreas]);
@@ -153,57 +194,66 @@ export default function StormSafe() {
     const createParticle = useCallback(() => ({
         id: Math.random(),
         x: Math.random() * 100,
-        y: Math.random() * 100,
-        vx: (Math.random() - 0.5) * 1,
-        vy: Math.random() * 1.5 + 0.5,
+        y: -5,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: Math.random() * 0.8 + 0.3,
         size: Math.random() * 2 + 1,
         opacity: Math.random() * 0.6 + 0.4,
         color: Math.random() > 0.5 ? '#ff6b6b' : '#4ecdc4',
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 2
     }), []);
 
-    // High-performance animation loop
+    // High-performance animation loop with proper frame timing
     useEffect(() => {
         if (gameState !== 'playing') return;
+
+        let previousTime = performance.now();
+        let particleTimer = 0;
 
         const animate = (currentTime) => {
             if (!mountedRef.current) return;
 
-            // Throttle to 60fps
-            if (currentTime - lastTime.current < 16.67) {
-                animationRef.current = requestAnimationFrame(animate);
-                return;
-            }
-            lastTime.current = currentTime;
+            const deltaTime = Math.min(currentTime - previousTime, 33.33); // Cap at 30fps minimum
+            previousTime = currentTime;
 
-            // Move areas
+            // Move areas with delta time for smooth movement
             if (isMoving && !showResult) {
-                moveAreas();
+                moveAreas(deltaTime);
             }
 
-            // Update particles
+            // Update particles with delta time
+            particleTimer += deltaTime;
             if (stormIntensity > 0) {
                 setParticles(prev => {
                     const updated = prev
                         .map(p => ({
                             ...p,
-                            x: p.x + p.vx,
-                            y: p.y + p.vy,
-                            opacity: p.opacity - 0.005,
+                            x: p.x + p.vx * deltaTime * 0.06,
+                            y: p.y + p.vy * deltaTime * 0.06,
+                            opacity: p.opacity - 0.001 * deltaTime * 0.06,
+                            rotation: p.rotation + p.rotationSpeed * deltaTime * 0.06
                         }))
-                        .filter(p => p.y < 100 && p.opacity > 0);
+                        .filter(p => p.y < 105 && p.opacity > 0);
 
-                    // Add new particles
-                    if (updated.length < 15 && Math.random() < stormIntensity * 0.1) {
+                    // Add new particles based on timer
+                    if (particleTimer > 100 && updated.length < 20 && Math.random() < stormIntensity * 0.3) {
                         updated.push(createParticle());
+                        particleTimer = 0;
                     }
 
                     return updated;
                 });
             }
 
-            // Update spacecraft rotation
+            // Update spacecraft rotation smoothly
             if (isShaking) {
-                setSpacecraftRotation(prev => prev + (Math.random() - 0.5) * 1);
+                setSpacecraftRotation(prev => {
+                    const targetRotation = (Math.sin(currentTime * 0.01) * 2);
+                    return prev + (targetRotation - prev) * 0.1;
+                });
+            } else {
+                setSpacecraftRotation(prev => prev * 0.95); // Smooth return to normal
             }
 
             animationRef.current = requestAnimationFrame(animate);
@@ -416,7 +466,7 @@ export default function StormSafe() {
     const renderGame = () => (
         <div className="h-screen w-screen relative overflow-hidden">
             {/* Header - Overlay on top */}
-            <div className="pt-20 absolute top-0 left-0 right-0 z-50 flex justify-between items-center  backdrop-blur-md p-4 border-b border-white/10">
+            <div className="pt-20 absolute top-0 left-0 right-0 z-50 flex justify-between items-center backdrop-blur-md p-4 border-b border-white/10">
                 <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                         <span className="text-red-400 text-xl">❤️</span>
@@ -465,25 +515,27 @@ export default function StormSafe() {
                 className="h-screen w-screen absolute inset-0 bg-gradient-to-br from-gray-800/30 to-blue-900/30 overflow-hidden"
                 style={{
                     transform: isShaking ? `rotate(${spacecraftRotation}deg)` : 'none',
-                    transition: isShaking ? 'none' : 'transform 0.1s ease-out'
+                    transition: 'none' // Remove transition for smoother animation
                 }}
             >
                 {/* Background particles */}
                 {particles.map((p) => (
                     <div
                         key={p.id}
-                        className="absolute w-1 h-1 rounded-full pointer-events-none z-10"
+                        className="absolute rounded-full pointer-events-none z-10"
                         style={{
                             left: `${p.x}%`,
                             top: `${p.y}%`,
+                            width: `${p.size * 2}px`,
+                            height: `${p.size * 2}px`,
                             backgroundColor: p.color,
                             opacity: p.opacity,
-                            transform: `scale(${p.size})`,
+                            transform: `rotate(${p.rotation}deg)`,
                         }}
                     />
                 ))}
 
-                {/* Moving Spacecraft Areas */}
+                {/* Moving Spacecraft Areas - Using transform for smoother movement */}
                 {shuffledAreas.map((area) => {
                     const pos = areaPositions[area.id];
                     if (!pos) return null;
@@ -499,7 +551,7 @@ export default function StormSafe() {
                             key={area.id}
                             onClick={() => handleAreaClick(area)}
                             disabled={!!selectedArea || showResult}
-                            className={`absolute rounded-xl border-2 transition-all duration-200 transform hover:scale-105 z-20 ${pickedRight
+                            className={`absolute rounded-xl border-2 z-20 ${pickedRight
                                 ? 'border-green-400 bg-green-500/30 shadow-green-400/50 shadow-xl'
                                 : pickedWrong
                                     ? 'border-red-400 bg-red-500/30 shadow-red-400/50 shadow-xl'
@@ -508,10 +560,11 @@ export default function StormSafe() {
                                         : 'border-gray-500 bg-gray-700/50 hover:border-blue-400 hover:bg-blue-600/30'
                                 } ${selectedArea ? 'opacity-50' : 'opacity-100'}`}
                             style={{
-                                left: pos.x,
-                                top: pos.y,
+                                transform: `translate(${pos.smoothX}px, ${pos.smoothY}px)`,
                                 width: area.width,
                                 height: area.height,
+                                transition: 'border-color 0.2s, background-color 0.2s, box-shadow 0.2s',
+                                willChange: 'transform',
                                 background: pickedRight
                                     ? 'linear-gradient(135deg, #10b981, #059669)'
                                     : pickedWrong
@@ -522,7 +575,7 @@ export default function StormSafe() {
                             }}
                             aria-label={area.name}
                         >
-                            <div className="flex flex-col items-center justify-center h-full text-white p-2">
+                            <div className="flex flex-col items-center justify-center h-full text-white p-2 transition-transform duration-200 hover:scale-110">
                                 <div className="text-2xl mb-1">{area.icon}</div>
                                 <div className="text-xs font-semibold text-center leading-tight">
                                     {area.name}
@@ -537,8 +590,7 @@ export default function StormSafe() {
                     <div
                         className="absolute text-3xl animate-bounce pointer-events-none z-30"
                         style={{
-                            left: areaPositions.shelter.x + 65,
-                            top: areaPositions.shelter.y - 20
+                            transform: `translate(${areaPositions.shelter.smoothX + 65}px, ${areaPositions.shelter.smoothY - 20}px)`
                         }}
                     >
                         👨‍🚀
