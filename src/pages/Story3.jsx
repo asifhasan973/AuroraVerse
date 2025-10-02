@@ -226,6 +226,7 @@ export default function Story3() {
   const [tapCount, setTapCount] = useState(0);
   const [allTapsComplete, setAllTapsComplete] = useState(false);
   const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // State for custom position editing (for development/testing)
   const [customPositions, setCustomPositions] = useState({
@@ -272,6 +273,8 @@ export default function Story3() {
         if (canNext) {
           setStepIndex(i => i + 1);
         } else {
+          // Show loading immediately before navigation
+          setIsTransitioning(true);
           // Go to next story part
           navigate("/story4");
         }
@@ -313,6 +316,8 @@ export default function Story3() {
     if (canNext) {
       setStepIndex(i => i + 1);
     } else {
+      // Show loading immediately before navigation
+      setIsTransitioning(true);
       // Go to next story part
       navigate("/story4");
     }
@@ -401,6 +406,9 @@ export default function Story3() {
         <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
           {/* Global loading overlay for the scene */}
           <LoadingOverlay show={!assetsReady} label={`Preparing scene… ${progress}%`} />
+
+          {/* Transition loading overlay */}
+          <LoadingOverlay show={isTransitioning} label="Loading Story 4..." />
           {/* Background Image */}
           <div
             className="absolute inset-0 -z-30 bg-cover bg-center transition-all duration-1000"

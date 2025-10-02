@@ -175,7 +175,7 @@ export default function Home() {
                 <span className="font-bold text-base sm:text-lg">Start Journey</span>
               </Button>
             </Link>
-            <Link to="https://u2204125.github.io/aurora-sentinel/" className="w-full sm:w-auto">
+            <Link to="/aurora" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="secondary"

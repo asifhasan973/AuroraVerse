@@ -24,6 +24,7 @@ export default function Story2() {
   const jumpToLast = Boolean(location.state?.jumpToLast);
   const [i, setI] = useState(jumpToLast ? LINES.length - 1 : 0);
   const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const canNext = i < LINES.length - 1;
   const canBack = i > 0;
   const navigate = useNavigate();
@@ -41,6 +42,8 @@ export default function Story2() {
         if (canNext) {
           setI((x) => x + 1);
         } else {
+          // Show loading immediately before navigation
+          setIsTransitioning(true);
           // Final line -> go to Story3 first dialogue
           navigate("/story3");
         }
@@ -58,6 +61,9 @@ export default function Story2() {
         {/* Main Content Area */}
         <div className={`${isVocabularySideBySide ? 'flex-1 min-w-0 relative pt-20' : 'w-full pt-20'}`}>
           <LoadingOverlay show={!assetsReady} label={`Loading… ${progress}%`} />
+
+          {/* Transition loading overlay */}
+          <LoadingOverlay show={isTransitioning} label="Loading Story 3..." />
           {/* Background (fixed) */}
           <div
             className="absolute inset-0 -z-30 bg-cover bg-center"
@@ -92,6 +98,8 @@ export default function Story2() {
             loading={!assetsReady}
             onNext={() => {
               if (canNext) return setI((x) => x + 1);
+              // Show loading immediately before navigation
+              setIsTransitioning(true);
               // Final line -> go to Story3 first dialogue
               navigate("/story3");
             }}

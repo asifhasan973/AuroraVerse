@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import AuroraLab from "./pages/AuroraLab";
 import AuroraForecast from "./pages/AuroraForecast";
 import Quiz from "./pages/Quiz";
 import Start from "./pages/Start";
@@ -16,6 +15,7 @@ import AIQuestionAnswer from "./pages/AIQuestionAnswer"; // AI Question Answer r
 import Data from "./pages/Data"; // Data documents route
 import SpaceDefense from "./pages/SpaceDefense"; // Space Defense game route
 import Games from "./pages/Games"; // Games page route
+import AuroraLab from "./pages/AuroraLab"; // Aurora Lab route
 
 export default function App() {
   return (
@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/ai-qa" element={<AIQuestionAnswer />} />
           <Route path="/data" element={<Data />} />
           <Route path="/space-defense" element={<SpaceDefense />} />
+          <Route path="/aurora-lab" element={<AuroraLab />} />
         </Routes>
       </main>
 

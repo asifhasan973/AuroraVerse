@@ -116,7 +116,7 @@ export default function Finale() {
               Play Again
             </Link>
             <Link
-              to="https://u2204125.github.io/aurora-sentinel/"
+              to="/aurora"
               className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20
                        hover:bg-white/20 transition-all duration-200 hover:scale-105 text-sm sm:text-base"
             >

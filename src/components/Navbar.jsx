@@ -52,7 +52,7 @@ export default function Navbar() {
         <NavItem to="/ai-qa">AI Assistant</NavItem>
         <NavItem to="/data">Data</NavItem>
         <NavItem to="/quiz">Quiz</NavItem>
-        <NavItem to="https://u2204125.github.io/aurora-sentinel/">Aurora Lab</NavItem>
+        <NavItem to="/aurora">Aurora Lab</NavItem>
         <StartJourneyButton />
       </div>
 
@@ -92,7 +92,7 @@ export default function Navbar() {
             <MobileItem to="/ai-qa" onClick={() => setOpen(false)}>AI Assistant</MobileItem>
             <MobileItem to="/data" onClick={() => setOpen(false)}>Data</MobileItem>
             <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
-            <MobileItem to="https://u2204125.github.io/aurora-sentinel/" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
+            <MobileItem to="/aurora" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
             <div className="pt-2 border-t border-white/10">
               <MobileStartJourneyButton onClick={() => setOpen(false)} />
             </div>

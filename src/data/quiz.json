@@ -17,8 +17,6 @@
       "Ice cream machines 🍦",
       "Mobile phones",
       "Power grids"
-
-
     ],
     "correctIndex": 0,
     "fact": "Solar storms can damage satellites, confuse signals, and disrupt GPS."
@@ -28,11 +26,32 @@
     "options": [
       "Tornadoes",
       "Auroras",
-
       "Earthquakes",
       "Volcanoes"
     ],
     "correctIndex": 1,
-    "fact": "Auroras appear when solar particles collide with Earth’s atmosphere near the poles."
+    "fact": "Auroras appear when solar particles collide with Earth's atmosphere near the poles."
+  },
+  {
+    "question": "How long does it take for solar flares to reach Earth?",
+    "options": [
+      "8 minutes ⚡",
+      "1 hour",
+      "1 day",
+      "1 week"
+    ],
+    "correctIndex": 0,
+    "fact": "Solar flares travel at the speed of light and reach Earth in just 8 minutes!"
+  },
+  {
+    "question": "What does NASA do to keep astronauts safe?",
+    "options": [
+      "Give them superhero capes 🦸",
+      "Monitor the Sun 24/7",
+      "Hide them underground",
+      "Send them to the Moon"
+    ],
+    "correctIndex": 1,
+    "fact": "NASA watches the Sun all day and night to warn astronauts about dangerous solar storms."
   }
 ]

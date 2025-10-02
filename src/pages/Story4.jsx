@@ -363,6 +363,7 @@ export default function Story4() {
     const [isVocabularySideBySide, setIsVocabularySideBySide] = useState(false);
     const [buttonHovered, setButtonHovered] = useState(false);
     const [isNavigatingToQuiz, setIsNavigatingToQuiz] = useState(false);
+    const [isNavigatingToFinale, setIsNavigatingToFinale] = useState(false);
 
     const navigate = useNavigate();
     const windowSize = useWindowSize();
@@ -404,6 +405,8 @@ export default function Story4() {
                 if (canNext) {
                     setStepIndex(i => i + 1);
                 } else {
+                    // Show loading immediately before navigation
+                    setIsNavigatingToFinale(true);
                     // Go to finale or next story part
                     navigate("/finale");
                 }
@@ -420,6 +423,8 @@ export default function Story4() {
         if (canNext) {
             setStepIndex(i => i + 1);
         } else {
+            // Show loading immediately before navigation
+            setIsNavigatingToFinale(true);
             // Go to finale or next story part
             navigate("/finale");
         }
@@ -471,6 +476,16 @@ export default function Story4() {
                                 <div className="text-center">
                                     <div className="animate-spin w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full mx-auto mb-4"></div>
                                     <p className="text-yellow-400 text-xl font-bold">Launching Quiz! 🚀</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Finale navigation overlay */}
+                        {isNavigatingToFinale && (
+                            <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="animate-spin w-12 h-12 border-4 border-purple-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+                                    <p className="text-purple-400 text-xl font-bold">Loading Finale... 🎉</p>
                                 </div>
                             </div>
                         )}

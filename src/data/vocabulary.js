@@ -69,24 +69,6 @@ export const START_VOCABULARY = {
 
     // Dialogue: "Hold my hand, let's fly! 🚀"
     "take-off": [
-        {
-            word: "Fly? How is it possible?",
-            explanation: "Its a fairy tale bro. But its possible with the help of a rocket.",
-            media: [
-                {
-                    type: "image",
-                    src: "https://www.nasa.gov/wp-content/uploads/2018/08/sls_block1_tps_afterburner_engmarkings_sm.jpg",
-                    alt: "Child flying",
-                    externalLink: "https://www.nasa.gov/humans-in-space/nasa-guide-outlines-deep-space-rockets-unprecedented-capabilities/",
-                    sourceText: "NASA"
-
-                }
-            ],
-            showMore: {
-                link: "https://www.nasa.gov/audience/forstudents/k-4/stories/nasa-knows/what-is-flight-k4.html",
-                text: "Learn about flight"
-            }
-        }
     ]
 };
 
