@@ -12,6 +12,10 @@ import Story4 from "./pages/Story4"; // Story 4 route
 import StormSafe from "./pages/StormSafe"; // StormSafe game route
 import KIndexDashboard from "./pages/KIndexDashboard"; // K-Index Dashboard route
 import ElectronFluenceForecast from "./pages/ElectronFluenceForecast"; // Electron Fluence Forecast route
+import AIQuestionAnswer from "./pages/AIQuestionAnswer"; // AI Question Answer route
+import Data from "./pages/Data"; // Data documents route
+import SpaceDefense from "./pages/SpaceDefense"; // Space Defense game route
+import Games from "./pages/Games"; // Games page route
 
 export default function App() {
   return (
@@ -23,6 +27,7 @@ export default function App() {
           <Route path="/aurora" element={<AuroraLab />} />
           <Route path="/forecast" element={<AuroraForecast />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/games" element={<Games />} />
           <Route path="/stormsafe" element={<StormSafe />} />
           <Route path="/finale" element={<Finale />} />
           <Route path="/start" element={<Start />} />
@@ -31,6 +36,9 @@ export default function App() {
           <Route path="/story4" element={<Story4 />} />
           <Route path="/kindex" element={<KIndexDashboard />} />
           <Route path="/electrons" element={<ElectronFluenceForecast />} />
+          <Route path="/ai-qa" element={<AIQuestionAnswer />} />
+          <Route path="/data" element={<Data />} />
+          <Route path="/space-defense" element={<SpaceDefense />} />
         </Routes>
       </main>
 

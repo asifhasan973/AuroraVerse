@@ -158,18 +158,31 @@ export default function ElectronFluenceForecast() {
     const electronStorm = fluenceData ? getElectronStormLevel(fluenceData.current) : null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white">
-            {/* Animated stars background */}
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-cyan-900 to-teal-900 text-white">
+            {/* Animated particles background */}
             <div className="absolute inset-0 overflow-hidden">
-                {[...Array(50)].map((_, i) => (
+                {[...Array(60)].map((_, i) => (
                     <div
                         key={i}
-                        className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+                        className="absolute w-1 h-1 bg-cyan-300 rounded-full animate-pulse"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 3}s`,
-                            animationDuration: `${2 + Math.random() * 2}s`
+                            animationDelay: `${Math.random() * 4}s`,
+                            animationDuration: `${3 + Math.random() * 3}s`
+                        }}
+                    />
+                ))}
+                {/* Floating electron particles */}
+                {[...Array(20)].map((_, i) => (
+                    <div
+                        key={`electron-${i}`}
+                        className="absolute w-2 h-2 bg-yellow-400 rounded-full animate-bounce opacity-60"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 5}s`,
+                            animationDuration: `${4 + Math.random() * 2}s`
                         }}
                     />
                 ))}
@@ -178,12 +191,15 @@ export default function ElectronFluenceForecast() {
             <div className="relative z-10 container mx-auto px-4 py-8 pt-20">
                 {/* Header */}
                 <div className="text-center mb-8 md:mb-12 px-4">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6">
-                        <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-                            ⚡ Electron Storm Station ⚡
-                        </span>
-                    </h1>
-                    <p className="text-lg sm:text-xl md:text-2xl text-blue-200 max-w-4xl mx-auto font-semibold">
+                    <div className="relative inline-block">
+                        <div className="absolute -inset-4 bg-gradient-to-r from-cyan-400 via-yellow-400 to-teal-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                        <h1 className="relative text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6">
+                            <span className="bg-gradient-to-r from-cyan-300 via-yellow-300 to-teal-300 bg-clip-text text-transparent">
+                                ⚡ Electron Storm Station ⚡
+                            </span>
+                        </h1>
+                    </div>
+                    <p className="text-lg sm:text-xl md:text-2xl text-cyan-200 max-w-4xl mx-auto font-semibold">
                         Watch the electron particles dance in space!
                     </p>
                 </div>
@@ -192,7 +208,7 @@ export default function ElectronFluenceForecast() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* Current Electron Storm Card */}
                     <div className="lg:col-span-2 order-1 lg:order-1">
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-white/20 shadow-2xl">
+                        <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center flex items-center justify-center gap-2 md:gap-3">
                                 <span className="text-2xl sm:text-3xl md:text-4xl">{electronStorm?.character || "⚡"}</span>
                                 <span className="hidden sm:inline">Current Electron Storm</span>
@@ -214,24 +230,24 @@ export default function ElectronFluenceForecast() {
                                         <h3 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${electronStorm.color} mb-2 md:mb-4`}>
                                             {electronStorm.level} Electrons!
                                         </h3>
-                                        <p className="text-lg sm:text-xl md:text-2xl text-blue-200 font-semibold px-2">
+                                        <p className="text-lg sm:text-xl md:text-2xl text-cyan-200 font-semibold px-2">
                                             {electronStorm.description}
                                         </p>
-                                        <div className="bg-white/5 rounded-xl md:rounded-2xl p-4 md:p-6 border border-white/10">
+                                        <div className="bg-gradient-to-r from-cyan-500/10 to-teal-500/10 rounded-xl md:rounded-2xl p-4 md:p-6 border border-cyan-400/20">
                                             <p className="text-lg md:text-xl text-yellow-200 font-bold">
                                                 {electronStorm.message}
                                             </p>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm md:text-lg">
-                                            <div className="bg-white/5 rounded-lg md:rounded-xl p-3 md:p-4">
-                                                <p className="text-gray-300 text-xs md:text-sm">Electron Count</p>
-                                                <p className="text-lg md:text-2xl font-bold text-cyan-300">
+                                            <div className="bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-lg md:rounded-xl p-3 md:p-4 border border-cyan-400/20">
+                                                <p className="text-cyan-300 text-xs md:text-sm">Electron Count</p>
+                                                <p className="text-lg md:text-2xl font-bold text-cyan-200">
                                                     {fluenceData.current.toLocaleString()}
                                                 </p>
                                             </div>
-                                            <div className="bg-white/5 rounded-lg md:rounded-xl p-3 md:p-4">
-                                                <p className="text-gray-300 text-xs md:text-sm">Solar Wind Speed</p>
-                                                <p className="text-lg md:text-2xl font-bold text-orange-300">
+                                            <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-lg md:rounded-xl p-3 md:p-4 border border-yellow-400/20">
+                                                <p className="text-yellow-300 text-xs md:text-sm">Solar Wind Speed</p>
+                                                <p className="text-lg md:text-2xl font-bold text-yellow-200">
                                                     {fluenceData.speed} km/s
                                                 </p>
                                             </div>
@@ -252,7 +268,7 @@ export default function ElectronFluenceForecast() {
                     {/* Info Panels */}
                     <div className="space-y-4 md:space-y-6 order-2 lg:order-2">
                         {/* Electron Storm Scale */}
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-white/20 shadow-2xl">
+                        <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
                             <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-center">⚡ Electron Storm Scale</h3>
                             <div className="space-y-2 md:space-y-4">
                                 {[
@@ -262,14 +278,14 @@ export default function ElectronFluenceForecast() {
                                     { range: "100M-500M", level: "Stormy", emoji: "🌪️", color: "text-orange-400", desc: "Electrons are partying" },
                                     { range: "&gt; 500M", level: "Extreme", emoji: "😡", color: "text-red-400", desc: "Electrons are crazy" }
                                 ].map((item, index) => (
-                                    <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg md:rounded-xl p-2 md:p-3">
+                                    <div key={index} className="flex items-center justify-between bg-gradient-to-r from-slate-700/20 to-cyan-800/20 rounded-lg md:rounded-xl p-2 md:p-3 border border-cyan-400/10">
                                         <div className="flex items-center gap-2 md:gap-3">
                                             <span className="text-lg md:text-2xl">{item.emoji}</span>
                                             <span className={`font-bold text-sm md:text-base ${item.color}`}>{item.level}</span>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xs md:text-sm text-gray-300">{item.range}</div>
-                                            <div className="text-xs text-gray-400 hidden sm:block">{item.desc}</div>
+                                            <div className="text-xs md:text-sm text-cyan-300">{item.range}</div>
+                                            <div className="text-xs text-cyan-400 hidden sm:block">{item.desc}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -277,8 +293,8 @@ export default function ElectronFluenceForecast() {
                         </div>
 
                         {/* Solar Wind Speed */}
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-white/20 shadow-2xl">
-                            <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-center">🌬️ Solar Wind Speed</h3>
+                        <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
+                            <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-center text-cyan-300">🌬️ Solar Wind Speed</h3>
                             {fluenceData ? (
                                 <div className="text-center">
                                     <div className="text-4xl md:text-6xl mb-2 md:mb-4">{fluenceData.solarWindEmoji}</div>
@@ -297,20 +313,20 @@ export default function ElectronFluenceForecast() {
                         </div>
 
                         {/* Fun Facts */}
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-white/20 shadow-2xl">
-                            <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-center">🚀 Fun Electron Facts</h3>
+                        <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
+                            <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-center text-cyan-300">🚀 Fun Electron Facts</h3>
                             <div className="space-y-3 md:space-y-4 text-xs md:text-sm">
-                                <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
-                                    <p className="font-semibold text-pink-200 text-xs md:text-sm">Did you know?</p>
-                                    <p className="text-gray-200 text-xs md:text-sm">Electrons are tiny particles that zoom around in space!</p>
+                                <div className="bg-gradient-to-r from-cyan-500/20 to-teal-500/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-cyan-400/20">
+                                    <p className="font-semibold text-cyan-200 text-xs md:text-sm">Did you know?</p>
+                                    <p className="text-cyan-100 text-xs md:text-sm">Electrons are tiny particles that zoom around in space!</p>
                                 </div>
-                                <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
-                                    <p className="font-semibold text-blue-200 text-xs md:text-sm">Cool fact!</p>
-                                    <p className="text-gray-200 text-xs md:text-sm">When there are lots of electrons, satellites need to be careful!</p>
+                                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-yellow-400/20">
+                                    <p className="font-semibold text-yellow-200 text-xs md:text-sm">Cool fact!</p>
+                                    <p className="text-yellow-100 text-xs md:text-sm">When there are lots of electrons, satellites need to be careful!</p>
                                 </div>
-                                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
-                                    <p className="font-semibold text-yellow-200 text-xs md:text-sm">Amazing!</p>
-                                    <p className="text-gray-200 text-xs md:text-sm">Solar wind carries electrons from the Sun to Earth!</p>
+                                <div className="bg-gradient-to-r from-teal-500/20 to-cyan-500/20 rounded-lg md:rounded-xl p-3 md:p-4 border border-teal-400/20">
+                                    <p className="font-semibold text-teal-200 text-xs md:text-sm">Amazing!</p>
+                                    <p className="text-teal-100 text-xs md:text-sm">Solar wind carries electrons from the Sun to Earth!</p>
                                 </div>
                             </div>
                         </div>
@@ -320,8 +336,8 @@ export default function ElectronFluenceForecast() {
                 {/* Forecast Section */}
                 {fluenceData && (
                     <div className="mt-8 md:mt-12">
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-white/20 shadow-2xl">
-                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-yellow-300">
+                        <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-cyan-300">
                                 🔮 4-Day Electron Forecast
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -333,18 +349,18 @@ export default function ElectronFluenceForecast() {
                                 ].map((forecast, index) => {
                                     const stormLevel = getElectronStormLevel(forecast.fluence);
                                     return (
-                                        <div key={index} className="bg-white/5 rounded-xl md:rounded-2xl p-4 md:p-6 text-center">
-                                            <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4">{forecast.day}</h4>
+                                        <div key={index} className="bg-gradient-to-br from-slate-700/20 to-cyan-800/20 rounded-xl md:rounded-2xl p-4 md:p-6 text-center border border-cyan-400/20">
+                                            <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-cyan-200">{forecast.day}</h4>
                                             <div className={`inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full border-4 ${stormLevel.bgColor} mb-3 md:mb-4`}>
                                                 <span className="text-2xl md:text-3xl">{stormLevel.emoji}</span>
                                             </div>
                                             <p className={`text-base md:text-lg font-bold ${stormLevel.color} mb-2`}>
                                                 {stormLevel.level}
                                             </p>
-                                            <p className="text-lg md:text-2xl font-bold text-cyan-300 mb-2">
+                                            <p className="text-lg md:text-2xl font-bold text-cyan-200 mb-2">
                                                 {forecast.fluence.toLocaleString()}
                                             </p>
-                                            <p className="text-xs md:text-sm text-gray-300">
+                                            <p className="text-xs md:text-sm text-cyan-300">
                                                 {stormLevel.description}
                                             </p>
                                         </div>
@@ -357,17 +373,17 @@ export default function ElectronFluenceForecast() {
 
                 {/* Real-time Chart Section */}
                 <div className="mt-8 md:mt-12 flex justify-center">
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-white/20 shadow-2xl w-full max-w-6xl">
+                    <div className="bg-gradient-to-br from-slate-800/30 via-cyan-900/20 to-teal-800/30 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full max-w-6xl">
                         <div className="flex flex-col items-center mb-4 md:mb-6">
-                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-yellow-300 flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-cyan-300 flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
                                 📈 Electron Fluence Chart
                             </h3>
                             <div className="flex flex-col sm:flex-row items-center gap-2 md:gap-4">
                                 <button
                                     onClick={() => setAutoRefresh(!autoRefresh)}
                                     className={`px-3 py-2 md:px-4 rounded-lg md:rounded-xl font-semibold transition-all text-sm md:text-base ${autoRefresh
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-500 text-gray-200'
+                                        ? 'bg-cyan-500 text-white'
+                                        : 'bg-slate-600 text-slate-200'
                                         }`}
                                 >
                                     <span className="hidden sm:inline">{autoRefresh ? '🔄 Auto-Update ON' : '⏸️ Auto-Update OFF'}</span>
@@ -375,7 +391,7 @@ export default function ElectronFluenceForecast() {
                                 </button>
                                 <button
                                     onClick={fetchFluenceData}
-                                    className="px-3 py-2 md:px-4 bg-blue-500 text-white rounded-lg md:rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm md:text-base"
+                                    className="px-3 py-2 md:px-4 bg-teal-500 text-white rounded-lg md:rounded-xl font-semibold hover:bg-teal-600 transition-colors text-sm md:text-base"
                                 >
                                     🔄 Refresh Now
                                 </button>
@@ -408,20 +424,20 @@ export default function ElectronFluenceForecast() {
 
                 {/* Educational Section */}
                 <div className="mt-8 md:mt-12">
-                    <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-white/20 shadow-2xl">
-                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-yellow-300">⚡ What are Electron Storms?</h3>
+                    <div className="bg-gradient-to-r from-cyan-500/20 to-teal-500/20 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border-2 border-cyan-400/30 shadow-2xl shadow-cyan-500/10">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-cyan-300">⚡ What are Electron Storms?</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                             <div>
                                 <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-cyan-300">🌌 Electrons in Space</h4>
-                                <p className="text-sm md:text-lg text-gray-200 leading-relaxed">
+                                <p className="text-sm md:text-lg text-cyan-100 leading-relaxed">
                                     Electrons are tiny particles that zoom around in space! When the Sun sends out energy,
                                     it carries lots of electrons with it. We count how many electrons are around Earth
                                     to understand space weather!
                                 </p>
                             </div>
                             <div>
-                                <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-pink-300">🛰️ Why It Matters</h4>
-                                <p className="text-sm md:text-lg text-gray-200 leading-relaxed">
+                                <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-teal-300">🛰️ Why It Matters</h4>
+                                <p className="text-sm md:text-lg text-teal-100 leading-relaxed">
                                     When there are too many electrons, they can affect satellites and make them work funny!
                                     That's why scientists watch electron storms very carefully to keep our technology
                                     safe and working properly!
@@ -434,7 +450,7 @@ export default function ElectronFluenceForecast() {
                 {/* Interactive Elements */}
                 <div className="mt-6 md:mt-8 text-center">
                     <button
-                        className="bg-gradient-to-r from-yellow-400 to-pink-400 text-black font-bold py-3 px-6 md:py-4 md:px-8 rounded-xl md:rounded-2xl text-lg md:text-xl hover:scale-105 transition-transform duration-200 shadow-2xl"
+                        className="bg-gradient-to-r from-cyan-400 to-teal-400 text-black font-bold py-3 px-6 md:py-4 md:px-8 rounded-xl md:rounded-2xl text-lg md:text-xl hover:scale-105 transition-transform duration-200 shadow-2xl shadow-cyan-500/25"
                         onClick={() => window.location.reload()}
                     >
                         <span className="hidden sm:inline">🔄 Check Electron Storms Again!</span>

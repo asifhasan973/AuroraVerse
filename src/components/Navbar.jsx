@@ -45,13 +45,14 @@ export default function Navbar() {
 
       {/* Desktop links */}
       <div className="hidden md:flex items-center gap-6 lg:gap-10 text-sm font-bold">
-        <NavItem to="/">Home</NavItem>
-        <NavItem to="https://u2204125.github.io/aurora-sentinel/">Aurora Lab</NavItem>
         <NavItem to="/forecast">Aurora Forecast</NavItem>
-        <NavItem to="/quiz">Quiz</NavItem>
-        <NavItem to="/stormsafe">StormSafe</NavItem>
         <NavItem to="/kindex">Mood Meter</NavItem>
         <NavItem to="/electrons">Electron Storms</NavItem>
+        <NavItem to="/games">Games</NavItem>
+        <NavItem to="/ai-qa">AI Assistant</NavItem>
+        <NavItem to="/data">Data</NavItem>
+        <NavItem to="/quiz">Quiz</NavItem>
+        <NavItem to="https://u2204125.github.io/aurora-sentinel/">Aurora Lab</NavItem>
         <StartJourneyButton />
       </div>
 
@@ -84,13 +85,14 @@ export default function Navbar() {
                      p-3 md:hidden"
         >
           <div className="space-y-1">
-            <MobileItem to="/" onClick={() => setOpen(false)}>Home</MobileItem>
-            <MobileItem to="https://u2204125.github.io/aurora-sentinel/" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
             <MobileItem to="/forecast" onClick={() => setOpen(false)}>Aurora Forecast</MobileItem>
-            <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
-            <MobileItem to="/stormsafe" onClick={() => setOpen(false)}>StormSafe</MobileItem>
-            <MobileItem to="/kindex" onClick={() => setOpen(false)}>K-Index Dashboard</MobileItem>
+            <MobileItem to="/kindex" onClick={() => setOpen(false)}>Mood Meter</MobileItem>
             <MobileItem to="/electrons" onClick={() => setOpen(false)}>Electron Storms</MobileItem>
+            <MobileItem to="/games" onClick={() => setOpen(false)}>Games</MobileItem>
+            <MobileItem to="/ai-qa" onClick={() => setOpen(false)}>AI Assistant</MobileItem>
+            <MobileItem to="/data" onClick={() => setOpen(false)}>Data</MobileItem>
+            <MobileItem to="/quiz" onClick={() => setOpen(false)}>Quiz</MobileItem>
+            <MobileItem to="https://u2204125.github.io/aurora-sentinel/" onClick={() => setOpen(false)}>Aurora Lab</MobileItem>
             <div className="pt-2 border-t border-white/10">
               <MobileStartJourneyButton onClick={() => setOpen(false)} />
             </div>
