@@ -1,118 +1,12 @@
 // src/pages/AIQuestionAnswer.jsx
 import { useState, useRef, useEffect } from "react";
 import { Button } from "../components/ui/Button";
+import { getAIResponse, isApiConfigured, getApiStatus, testApiConnection } from "../services/aiService";
 
-// AI responses for different space weather topics
-const AI_RESPONSES = {
-    aurora: {
-        keywords: ["aurora", "northern lights", "southern lights", "aurora borealis", "aurora australis", "lights", "dancing lights", "polar lights", "sky lights", "colorful sky", "green lights", "pink lights", "purple lights"],
-        responses: [
-            "Auroras are beautiful lights in the sky that happen when particles from the Sun hit Earth's atmosphere! They look like colorful curtains dancing in the night sky. The best time to see them is when there's a lot of solar activity! 🌌✨",
-            "The Northern Lights (Aurora Borealis) and Southern Lights (Aurora Australis) are like nature's light show! They happen when the Sun sends charged particles toward Earth, and our magnetic field guides them to the poles where they create amazing colors! 🌈",
-            "Auroras come in many colors - green, pink, purple, and even red! The color depends on what type of gas in our atmosphere the solar particles hit. It's like a cosmic paintbrush painting the sky! 🎨",
-            "Did you know auroras can make sounds? Some people report hearing crackling or hissing sounds when auroras are very strong! It's like the sky is whispering to us! 👂✨",
-            "Auroras happen on other planets too! Jupiter and Saturn have auroras that are even bigger and more powerful than Earth's! Imagine seeing those from space! 🪐🌟"
-        ]
-    },
-    solar_storm: {
-        keywords: ["solar storm", "sun storm", "space storm", "solar flare", "coronal mass ejection", "cme", "storm", "solar wind", "solar particles", "sun explosion", "solar activity", "space weather storm", "geomagnetic storm"],
-        responses: [
-            "Solar storms are like the Sun having a temper tantrum! It sends out huge bursts of energy and particles that can travel all the way to Earth. Don't worry though - our planet has a magnetic shield that protects us! 🛡️☀️",
-            "When the Sun gets really active, it can send billions of tons of particles toward Earth at super high speeds! This can cause beautiful auroras but might also affect satellites and power grids. Scientists watch the Sun 24/7 to keep us safe! 🔬",
-            "Solar storms are actually pretty common! The Sun goes through cycles of being more or less active. During the active times, we see more sunspots, solar flares, and auroras. It's like the Sun's way of showing off! 😄",
-            "The biggest solar storm ever recorded happened in 1859! It was so strong that people could read newspapers by the light of the auroras, and telegraph machines worked without being plugged in! 📰⚡",
-            "Solar storms can create beautiful auroras, but they can also cause problems for our technology. That's why scientists work hard to predict them and help us prepare! 🛰️🔧"
-        ]
-    },
-    space_weather: {
-        keywords: ["space weather", "space environment", "magnetic field", "solar wind", "radiation", "space conditions", "space climate", "interplanetary space", "heliosphere", "magnetosphere", "ionosphere", "space monitoring"],
-        responses: [
-            "Space weather is like regular weather, but in space! Instead of rain and clouds, we have solar wind, magnetic fields, and radiation. Scientists study it to keep astronauts and satellites safe! 🚀",
-            "Just like we check the weather before going outside, astronauts and satellite operators check space weather before missions! They need to know if there are any solar storms coming that might affect their equipment! 📡",
-            "Space weather affects everything from GPS signals to power grids on Earth! That's why scientists around the world work together to monitor the Sun and predict when space weather might impact us! 🌍",
-            "Space weather can affect radio signals, airplane flights, and even power lines on Earth! It's amazing how something happening 93 million miles away can affect our daily lives! 📻✈️",
-            "Scientists use special satellites and ground-based instruments to monitor space weather 24/7. It's like having weather stations, but for space! 🛰️🌤️"
-        ]
-    },
-    sun: {
-        keywords: ["sun", "solar", "star", "sunspot", "solar cycle", "solar activity", "solar maximum", "solar minimum", "solar corona", "solar surface", "solar energy", "solar radiation", "our star", "day star"],
-        responses: [
-            "The Sun is our closest star and it's absolutely amazing! It's like a giant nuclear reactor that's been burning for billions of years, giving us light and heat. Without it, there would be no life on Earth! ☀️",
-            "The Sun has an 11-year cycle where it gets more and less active. During the active phase, we see more sunspots and solar flares. It's like the Sun's way of breathing in and out! 🌬️",
-            "Even though the Sun looks calm from Earth, it's actually a very active place! There are constant explosions, magnetic storms, and streams of particles flowing outward. It's like a cosmic fireworks show! 🎆",
-            "The Sun is so big that you could fit 1.3 million Earths inside it! And it's so hot that its surface temperature is about 10,000 degrees Fahrenheit! 🔥🌡️",
-            "Sunspots are dark spots on the Sun that are actually cooler than the rest of the surface. They're like the Sun's freckles, and they can be bigger than Earth! 🌞🔍"
-        ]
-    },
-    earth: {
-        keywords: ["earth", "planet", "magnetic field", "atmosphere", "protection", "shield", "our planet", "blue planet", "earth's field", "geomagnetic", "atmospheric", "ozone layer", "earth protection"],
-        responses: [
-            "Earth is like a spaceship with a magnetic shield! Our magnetic field protects us from harmful solar radiation and particles. It's like having an invisible force field around our planet! 🛡️🌍",
-            "Earth's atmosphere is like a protective blanket that keeps us safe and warm. It also helps create the beautiful auroras when solar particles interact with it! It's our planet's way of taking care of us! 🤗",
-            "Our planet is perfectly positioned in the 'Goldilocks zone' - not too hot, not too cold, just right for life! And our magnetic field and atmosphere work together to keep us safe from space weather! 🌟",
-            "Earth's magnetic field is like a giant invisible shield that extends far into space! It deflects harmful solar particles and creates the beautiful auroras at the poles! 🧲✨",
-            "The atmosphere has different layers, and each one helps protect us in different ways. The ozone layer, for example, blocks harmful ultraviolet radiation from the Sun! 🌫️🛡️"
-        ]
-    },
-    planets: {
-        keywords: ["planets", "solar system", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto", "dwarf planet", "other planets", "planetary", "space exploration"],
-        responses: [
-            "Our solar system has 8 amazing planets, each with its own unique features! Mercury is the closest to the Sun, while Neptune is the farthest. Each planet has its own weather and magnetic field! 🪐🌟",
-            "Jupiter is like a giant vacuum cleaner in space! Its strong magnetic field helps protect the inner planets from dangerous space weather. It's like our solar system's bodyguard! 🛡️🪐",
-            "Mars doesn't have a strong magnetic field like Earth, so it gets hit by more solar radiation. That's one reason why it's harder for life to survive there! 🔴🌪️",
-            "Saturn has beautiful rings made of ice and rock! It also has auroras, just like Earth, but they're created by different processes. Space is full of surprises! 💍✨",
-            "Venus is the hottest planet in our solar system, even hotter than Mercury! It has a thick atmosphere that traps heat, making it like a giant greenhouse! 🌡️🌺"
-        ]
-    },
-    satellites: {
-        keywords: ["satellites", "spacecraft", "space station", "iss", "international space station", "space missions", "orbital", "space technology", "spacecraft protection", "satellite weather"],
-        responses: [
-            "Satellites are like robots that orbit Earth and help us study space weather! They can see the Sun and space in ways we can't from the ground. They're our eyes in space! 👁️🛰️",
-            "The International Space Station (ISS) is like a giant laboratory floating in space! Astronauts live there and study space weather up close. It travels around Earth 16 times a day! 🚀🏠",
-            "Satellites need special protection from space weather! They have shields and backup systems to keep them safe from solar storms and radiation. It's like giving them space armor! ⚔️🛡️",
-            "Some satellites are designed specifically to watch the Sun and predict space weather! They help us know when solar storms are coming so we can prepare! 🔍☀️",
-            "Space weather can affect satellites by causing electrical problems or changing their orbits. That's why scientists work hard to predict and protect against it! ⚡🛰️"
-        ]
-    },
-    astronauts: {
-        keywords: ["astronauts", "space travelers", "space explorers", "cosmonauts", "space missions", "space suits", "space radiation", "space safety", "human spaceflight"],
-        responses: [
-            "Astronauts are brave explorers who travel to space! They need special protection from space weather, including radiation and solar storms. Their space suits are like personal spaceships! 👨‍🚀🛡️",
-            "When astronauts are in space, they're outside Earth's protective atmosphere and magnetic field! That's why they need special training and equipment to stay safe from space weather! 🌌👩‍🚀",
-            "Astronauts on the International Space Station can see auroras from above! They get an amazing view of the dancing lights that we see from Earth. It must be incredible! 🌟👀",
-            "Space radiation is one of the biggest challenges for astronauts! They need special shielding and monitoring to make sure they don't get too much exposure during their missions! ☢️🛡️",
-            "Astronauts study space weather to help scientists understand how it affects Earth and other planets. They're like space weather detectives! 🔍🕵️‍♂️"
-        ]
-    },
-    technology: {
-        keywords: ["technology", "gps", "radio", "power grid", "electricity", "communication", "internet", "space technology", "satellite communication", "power systems"],
-        responses: [
-            "Space weather can affect our technology here on Earth! It can disrupt GPS signals, radio communications, and even power grids. That's why scientists study it so carefully! 📡⚡",
-            "GPS satellites help us navigate, but space weather can mess up their signals! That's why we need backup systems and ways to predict when space weather might cause problems! 🗺️🛰️",
-            "Power companies watch space weather because solar storms can affect power lines and transformers! They need to be ready to protect the electrical grid! ⚡🏭",
-            "Radio signals can be affected by space weather too! That's why radio operators and emergency services need to know about space weather conditions! 📻📡",
-            "The internet and phone systems rely on satellites, so space weather can affect our daily communications! It's amazing how connected everything is! 🌐📱"
-        ]
-    },
-    science: {
-        keywords: ["science", "scientists", "research", "study", "experiments", "discovery", "space science", "physics", "astronomy", "space research", "scientific method"],
-        responses: [
-            "Scientists study space weather to understand how the Sun affects Earth and our technology! They use special instruments and computer models to predict what might happen! 🔬🧪",
-            "Space weather research helps us understand not just Earth, but other planets too! By studying how space weather works, we learn more about the universe! 🌌🔍",
-            "Scientists use telescopes, satellites, and ground-based instruments to study space weather! It's like being a detective, but for space! 🕵️‍♀️🔭",
-            "Research in space weather helps us protect astronauts, satellites, and our technology! It's science that directly helps people and makes life better! 👨‍🔬💡",
-            "Every day, scientists around the world work together to monitor space weather and share their findings! It's a global effort to understand our space environment! 🌍🤝"
-        ]
-    },
-    general: {
-        responses: [
-            "That's a great question about space! Space is full of amazing mysteries and wonders. The Sun, our solar system, and the space around Earth are all connected in fascinating ways! 🌌",
-            "I love your curiosity about space! There's so much to learn about how the Sun affects Earth and creates beautiful phenomena like auroras. Keep asking questions - that's how we discover new things! 🚀",
-            "Space weather is such an exciting topic! It's all about how the Sun and Earth interact, creating everything from beautiful auroras to challenges for our technology. What would you like to know more about? ✨",
-            "That's an interesting question! Space is full of surprises and there's always something new to learn. The more we study space weather, the more we understand about our amazing universe! 🌟",
-            "Great thinking! Space weather affects so many things in our daily lives, from the beautiful auroras we see to the technology we use. What other space topics interest you? 🚀💫"
-        ]
-    }
+// API status for display
+const getApiStatusDisplay = () => {
+    const status = getApiStatus();
+    return status;
 };
 
 // Current space weather status (simulated data)
@@ -153,7 +47,7 @@ export default function AIQuestionAnswer() {
         {
             id: 1,
             type: "ai",
-            content: "Hi there, space explorer! 👋 I'm your AI space weather assistant! I can help you learn about auroras, solar storms, space weather, and anything else about space! What would you like to know? 🌌✨",
+            content: "Hi there, space explorer! 👋 I'm your Space Weather Assistant! I love helping kids learn about auroras, solar storms, and how the Sun affects Earth. What space weather topic would you like to explore today? 🌌",
             timestamp: new Date()
         }
     ]);
@@ -173,27 +67,100 @@ export default function AIQuestionAnswer() {
         scrollToBottom();
     }, [messages]);
 
-    // AI response logic
-    const getAIResponse = (userMessage) => {
-        const message = userMessage.toLowerCase();
+    useEffect(() => {
+        // Refresh API status when component mounts
+        setApiStatus(getApiStatusDisplay());
+    }, []);
 
-        // Check for specific topics
-        for (const [topic, data] of Object.entries(AI_RESPONSES)) {
-            if (topic === 'general') continue;
+    // State for API status
+    const [apiStatus, setApiStatus] = useState(getApiStatusDisplay());
+    const [isTestingConnection, setIsTestingConnection] = useState(false);
 
-            const hasKeyword = data.keywords.some(keyword =>
-                message.includes(keyword.toLowerCase())
-            );
+    // Custom AI response function with progress updates
+    const getAIResponseWithProgress = async (userMessage, updateProgress) => {
+        const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
-            if (hasKeyword) {
-                const randomResponse = data.responses[Math.floor(Math.random() * data.responses.length)];
-                return randomResponse;
-            }
+        if (!apiKey || !apiKey.startsWith('gsk_')) {
+            throw new Error('API_KEY_MISSING');
         }
 
-        // Default response
-        const randomGeneral = AI_RESPONSES.general.responses[Math.floor(Math.random() * AI_RESPONSES.general.responses.length)];
-        return randomGeneral;
+        const maxRetries = 3;
+
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                if (attempt > 0) {
+                    updateProgress(`🔄 Retry ${attempt}/${maxRetries} - AI is working hard to get you an answer...`);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+
+                updateProgress(`🤖 AI is processing your question... `);
+
+                // Call the actual AI service
+                const response = await getAIResponse(userMessage, attempt, maxRetries);
+                return response;
+            } catch (error) {
+
+                if (attempt === maxRetries) {
+                    throw error; // Final attempt failed
+                }
+
+                updateProgress(`⚠️ Attempt ${attempt + 1} failed, trying again...`);
+            }
+        }
+    };
+
+    // Test API connection
+    const handleTestConnection = async () => {
+        setIsTestingConnection(true);
+
+        // Add diagnostic info to chat
+        const diagnosticMessage = {
+            id: Date.now(),
+            type: "ai",
+            content: `🔍 Running connection test... Check your browser console (F12) for detailed logs! 🛠️`,
+            timestamp: new Date()
+        };
+        setMessages(prev => [...prev, diagnosticMessage]);
+
+        try {
+            const result = await testApiConnection();
+            if (result.success) {
+                const testMessage = {
+                    id: Date.now() + 1,
+                    type: "ai",
+                    content: `🎉 Great news! Your AI connection is working perfectly! The API responded successfully. Now you can ask me any questions about space weather and I'll give you real AI-powered answers! 🚀✨`,
+                    timestamp: new Date()
+                };
+                setMessages(prev => [...prev, testMessage]);
+            } else {
+                const errorMessage = {
+                    id: Date.now() + 1,
+                    type: "ai",
+                    content: `⚠️ Connection test failed: ${result.message}. 
+
+📋 **Quick fixes to try:**
+1. Check browser console (F12) for detailed error logs
+2. Verify your .env file has: VITE_GROQ_API_KEY=gsk_your_key
+3. Make sure API key starts with 'gsk_'
+4. Restart the dev server (Ctrl+C then npm run dev)
+5. Check the TROUBLESHOOTING.md file for detailed help
+
+Don't worry though - I'm still here to help with backup responses! 🤖`,
+                    timestamp: new Date()
+                };
+                setMessages(prev => [...prev, errorMessage]);
+            }
+        } catch (error) {
+            const errorMessage = {
+                id: Date.now() + 1,
+                type: "ai",
+                content: `❌ Couldn't test the connection right now. Check the browser console (F12) for error details. But I'm still working with backup responses! Try asking me a question! 🌟`,
+                timestamp: new Date()
+            };
+            setMessages(prev => [...prev, errorMessage]);
+        } finally {
+            setIsTestingConnection(false);
+        }
     };
 
     const handleSendMessage = async (e) => {
@@ -215,19 +182,63 @@ export default function AIQuestionAnswer() {
         setInputValue("");
         setIsTyping(true);
 
-        // Simulate AI thinking time
-        setTimeout(() => {
-            const aiResponse = getAIResponse(userMessage.content);
-            const aiMessage = {
-                id: Date.now() + 1,
-                type: "ai",
-                content: aiResponse,
-                timestamp: new Date()
-            };
+        // Add thinking indicator message
+        const thinkingMessageId = Date.now() + 1;
+        const thinkingMessage = {
+            id: thinkingMessageId,
+            type: "ai",
+            content: "🤖 AI is thinking and processing your question...",
+            timestamp: new Date(),
+            isThinking: true
+        };
+        setMessages(prev => [...prev, thinkingMessage]);
 
-            setMessages(prev => [...prev, aiMessage]);
+        // Function to update thinking message
+        const updateThinkingMessage = (newContent) => {
+            setMessages(prev => prev.map(msg =>
+                msg.id === thinkingMessageId
+                    ? { ...msg, content: newContent }
+                    : msg
+            ));
+        };
+
+        try {
+            // Get AI response with retry progress updates
+            const aiResponseContent = await getAIResponseWithProgress(userMessage.content, updateThinkingMessage);
+
+            // Remove thinking message and add real response
+            setMessages(prev => {
+                const filtered = prev.filter(msg => msg.id !== thinkingMessageId);
+                return [...filtered, {
+                    id: Date.now() + 2,
+                    type: "ai",
+                    content: aiResponseContent,
+                    timestamp: new Date()
+                }];
+            });
+        } catch (error) {
+
+            // Remove thinking message and show error
+            setMessages(prev => {
+                const filtered = prev.filter(msg => msg.id !== thinkingMessageId);
+                let errorContent = "I'm having trouble connecting to my AI brain right now! 🤖";
+
+                if (error.message === 'API_KEY_MISSING') {
+                    errorContent = "⚠️ My AI connection isn't set up yet! I need an API key to give you real AI answers. For now, I can still chat with you using my backup knowledge! 🤖";
+                } else {
+                    errorContent = "I tried really hard to get you an answer, but I'm having connection issues! 🤖 Let me try again in a moment, or you can ask me another question! ✨";
+                }
+
+                return [...filtered, {
+                    id: Date.now() + 2,
+                    type: "ai",
+                    content: errorContent,
+                    timestamp: new Date()
+                }];
+            });
+        } finally {
             setIsTyping(false);
-        }, 1000 + Math.random() * 2000); // 1-3 seconds delay
+        }
     };
 
     const handleSampleQuestion = (question) => {
@@ -288,12 +299,16 @@ export default function AIQuestionAnswer() {
                     </p>
 
                     {/* Current Space Weather Status */}
-                    <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                        <span className="text-2xl">{currentWeather.emoji}</span>
-                        <div className="text-left">
-                            <div className="font-semibold">Current Space Weather: {currentWeather.level}</div>
-                            <div className="text-sm text-white/70">{currentWeather.description}</div>
+                    <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+                            <span className="text-2xl">{currentWeather.emoji}</span>
+                            <div className="text-left">
+                                <div className="font-semibold">Current Space Weather: {currentWeather.level}</div>
+                                <div className="text-sm text-white/70">{currentWeather.description}</div>
+                            </div>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -312,10 +327,25 @@ export default function AIQuestionAnswer() {
                                 <div
                                     className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl ${message.type === "user"
                                         ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white"
-                                        : "bg-white/10 text-white border border-white/20"
+                                        : message.isThinking
+                                            ? "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-white border border-blue-400/30 animate-pulse"
+                                            : "bg-white/10 text-white border border-white/20"
                                         }`}
                                 >
-                                    <div className="text-sm leading-relaxed">{message.content}</div>
+                                    <div className="text-sm leading-relaxed">
+                                        {message.isThinking ? (
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex gap-1">
+                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                </div>
+                                                <span>{message.content}</span>
+                                            </div>
+                                        ) : (
+                                            message.content
+                                        )}
+                                    </div>
                                     <div className="text-xs opacity-70 mt-2">
                                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
@@ -323,7 +353,7 @@ export default function AIQuestionAnswer() {
                             </div>
                         ))}
 
-                        {isTyping && (
+                        {/* {isTyping && (
                             <div className="flex justify-start">
                                 <div className="bg-white/10 text-white border border-white/20 px-4 py-3 rounded-2xl">
                                     <div className="flex items-center gap-1">
@@ -336,7 +366,7 @@ export default function AIQuestionAnswer() {
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Input Area - Added form to prevent default submission */}

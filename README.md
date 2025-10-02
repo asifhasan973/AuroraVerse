@@ -353,4 +353,4 @@ For questions, suggestions, or support, please reach out through the project's G
 
 ---
 
-**🌟 Made with ❤️ for space education and the NASA Space Apps Challenge 2024**
+**🌟 Made with ❤️ for space education and the NASA Space Apps Challenge 2025**

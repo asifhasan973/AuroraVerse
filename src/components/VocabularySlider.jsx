@@ -142,16 +142,16 @@ export default function VocabularySlider({ vocabulary = [], isVisible = false, o
                 {!isExpanded && (
                     <button
                         onClick={() => setIsExpanded(true)}
-                        className={`absolute top-1/3 -translate-y-1/2 ${isSideBySide ? '-left-12 sm:-left-16' : '-left-12 sm:-left-16'
-                            } bg-gradient-to-r from-fuchsia-500 to-purple-500 hover:from-fuchsia-400 hover:to-purple-400 text-white p-3 sm:p-4 rounded-l-xl shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-fuchsia-500/25 group`}
+                        className={` absolute right-0 top-1/3 -translate-y-1/2 ${isSideBySide ? '-left-10 sm:-left-24' : '-left-16 sm:-left-24'
+                            } bg-gradient-to-r from-fuchsia-500 to-purple-500 hover:from-fuchsia-400 hover:to-purple-400 text-white p-4 sm:p-5 rounded-l-xl shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-fuchsia-500/25 group`}
                         aria-label="Show vocabulary"
                     >
                         <div className="flex items-center gap-2">
-                            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-pulse" />
-                            <span className="hidden sm:block text-xs font-semibold"></span>
+                            <BookOpen className="w-5 h-5 sm:w-7 sm:h-7 group-hover:animate-pulse" />
+                            <span className="hidden sm:block text-sm font-semibold"></span>
                         </div>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping" />
-                        <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-white/80 rounded-full flex items-center justify-center">
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-ping" />
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white/80 rounded-full flex items-center justify-center">
                             {isSideBySide ? (
                                 <Sidebar className="w-1 h-1 text-fuchsia-500" />
                             ) : (

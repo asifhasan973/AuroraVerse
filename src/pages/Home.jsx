@@ -159,7 +159,9 @@ export default function Home() {
         <div className="flex flex-col items-center lg:items-start justify-center px-4 sm:px-6 md:px-8 lg:px-16 text-center lg:text-left xl:ps-32 pt-20 lg:pt-0">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-extrabold tracking-wide drop-shadow-lg leading-tight">
             <span className="bg-gradient-to-r from-pink-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent animate-pulse moo-lah-lah-regular">
-              From Solar Storms to Auroras
+              Solar <br /> Storms
+              to
+              <br /> Auroras
             </span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl md:text-2xl text-white/80 font-bold max-w-2xl">

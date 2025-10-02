@@ -39,7 +39,7 @@ export default function Navbar() {
                      bg-gradient-to-r from-fuchsia-300 via-violet-300 to-indigo-300
                      bg-clip-text rubik-dirt-regular"
         >
-          AuroraVerse
+          ExoVisionaries
         </span>
       </Link>
 
