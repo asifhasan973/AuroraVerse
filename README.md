@@ -35,7 +35,6 @@ This space weather education platform combines interactive storytelling with rea
 
 ## 🌐 NASA & NOAA Data Sources
 
-- **NASA DONKI**: [https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get](https://kauai.ccmc.gsfc.nasa.gov/DONKI/WS/get) - Real-time CME and solar wind data for Aurora Lab
 - **NASA Images**: [https://www.nasa.gov/images/](https://www.nasa.gov/images/) - Educational imagery for vocabulary cards and stories
 - **NASA Science**: [https://science.nasa.gov/](https://science.nasa.gov/) - Heliophysics research and educational content
 - **Space Place**: [https://spaceplace.nasa.gov/](https://spaceplace.nasa.gov/) - Kid-friendly space weather explanations
@@ -43,6 +42,8 @@ This space weather education platform combines interactive storytelling with rea
 - **Aurora Animations**: [https://services.swpc.noaa.gov/products/animations/](https://services.swpc.noaa.gov/products/animations/) - 24-hour aurora activity animations
 - **K-Index Data**: [https://services.swpc.noaa.gov/json/boulder_k_index_1m.json](https://services.swpc.noaa.gov/json/boulder_k_index_1m.json) - Real-time geomagnetic activity measurements
 - **Electron Forecast**: [https://services.swpc.noaa.gov/json/electron_fluence_forecast.json](https://services.swpc.noaa.gov/json/electron_fluence_forecast.json) - Radiation storm predictions
+- **Heliophysics Data Portal**: [https://science.nasa.gov/heliophysics/data/](https://science.nasa.gov/heliophysics/data/) - Comprehensive heliophysics datasets and modeling tools
+- **NASA YouTube**: [https://www.youtube.com/@NASAgovVideo](https://www.youtube.com/@NASAgovVideo) - Educational videos for story explanations and space content 
 
 
 
