@@ -125,16 +125,6 @@ space-apps-game/
 
 Developed for NASA Space Apps Challenge 2025, this project makes space weather education accessible through modern web technology and real NASA data integration.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make improvements
-4. Submit a pull request
-
-## 📄 License
-
-MIT License – Open source project
 
 ---
 
