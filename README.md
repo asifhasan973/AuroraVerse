@@ -1,4 +1,4 @@
-# 🌟 From Solar Storms to Auroras: Interactive Space Weather Game
+# 🌟 Solar Storms to Auroras: Interactive Space Weather Game
 An interactive educational game that teaches space weather concepts through storytelling, real-time NASA data, and gamified learning experiences.
 
 ## 🎮 [Live Demo](https://space-apps-game.vercel.app)
