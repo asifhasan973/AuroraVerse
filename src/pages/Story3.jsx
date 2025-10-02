@@ -583,7 +583,7 @@ export default function Story3() {
             <DialogueBox
               speaker={currentStep.dialogue.speaker}
               text={currentStep.dialogue.text}
-              width={isMobile ? "90%" : 600}
+              width={isMobile ? "80%" : 420}
               maxWidth={600}
               position={getCurrentDialoguePosition()}
               anchorCenterX={true}

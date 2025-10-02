@@ -13,7 +13,7 @@ export default function DialogueBox({
   position = { bottom: 24, left: "50%" },
   anchorCenterX = true,
   showNext = true,
-  onNext = () => {},
+  onNext = () => { },
   onBack = null,
   canBack = false,
   loading = false,
@@ -35,7 +35,7 @@ export default function DialogueBox({
   // Responsive positioning
   const getResponsivePosition = () => {
     const basePosition = { ...position };
-    
+
     // On mobile, adjust positioning
     if (window.innerWidth < 768) {
       // Center horizontally with some margin
@@ -43,12 +43,12 @@ export default function DialogueBox({
       basePosition.right = undefined;
       // Give more space from bottom on mobile
       if (basePosition.bottom) {
-        basePosition.bottom = typeof basePosition.bottom === 'number' 
-          ? Math.max(12, basePosition.bottom / 2) 
+        basePosition.bottom = typeof basePosition.bottom === 'number'
+          ? Math.max(12, basePosition.bottom / 2)
           : basePosition.bottom;
       }
     }
-    
+
     return Object.fromEntries(
       Object.entries(basePosition).map(([k, v]) => [k, pxOr(v)])
     );
@@ -78,7 +78,7 @@ export default function DialogueBox({
       <div className="mb-1.5 sm:mb-2 text-xs sm:text-sm uppercase tracking-wide text-fuchsia-200">
         {labelFor(speaker)}
       </div>
-      
+
       {/* Dialogue text */}
       <p className="min-h-[2.5rem] sm:min-h-[3lh] 
                     text-sm sm:text-base md:text-lg 
@@ -104,8 +104,8 @@ export default function DialogueBox({
 
         {/* Next button */}
         {showNext && (
-          <Button 
-            onClick={onNext} 
+          <Button
+            onClick={onNext}
             className="w-full sm:w-auto 
                        text-sm sm:text-base
                        py-2 sm:py-2.5

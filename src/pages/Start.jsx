@@ -113,7 +113,7 @@ const SCRIPT = [
       speaker: "astro",
       text: "Hi there! I'm Stelly.",
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "25vh", left: "65%" },
         anchorCenterX: true
       },
@@ -145,7 +145,7 @@ const SCRIPT = [
       speaker: "child",
       text: "Hi! Who are you?",
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "15vh", left: "35%" },
         anchorCenterX: true
       },
@@ -177,7 +177,7 @@ const SCRIPT = [
       speaker: "astro",
       text: "I'm an astronaut.",
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "25vh", left: "65%" },
         anchorCenterX: true
       },
@@ -209,7 +209,7 @@ const SCRIPT = [
       speaker: "child",
       text: "Astronaut? What is it?",
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "15vh", left: "35%" },
         anchorCenterX: true
       },
@@ -241,7 +241,7 @@ const SCRIPT = [
       speaker: "astro",
       text: `An astronaut is a space explorer!`,
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "25vh", left: "65%" },
         anchorCenterX: true
       },
@@ -273,7 +273,7 @@ const SCRIPT = [
       speaker: "astro",
       text: `Do you wanna explore the space?`,
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "25vh", left: "65%" },
         anchorCenterX: true
       },
@@ -305,7 +305,7 @@ const SCRIPT = [
       speaker: "child",
       text: "Yes...",
       box: {
-        width: { base: 450, mobile: "85%", tablet: 380 },
+        width: { base: 320, mobile: "75%", tablet: 280 },
         pos: { bottom: "15vh", left: "35%" },
         anchorCenterX: true
       },
@@ -363,7 +363,7 @@ const SCRIPT = [
       speaker: "astro",
       text: "Hold my hand, let's fly! 🚀",
       box: {
-        width: { base: 480, mobile: "85%", tablet: 400 },
+        width: { base: 340, mobile: "75%", tablet: 300 },
         pos: { bottom: "20vh", left: "60%" },
         anchorCenterX: true
       },
