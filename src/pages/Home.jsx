@@ -2,11 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
+import Toast from "../components/ui/Toast";
 import { useImagePreload } from "../hooks/useImagePreload";
 
 export default function Home() {
   const videoRef = useRef(null);
   const [videoReady, setVideoReady] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const location = useLocation();
   const { done: imgsReady, progress } = useImagePreload([
     "/images/astranaut2.png",
@@ -128,6 +130,15 @@ export default function Home() {
     };
   }, [videoReady]);
 
+  // Show toast notification when page loads
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowToast(true);
+    }, 2000); // Show toast after 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
       <LoadingOverlay show={!(videoReady && imgsReady)} label={`Loading… ${progress ?? 0}%`} />
@@ -196,6 +207,18 @@ export default function Home() {
           />
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message="💻 Use Laptop and Ctrl - or Ctrl + for better experience and adjustment"
+          duration={6000}
+          type="info"
+          position="top-right"
+          clickToDismiss={true}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }
