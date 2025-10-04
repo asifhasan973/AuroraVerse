@@ -10,6 +10,7 @@ const AuroraLab = () => {
 
         const loadResources = async () => {
             try {
+                // Load CSS files
                 const loadCSS = (href) => {
                     return new Promise((resolve, reject) => {
                         const link = document.createElement('link');
@@ -26,6 +27,7 @@ const AuroraLab = () => {
                     });
                 };
 
+                // Load Google Fonts
                 const fontLink = document.createElement('link');
                 fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
                 fontLink.rel = 'stylesheet';
@@ -36,11 +38,13 @@ const AuroraLab = () => {
                     }
                 });
 
+                // Load CSS files
                 await Promise.all([
                     loadCSS('/aurora-lab/styles/main.css'),
                     loadCSS('/aurora-lab/styles/control-panel.css')
                 ]);
 
+                // Create import map for Three.js
                 const importMap = document.createElement('script');
                 importMap.type = 'importmap';
                 importMap.textContent = JSON.stringify({
